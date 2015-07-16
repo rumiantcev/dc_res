@@ -427,13 +427,13 @@ void Task::Control_R1(int trNum) {
 
 	bool  extr_u_exist;
 	LDouble  tau_s, tau_delta, xNorm, xExtNorm;
-    VecOfVec vx_i, vu_i, vv_i;
+	VecOfVec vx_i, vu_i, vv_i;
 	Vector *rx_i;
 
 	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, tcurr = tmax, p, a =
-		LDouble(_lrand() % cP->Count) / cP->Count, ccurr = _extr_e_val*2;
+		LDouble(_lrand() % cP->Count) / cP->Count, ccurr = _extr_e_val;
 
-	long jk=_lrand() % (tmpPNet.Count),jj;
+	long jk=_lrand() % (c.Count),jj, prevInd,indExtr;
 
 	j = 0;
 	k = tr_s[trNum].NetList.size();
@@ -448,7 +448,7 @@ void Task::Control_R1(int trNum) {
 		tr_s[trNum].x_i->v->v[0][m] = tr_s[trNum].x0[m];
 	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
 	t = tr_s[trNum].T; // значение t = конечному времени;
-	tau_s = tau/(2*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
+	tau_s = tau/(tmpPNet.Count*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
 
 
 	while (t >= precision) {
@@ -470,7 +470,7 @@ void Task::Control_R1(int trNum) {
 		Ind = c.GetExtrGlobal(opMin,  0, min);
 		for (m = 0; m < c.Dim; m++)
 			psi.v->v[m] = c.getIJ(Ind, m);
-
+		//prevInd = Ind;
 		//выбираем u_i
 		extrVec = Transpose(PiEtAB) * psi;
 		cP->perfomance = 0;
@@ -478,7 +478,9 @@ void Task::Control_R1(int trNum) {
 		for (m = 0; m < dim_u; m++)
 			u_i.v->v[m] = cP->getIJ(Ind, m);
 		u_i = cP->getBorderPoint(Ind, u_i);
-		cout << Ind << " : " << u_i;
+		prevInd = Ind;
+
+	    cout << Ind << " : " << u_i;
 
 		//выбираем v_i
 		extrVec = Transpose(PiEtAC) * psi;
@@ -488,88 +490,80 @@ void Task::Control_R1(int trNum) {
 			v_i.v->v[m] =   cQ->getIJ(Ind, m);
 		v_i=cQ->getBorderPoint(Ind,v_i);
 		//cout << Ind << " : " << v_i;
-		PiEtAx = PiEtA * x_i;
-		xNorm = PiEtAx.norm();
-		cout << (j) * tau << " : " << xNorm << " : "<< x_i;
+
+		xExtNorm = c.f->v->v[jk];
+		indExtr = jk;
+		xNorm =  xExtNorm;
+        jk = _lrand() % (c.Count);
 
 		 //--------ищем u_i при условии отсутствия информации о системе и наличия данных только о расстоянии до терм. множества
-	  	tau_delta=tau;
+		tau_delta=tau;
 		tmin = _extr_tmin_param; tcurr = tmax;
-        extr_u_exist = false;
 		while (tcurr>tmin) {
 			EtA = Exponential(A, t, precision);
 			PiEtA = PP * EtA;
 			PiEtAB = PiEtA * B;
-			PiEtAx = PiEtA * x_i;
-			xNorm = PiEtAx.norm(); // длина PiEtA*x_0
-
-			cP->oporn(t, 1);//сделать вычисления для единичного значения  - больше и не надо, хотя для окресности psi это будет важно
-			tmpPNet = *cP;
-			tmpPNet *= PiEtAB; //и  в этом  значении умножать на  PiEtAB
-			tmpPNet.update();
-			if(!extr_u_exist){
-				jk = _lrand() % (tmpPNet.Count);
-				xExtNorm = xNorm;
-				extr_u_exist = true;
-			}
-			else
+		   /*	PiEtAx = PiEtA * x_i;
+			for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
+				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
+				c.f->v->v[i] = tr_s[trNum].NetList[k+1]->f->v->v[i] - x_Net.f->v->v[i];
+			}/**/
+			xNorm = c.f->v->v[jk];
 			//шаг метода annealing
-				if(xNorm < xExtNorm){
+			if(xNorm < xExtNorm){
+				xExtNorm = xNorm;
+				indExtr = jk;
+				tcurr = tcurr * ccurr;
+			}else{
+				p = 1.0 / (1.0 + exp(-fabs(xNorm - xExtNorm) /tcurr));
+				a = double(_lrand() % c.Count) / (double)c.Count;
+				if (a > p) {
 					xExtNorm = xNorm;
+					indExtr = jk;
 					tcurr = tcurr * ccurr;
-				}else{
-					p = 1.0 / (1.0 + exp(-fabs(xNorm - xExtNorm) / tcurr));
-					a = double(_lrand() % tmpPNet.Count) / tmpPNet.Count;
-					if (a > p) {
-						xExtNorm = xNorm;
-						tcurr = tcurr * ccurr;
-					}
-					else
-					if (p>1-tmin)
-						tcurr = tcurr * ccurr;
-
-					a = double(_lrand() % tmpPNet.Count) / tmpPNet.Count;
-					jj = signof(a - 0.5) * tcurr * (pow((1 + 1 / tcurr), fabs(2 * a - 1)) -	1) * tmpPNet.Count;
-					jk = abs(jj + jk) % tmpPNet.Count;
-				   //	tcurr = tcurr * ccurr;
 				}
+				//	else
+				//	if (p>0.9999999999)
+				//		tcurr = tcurr * ccurr;
+			}
+			a = double(_lrand() % c.Count) / double(c.Count);
+			jj = signof(a - 0.5) * tcurr * (pow((1.0 + 1.0 / tcurr), fabs(2.0 * a - 1.0)) -	1.0) * double(c.Count);
+			jk = abs(jj + jk) % c.Count;
+			 /**/
+			//tcurr = tcurr * ccurr;
+			for (m = 0; m < c.Dim; m++)
+				psi.v->v[m] = c.getIJ(indExtr, m);
 
-			Ind = jk;
+			cP->oporn(t, 1);
+			extrVec = Transpose(PiEtAB) * psi;
+			cP->perfomance = 0;
+			Ind = cP->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *cP);
 			for (m = 0; m < dim_u; m++)
-				u_i.v->v[m] = tmpPNet.getIJ(Ind, m);
-			u_i = tmpPNet.getBorderPoint(Ind, u_i);
+				u_i.v->v[m] = cP->getIJ(Ind, m);
+			u_i = cP->getBorderPoint(Ind, u_i);
 
 			x_i = rungeCutt(x_i, u_i, v_i, tau_s);
-		   //	cout<< xExtNorm <<" : "<< x_i <<endl;
+		  //	cout<< xExtNorm <<" : "<< x_i <<endl;
 			t -=tau_s;
 			tau_delta -= tau_s;
 		}
 
-		EtA = Exponential(A, t, precision);
-		PiEtA = PP * EtA;
-		PiEtAB = PiEtA * B;
-		cP->oporn(t, 1);
-		tmpPNet = *cP;
-		tmpPNet *= PiEtAB;
-		tmpPNet.update();
 		for (m = 0; m < dim_v; m++)
-			u_i.v->v[m] = tmpPNet.getIJ(Ind, m);
+			u_i.v->v[m] = cP->getIJ(Ind, m);
 
-		u_i = tmpPNet.getBorderPoint(Ind, u_i);
+		u_i = cP->getBorderPoint(Ind, u_i);
 		cout << Ind << " : " << u_i;
 
 		x_i = rungeCutt(x_i, u_i, v_i, tau_delta);
-        t -=tau_delta;
+		cout<<xExtNorm<<" : "<< x_i <<endl;
+		t -=tau_delta;
 
-		//PiEtAx = PiEtA * x_i;
-		//xNorm = x_i.norm(); // длина PiEtA*x_0
-		/**/
 	   //----------------------------------------------------------
-
+	  /*
 		//находим следующий  x_i  методом  Рунге-Кутты
-	  /*	x_i = rungeCutt(x_i, u_i, v_i);
+		x_i = rungeCutt(x_i, u_i, v_i);
 
-	  //	cout<<x_i<<" : "<< xExtNorm <<endl;
+		cout<<xExtNorm<<" : "<< x_i <<endl;
 
 		//сохраняем результаты расчётов
 		for (m = 0; m < dim_u; m++)
@@ -577,12 +571,14 @@ void Task::Control_R1(int trNum) {
 		for (m = 0; m < dim_v; m++)
 			tr_s[trNum].v_i->v->v[j][m] = v_i[m];
 		for (m = 0; m < dim_x; m++)
-	 		tr_s[trNum].x_i->v->v[j + 1][m] = x_i[m];
-
+			tr_s[trNum].x_i->v->v[j + 1][m] = x_i[m];
+		t -=tau;
 		/**/
 		j++;
 	}
 
+
+	//--------------------------------------------------------------------
  
 }
 

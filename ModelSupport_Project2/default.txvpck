@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nodeSet version="1.0">
+  <view uin="j0rzu9ozhh2wadn0g_v">
+    <property name="$defaultDiagram" value="true" />
+    <property name="$metaclass" value="Package Diagram" />
+    <property name="$name" value="default" />
+    <reference referencedUin="cpp:e_class:src:Project2:Matrix">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="680,420,139,461" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:Matrix.updated" />
+      <reference referencedUin="cpp:e_field:src:Project2:Matrix.upd" />
+      <reference referencedUin="cpp:e_field:src:Project2:Matrix.v" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.Norm()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.copy(Matrix*!Matrix*)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.GetSubMatrix(long!long!long!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.SetCol(Vector const &amp;!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.SetRow(Vector const &amp;!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.GetCol(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.GetRow(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.operator *=(Matrix const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.operator *=(double const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.operator +=(Matrix const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.operator =(Matrix const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.operator ()(long!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.n()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.m()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.~Matrix()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.detach()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.create(bool!long!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.update()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.Matrix(Matrix::string const &amp;!long!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.Matrix(double**!long!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.Matrix(Matrix const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.Matrix(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.Matrix(long!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Matrix.Matrix(::std::string const &amp;!long!long)" />
+      <reference referencedUin="cpp:l_ast:src:Project2:Matrix.v">
+        <property name="sourceAnchor" value="819,850" />
+        <property name="targetAnchor" value="900,850" />
+        <property name="bendpoints" value="" />
+      </reference>
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:exInvalidMoveDirection">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="780,260,148,52" />
+      <property name="location_set_by_user" value="True" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:DeleteObj">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="820,140,157,83" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_method:src:Project2:DeleteObj.operator () &lt;T&gt;(T * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Task">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="600,1100,267,791" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.psi0Index" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.description" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.method" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.priority" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.tmpT" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.T" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.t0" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.maxTime" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.tau" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.precision" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.epsilon" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.steps" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.dim_m" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.dim_m1" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.dim_v" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.dim_u" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.dim_x" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.cM" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.cQ" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.cP" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.tr_s" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.currT" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.currMu" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.PP" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.C" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.B" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.A" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.state" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.perfomance" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.IndI" />
+      <reference referencedUin="cpp:e_field:src:Project2:Task.Level" />
+      <reference referencedUin="cpp:l_ast:src:Project2:Task.cM">
+        <property name="sourceAnchor" value="600,1711" />
+        <property name="targetAnchor" value="236,1711" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:Task.cQ">
+        <property name="sourceAnchor" value="600,1673" />
+        <property name="targetAnchor" value="236,1673" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:Task.cP">
+        <property name="sourceAnchor" value="600,1633" />
+        <property name="targetAnchor" value="236,1633" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:Task.PP">
+        <property name="sourceAnchor" value="749,1100" />
+        <property name="targetAnchor" value="749,881" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:Task.C">
+        <property name="sourceAnchor" value="741,1100" />
+        <property name="targetAnchor" value="741,881" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:Task.B">
+        <property name="sourceAnchor" value="733,1100" />
+        <property name="targetAnchor" value="733,881" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:Task.A">
+        <property name="sourceAnchor" value="725,1100" />
+        <property name="targetAnchor" value="725,881" />
+        <property name="bendpoints" value="" />
+      </reference>
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:SIC_FunTable">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1160,880,164,98" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_FunTable.items" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_FunTable.header" />
+      <reference referencedUin="cpp:l_ast:src:Project2:SIC_FunTable.items">
+        <property name="sourceAnchor" value="1240,978" />
+        <property name="targetAnchor" value="1240,1020" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:SIC_FunTable.header">
+        <property name="sourceAnchor" value="1208,880" />
+        <property name="targetAnchor" value="1208,818" />
+        <property name="bendpoints" value="" />
+      </reference>
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:SIC_TableHeader">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1140,660,117,158" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_TableHeader.oooooo" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_TableHeader.titype" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_TableHeader.tnsize" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_TableHeader.tisize" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_TableHeader.mcount" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_TableHeader.icount" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:sMx">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="900,820,136,236" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:sMx.linkCount" />
+      <reference referencedUin="cpp:e_field:src:Project2:sMx.vv" />
+      <reference referencedUin="cpp:e_field:src:Project2:sMx.v" />
+      <reference referencedUin="cpp:e_field:src:Project2:sMx.n" />
+      <reference referencedUin="cpp:e_field:src:Project2:sMx.m" />
+      <reference referencedUin="cpp:e_method:src:Project2:sMx.create()" />
+      <reference referencedUin="cpp:e_method:src:Project2:sMx.operator delete(void*)" />
+      <reference referencedUin="cpp:e_method:src:Project2:sMx.~sMx()" />
+      <reference referencedUin="cpp:e_method:src:Project2:sMx.sMx(double**!long!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:sMx.sMx(sMx&amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:sMx.sMx(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:sMx.sMx(long!long)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:TNetF">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="60,1160,176,911" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNetF.t" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNetF.vars" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNetF.sic" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNetF.dll" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNetF.lib_name" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNetF.fStr" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNetF.net" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNetF.f" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNetF.alpha" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNetF.zeroPrecision" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNetF.alphaMode" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNetF.operType" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.getBorderPoint(long!Vector const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.copyNetFFrom(TNetF const &amp;!bool)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.initNetFDefault()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.findExtrFastXGlobal(OpType!ZeroAware!FindBase!long!double&amp;!FindPath!pathType&amp;!bool * const)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.findExtrFastXDirection(Vector const &amp;!(double)(*)(long, Vector const &amp;, TNetF*)!(double)(*)(long, double, TNetF * const)!OpType!ZeroAware!FindBase!long!double&amp;!FindPath!pathType&amp;!bool * const!TNetF&amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.selectExtrX(Vector const &amp;!(double)(*)(long, Vector const &amp;, TNetF*)!(double)(*)(long, double, TNetF * const)!long!long&amp;!double&amp;!OpType!ZeroAware!bool&amp;!FindBase!long!FindPath!pathType&amp;!bool * const!TNetF&amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.makeAlpha(alphType&amp;!pathType&amp;!bool*!bool!TNetF&amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.AddVariables()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.findExtrSlowGlobal(OpType!ZeroAware!FindBase!long!double&amp;!FindPath!pathType&amp;!bool * const)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.findExtrSlowDirection(Vector const &amp;!(double)(*)(long, Vector const &amp;, TNetF*)!(double)(*)(long, double, TNetF * const)!OpType!ZeroAware!FindBase!long!double&amp;!FindPath!pathType&amp;!bool * const!TNetF&amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.getVecAt(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.smoothFunction(double)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.saveAsVrml(::std::string)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.Points(bool)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.ConvSerial(bool*!Vector const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.Conv(bool*)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.SetFunc(::std::string const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.Clear()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.GetExtrGlobal(OpType!ZeroAware!FindBase!long!double&amp;!FindPath!pathType&amp;!bool * const)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.GetExtrDirection(Vector const &amp;!(double)(*)(long, Vector const &amp;, TNetF*)!(double)(*)(long, double, TNetF * const)!OpType!ZeroAware!FindBase!long!double&amp;!FindPath!pathType&amp;!bool * const!TNetF&amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.oporn(double!int!Matrix const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.oporn(Vector const &amp;!double!int!Matrix const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.opornx(double!int)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.oporn(double!int)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.oporn(Vector const &amp;!double!::std::string const &amp;!int)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.oporn(Vector const &amp;!double!int)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.operator -=(TNetF const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.operator +=(TNetF const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.operator *=(double const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.operator *=(Matrix const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.operator =(TNetF const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.getIJ(long!int)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.detach()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.create(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.dynUpdate()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.update()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.operator delete(void*)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.~TNetF()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.TNetF(TNetF&amp;!::std::string const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.TNetF(TNetF const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.TNetF(TNet&amp;!::std::string const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.TNetF(TNet&amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.TNetF(long!int!long!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.TNetF(int!long!long!::std::string)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNetF.TNetF(int!long!long)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:TNetF:TNet">
+        <property name="sourceAnchor" value="236,1378" />
+        <property name="targetAnchor" value="320,1378" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:TNetF.sic">
+        <property name="sourceAnchor" value="236,1925" />
+        <property name="targetAnchor" value="1200,1925" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:TNetF.net">
+        <property name="sourceAnchor" value="236,1370" />
+        <property name="targetAnchor" value="320,1370" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:TNetF.f">
+        <property name="sourceAnchor" value="123,1160" />
+        <property name="targetAnchor" value="123,851" />
+        <property name="bendpoints" value="" />
+      </reference>
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:SIC_ConItem">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1340,560,93,113" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_ConItem.value" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_ConItem.datype" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_ConItem.name" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:SIC_ConTable">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1280,700,164,98" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_ConTable.items" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_ConTable.header" />
+      <reference referencedUin="cpp:l_ast:src:Project2:SIC_ConTable.items">
+        <property name="sourceAnchor" value="1386,700" />
+        <property name="targetAnchor" value="1386,673" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:SIC_ConTable.header">
+        <property name="sourceAnchor" value="1280,749" />
+        <property name="targetAnchor" value="1257,749" />
+        <property name="bendpoints" value="" />
+      </reference>
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Traectory">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="280,300,266,281" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:Traectory.w" />
+      <reference referencedUin="cpp:e_field:src:Project2:Traectory.vecBrige" />
+      <reference referencedUin="cpp:e_field:src:Project2:Traectory.x_i" />
+      <reference referencedUin="cpp:e_field:src:Project2:Traectory.v_i" />
+      <reference referencedUin="cpp:e_field:src:Project2:Traectory.u_i" />
+      <reference referencedUin="cpp:e_field:src:Project2:Traectory.psiExtr" />
+      <reference referencedUin="cpp:e_field:src:Project2:Traectory.NetList" />
+      <reference referencedUin="cpp:e_field:src:Project2:Traectory.ind" />
+      <reference referencedUin="cpp:e_field:src:Project2:Traectory.T" />
+      <reference referencedUin="cpp:e_field:src:Project2:Traectory.mu" />
+      <reference referencedUin="cpp:e_field:src:Project2:Traectory.psi" />
+      <reference referencedUin="cpp:e_field:src:Project2:Traectory.x0" />
+      <reference referencedUin="cpp:e_method:src:Project2:Traectory.init(Vector const &amp;!Vector const &amp;!TNetF*)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Traectory.Traectory()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Traectory.~Traectory()" />
+      <reference referencedUin="cpp:l_ast:src:Project2:Traectory.x_i">
+        <property name="sourceAnchor" value="546,500" />
+        <property name="targetAnchor" value="680,500" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:Traectory.v_i">
+        <property name="sourceAnchor" value="546,492" />
+        <property name="targetAnchor" value="680,492" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:Traectory.u_i">
+        <property name="sourceAnchor" value="546,484" />
+        <property name="targetAnchor" value="680,484" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:Traectory.psi">
+        <property name="sourceAnchor" value="280,500" />
+        <property name="targetAnchor" value="187,500" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:Traectory.x0">
+        <property name="sourceAnchor" value="280,492" />
+        <property name="targetAnchor" value="187,492" />
+        <property name="bendpoints" value="" />
+      </reference>
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:SIC_Data64">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1100,260,160,383" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.value" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.rcode" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.ecode" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.pcurs" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.ccurs" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.rcount" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.vcount" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.ccount" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.fcount" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.rpn" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.tokens" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.coops" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.size" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.entry" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.stack" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.data" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.code" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.rdata" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.vdata" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.cdata" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data64.fdata" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Vector">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="20,420,167,431" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:Vector.updated" />
+      <reference referencedUin="cpp:e_field:src:Project2:Vector.upd" />
+      <reference referencedUin="cpp:e_field:src:Project2:Vector.v" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.norm(long const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.copy(Vector*!Vector*)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.operator [](long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.operator ()(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.GetSubVector(long!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.vSum(Vector const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.operator *=(double const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.operator +=(Vector const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.operator =(double const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.operator =(Vector const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.detachT()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.detach()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.create(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.size()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.update()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.~Vector()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.Vector(Vector::string const &amp;!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.Vector(double * const!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.Vector(Vector const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.Vector(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.Vector()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Vector.Vector(::std::string const &amp;!long)" />
+      <reference referencedUin="cpp:l_ast:src:Project2:Vector.v">
+        <property name="sourceAnchor" value="20,795" />
+        <property name="targetAnchor" value="-24,795" />
+        <property name="bendpoints" value="" />
+      </reference>
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:SIC_VarItem">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1400,1020,160,113" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_VarItem.offset" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_VarItem.datype" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_VarItem.name" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:SIC_VarTable">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1380,880,164,98" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_VarTable.items" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_VarTable.header" />
+      <reference referencedUin="cpp:l_ast:src:Project2:SIC_VarTable.items">
+        <property name="sourceAnchor" value="1472,978" />
+        <property name="targetAnchor" value="1472,1020" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:SIC_VarTable.header">
+        <property name="sourceAnchor" value="1394,880" />
+        <property name="targetAnchor" value="1257,781" />
+        <property name="bendpoints" value="" />
+      </reference>
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:TNet">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="320,640,205,956" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.__mod" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet._mod" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.coordNumber" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.dRes" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.halfRes" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.virtDim" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.cacheCurrent" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.cache" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.powVec_1" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.powVec" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.currPlateDir" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.currPlateNorm" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.u_vec" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.uvec" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.u_mx" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.upd" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.isVirtual" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.cached" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.umx" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.updated" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.NumOfSur" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.SurfaceDim" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.maxBorder" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.minBorder" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.Dim" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.NumOfPoints" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.Count" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.v" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.perfomance" />
+      <reference referencedUin="cpp:e_field:src:Project2:TNet.Res" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.checkCacheVector()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.initNetParams(int const &amp;!int const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.initNetDefault()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.MVMul(double*!double*)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.MVMul(Vector*!Vector*)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.getVecAt(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.buildPowerVectors(int)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.copyNetFrom(TNet const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.operator ()(long!int)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.Clear()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.operator =(TNet const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.operator +=(Vector const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.operator +=(TNet const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.operator *=(Matrix const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.getIJ(long!int)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.getCurrentPlate(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.create(long!long!long!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.create(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.shift(long!int!int!bool&amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.parseCoordinateForShift(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.parseCoordinate(long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.destroy()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.detach()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.dynUpdate()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.update()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.~TNet()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.TNet()" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.TNet(TNet const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.TNet(long!long!long!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:TNet.TNet(int!long!long!bool)" />
+      <reference referencedUin="cpp:l_ast:src:Project2:TNet.cache">
+        <property name="sourceAnchor" value="320,745" />
+        <property name="targetAnchor" value="187,745" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:TNet.powVec_1">
+        <property name="sourceAnchor" value="320,737" />
+        <property name="targetAnchor" value="187,737" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:TNet.powVec">
+        <property name="sourceAnchor" value="320,729" />
+        <property name="targetAnchor" value="187,729" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:TNet.u_vec">
+        <property name="sourceAnchor" value="320,721" />
+        <property name="targetAnchor" value="187,721" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:TNet.u_mx">
+        <property name="sourceAnchor" value="525,760" />
+        <property name="targetAnchor" value="680,760" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:l_ast:src:Project2:TNet.v">
+        <property name="sourceAnchor" value="525,752" />
+        <property name="targetAnchor" value="680,752" />
+        <property name="bendpoints" value="" />
+      </reference>
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:SIC_Data32">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1200,1780,129,383" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.value" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.rcode" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.ecode" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.pcurs" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.ccurs" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.rcount" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.vcount" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.ccount" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.fcount" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.rpn" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.tokens" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.coops" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.size" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.entry" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.stack" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.data" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.code" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.rdata" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.vdata" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.cdata" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_Data32.fdata" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:sVec">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="-160,740,136,191" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:sVec.linkCount" />
+      <reference referencedUin="cpp:e_field:src:Project2:sVec.v" />
+      <reference referencedUin="cpp:e_field:src:Project2:sVec.size" />
+      <reference referencedUin="cpp:e_method:src:Project2:sVec.sVec(sVec const &amp;)" />
+      <reference referencedUin="cpp:e_method:src:Project2:sVec.create()" />
+      <reference referencedUin="cpp:e_method:src:Project2:sVec.operator delete(void*)" />
+      <reference referencedUin="cpp:e_method:src:Project2:sVec.~sVec()" />
+      <reference referencedUin="cpp:e_method:src:Project2:sVec.sVec(double * const!long)" />
+      <reference referencedUin="cpp:e_method:src:Project2:sVec.sVec(long)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:SIC_FunItem">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1160,1020,160,128" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_FunItem.offset" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_FunItem.cosize" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_FunItem.acount" />
+      <reference referencedUin="cpp:e_field:src:Project2:SIC_FunItem.name" />
+    </reference>
+    <reference referencedUin="design:view:::kjeon866r6e3rsvt_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1040,1460,100,419" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProcV4&lt;P1,P2,P3,P4&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProcV3&lt;P1,P2,P3&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProc" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProc1&lt;R,P1&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDll" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProc2&lt;R,P1,P2&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProcV2&lt;P1,P2&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProc3&lt;R,P1,P2,P3&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProcV2&lt;P1,P2&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProcV3&lt;P1,P2,P3&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProc3&lt;R,P1,P2,P3&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProc2&lt;R,P1,P2&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.EDllError" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProc4&lt;R,P1,P2,P3,P4&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProcV1&lt;P1&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProc1&lt;R,P1&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProcV1&lt;P1&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProc4&lt;R,P1,P2,P3,P4&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProc0&lt;R&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProcV4&lt;P1,P2,P3,P4&gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.EDllProcError" />
+      <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProcV0" />
+    </reference>
+    <reference referencedUin="design:view:::xf0yx0xjlr6zcfvur_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="1040,1240,100,194" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="cpp:e_class:src:Project2:std.vector&lt;TNetF *,allocator&lt;TNetF *&gt; &gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:std.VecOfVec" />
+      <reference referencedUin="cpp:e_class:src:Project2:std.pathType" />
+      <reference referencedUin="cpp:e_class:src:Project2:std.vector&lt;Traectory,allocator&lt;Traectory&gt; &gt;" />
+      <reference referencedUin="cpp:e_class:src:Project2:std.seekType" />
+      <reference referencedUin="cpp:e_class:src:Project2:std.alphType" />
+      <reference referencedUin="cpp:e_class:src:Project2:std.VecOfLong" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:list">
+      <property name="$shortcutReference" value="true" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:map">
+      <property name="$shortcutReference" value="true" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:vector">
+      <property name="$shortcutReference" value="true" />
+    </reference>
+  </view>
+</nodeSet>

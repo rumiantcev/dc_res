@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nodeSet version="1.0">
+  <view uin="kjeon866r6e3rsvt_v">
+    <property name="$defaultDiagram" value="true" />
+    <property name="$metaclass" value="Package Diagram" />
+    <property name="$name" value="default" />
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProcV4&lt;P1,P2,P3,P4&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="10,10,110,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProcV4&lt;P1,P2,P3,P4&gt;.operator ()(P1!P2!P3!P4)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllProcV4&lt;P1,P2,P3,P4&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="120,95" />
+        <property name="targetAnchor" value="139,110" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProcV4&lt;P1,P2,P3,P4&gt;.TDllProcV4(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProcV3&lt;P1,P2,P3&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="139,1,110,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProcV3&lt;P1,P2,P3&gt;.operator ()(P1!P2!P3)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllStdProcV3&lt;P1,P2,P3&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="194,106" />
+        <property name="targetAnchor" value="194,110" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProcV3&lt;P1,P2,P3&gt;.TDllStdProcV3(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProc">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="139,110,112,101" />
+      <reference referencedUin="cpp:e_field:src:Project2:Dll.TDllProc.m_Proc" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProc.TDllProc(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProc1&lt;R,P1&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="40,119,96,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProc1&lt;R,P1&gt;.operator ()(P1)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllProc1&lt;R,P1&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="136,162" />
+        <property name="targetAnchor" value="139,162" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProc1&lt;R,P1&gt;.TDllProc1(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDll">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="270,1,262,131" />
+      <reference referencedUin="cpp:e_field:src:Project2:Dll.TDll.m_DLLInstance" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDll.operator HINSTANCE__ *()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDll.~TDll()" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDll.TDll(char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProc2&lt;R,P1,P2&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="289,136,96,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProc2&lt;R,P1,P2&gt;.operator ()(P1!P2)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllProc2&lt;R,P1,P2&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="289,166" />
+        <property name="targetAnchor" value="251,166" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProc2&lt;R,P1,P2&gt;.TDllProc2(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProcV2&lt;P1,P2&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="289,245,110,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProcV2&lt;P1,P2&gt;.operator ()(P1!P2)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllStdProcV2&lt;P1,P2&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="292,245" />
+        <property name="targetAnchor" value="250,208" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProcV2&lt;P1,P2&gt;.TDllStdProcV2(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProc3&lt;R,P1,P2,P3&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="190,247,96,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProc3&lt;R,P1,P2,P3&gt;.operator ()(P1!P2!P3)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllProc3&lt;R,P1,P2,P3&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="220,247" />
+        <property name="targetAnchor" value="220,211" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProc3&lt;R,P1,P2,P3&gt;.TDllProc3(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProcV2&lt;P1,P2&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="71,247,110,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProcV2&lt;P1,P2&gt;.operator ()(P1!P2)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllProcV2&lt;P1,P2&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="160,247" />
+        <property name="targetAnchor" value="160,211" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProcV2&lt;P1,P2&gt;.TDllProcV2(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProcV3&lt;P1,P2,P3&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="627,1,110,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProcV3&lt;P1,P2,P3&gt;.operator ()(P1!P2!P3)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllProcV3&lt;P1,P2,P3&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="627,58" />
+        <property name="targetAnchor" value="251,140" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProcV3&lt;P1,P2,P3&gt;.TDllProcV3(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProc3&lt;R,P1,P2,P3&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="627,110,99,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProc3&lt;R,P1,P2,P3&gt;.operator ()(P1!P2!P3)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllStdProc3&lt;R,P1,P2,P3&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="627,153" />
+        <property name="targetAnchor" value="251,153" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProc3&lt;R,P1,P2,P3&gt;.TDllStdProc3(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProc2&lt;R,P1,P2&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="627,219,99,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProc2&lt;R,P1,P2&gt;.operator ()(P1!P2)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllStdProc2&lt;R,P1,P2&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="627,252" />
+        <property name="targetAnchor" value="251,166" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProc2&lt;R,P1,P2&gt;.TDllStdProc2(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.EDllError">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="627,328,104,101" />
+      <reference referencedUin="cpp:e_field:src:Project2:Dll.EDllError.Name" />
+      <reference referencedUin="cpp:e_field:src:Project2:Dll.EDllError.m_Name" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.EDllError.EDllError(::std::string!::std::string)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProc4&lt;R,P1,P2,P3,P4&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="518,375,99,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProc4&lt;R,P1,P2,P3,P4&gt;.operator ()(P1!P2!P3!P4)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllStdProc4&lt;R,P1,P2,P3,P4&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="518,385" />
+        <property name="targetAnchor" value="251,199" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProc4&lt;R,P1,P2,P3,P4&gt;.TDllStdProc4(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProcV1&lt;P1&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="399,375,110,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProcV1&lt;P1&gt;.operator ()(P1)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllProcV1&lt;P1&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="409,375" />
+        <property name="targetAnchor" value="245,211" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProcV1&lt;P1&gt;.TDllProcV1(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProc1&lt;R,P1&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="290,375,99,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProc1&lt;R,P1&gt;.operator ()(P1)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllStdProc1&lt;R,P1&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="314,375" />
+        <property name="targetAnchor" value="223,211" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProc1&lt;R,P1&gt;.TDllStdProc1(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProcV1&lt;P1&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="171,375,110,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProcV1&lt;P1&gt;.operator ()(P1)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllStdProcV1&lt;P1&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="211,375" />
+        <property name="targetAnchor" value="211,211" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProcV1&lt;P1&gt;.TDllStdProcV1(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProc4&lt;R,P1,P2,P3,P4&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="72,375,96,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProc4&lt;R,P1,P2,P3,P4&gt;.operator ()(P1!P2!P3!P4)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllProc4&lt;R,P1,P2,P3,P4&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="153,375" />
+        <property name="targetAnchor" value="153,211" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProc4&lt;R,P1,P2,P3,P4&gt;.TDllProc4(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProc0&lt;R&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="775,1,96,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProc0&lt;R&gt;.operator ()()" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllProc0&lt;R&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="775,54" />
+        <property name="targetAnchor" value="251,143" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProc0&lt;R&gt;.TDllProc0(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllStdProcV4&lt;P1,P2,P3,P4&gt;">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="775,110,110,105" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProcV4&lt;P1,P2,P3,P4&gt;.operator ()(P1!P2!P3!P4)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllStdProcV4&lt;P1,P2,P3,P4&gt;:Dll.TDllProc">
+        <property name="sourceAnchor" value="775,161" />
+        <property name="targetAnchor" value="251,161" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllStdProcV4&lt;P1,P2,P3,P4&gt;.TDllStdProcV4(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.EDllProcError">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="775,219,102,69" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.EDllProcError.EDllProcError(::std::string!::std::string)" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.EDllProcError:Dll.EDllError">
+        <property name="sourceAnchor" value="785,288" />
+        <property name="targetAnchor" value="731,333" />
+        <property name="bendpoints" value="" />
+      </reference>
+    </reference>
+    <reference referencedUin="cpp:e_class:src:Project2:Dll.TDllProcV0">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="775,307,110,99" />
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProcV0.operator ()()" />
+      <reference referencedUin="cpp:l_gnt:src:Project2:Dll.TDllProcV0:Dll.TDllProc">
+        <property name="sourceAnchor" value="775,332" />
+        <property name="targetAnchor" value="251,169" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="cpp:e_method:src:Project2:Dll.TDllProcV0.TDllProcV0(::Dll::TDll const &amp;!char * const)" />
+    </reference>
+  </view>
+</nodeSet>

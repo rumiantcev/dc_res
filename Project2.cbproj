@@ -142,8 +142,8 @@
         <BCC_AddProjectDirToIncludePath>true</BCC_AddProjectDirToIncludePath>
         <BCC_CPPCompileAlways>true</BCC_CPPCompileAlways>
         <BCC_EnableBatchCompilation>true</BCC_EnableBatchCompilation>
-        <VerInfo_Build>16</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.16;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Build>17</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.17;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <BCC_AllCodeguardOptions>true</BCC_AllCodeguardOptions>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>

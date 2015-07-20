@@ -13,10 +13,12 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <locale>
 //#include <chrono>
 #include<time.h>
+#include <io.h>
 
-#include "Vector.h"
+//#include "Vector.h"
 #include "Matrix.h"
 #include "Net.h"
 #include "Netfunc.h"
@@ -34,13 +36,15 @@
 //#include <boost/program_options/config_file.hpp>
 
 using namespace Dll;
-//using namespace::std;
+using namespace::std;
 typedef vector<Task*>VecOfTask;
 
-void loadGlobalParameters()
+void loadGlobalParameters(string localPath)
 {
-	CDataFile DFile(".\\dconsole.ini");
-
+	string fileName = localPath+"\\dconsole.ini";
+	cout<<fileName<<endl;
+   //	CDataFile DFile("C:\\Users\\alex\\Documents\\MSU\\dc_res\\Win32\\Debug\\dconsole.ini");
+	CDataFile DFile(fileName);
 	Report(E_INFO, "[doSomething] The file <control.ini> contains %d sections, & %d keys.",
 				   DFile.SectionCount(), DFile.KeyCount());
 
@@ -54,13 +58,13 @@ void loadGlobalParameters()
   //  DFile.Clear();
 }
 
-void load_and_calc_tasks(){
+void load_and_calc_tasks(string localPath){
 	VecOfTask taskList;
 	int j = 0;
 	ofstream out_f;
 	Task* t = NULL;
 
-	CDataFile DFile(".\\control.ini");
+	CDataFile DFile(std::string(localPath+"\\control.ini").c_str());
 	Report(E_INFO, "[doSomething] The file <control.ini> contains %d sections, & %d keys.",
 				   DFile.SectionCount(), DFile.KeyCount());
 	SectionItor i = DFile.GetFirstSectionIter();
@@ -72,11 +76,13 @@ void loadGlobalParameters()
 
 	while (i!= NULL) {
 		section = (t_Section*)&(*i);
-		fileName = ".\\"+section->Keys[0].szValue;//fileName = DFile.GetValue(section->szName, "file");
+		fileName = localPath+"\\";
+		fileName+= section->Keys[0].szValue;//fileName = DFile.GetValue(section->szName, "file");
 		t =  Task::loadTask(fileName);
 		cout << "Task "<< t->description<< "  loaded" << endl;
 		taskList.push_back(t);
-		fileName = ".\\"+section->Keys[4].szValue;//DFile.GetValue(section->szName, "result");
+		fileName = localPath+"\\";
+		fileName += section->Keys[4].szValue;//DFile.GetValue(section->szName, "result");
 		out_f.open(fileName.c_str());
 		//загрузка настроечных параметров задачи
 		method =  section->Keys[1].szValue;//DFile.GetValue(section->szName, "method");
@@ -97,6 +103,8 @@ void loadGlobalParameters()
 			taskList[j]->TimeCalc_Pontryagin(0);
 		if (method == "alt_int")
 			taskList[j]->TimeCalc_AltInt(0);
+		if (method == "gr1")
+			taskList[j]->TimeCalc_AltInt(0);
 		cout << "Time evaluated.." << endl;
 		out_f << "Time evaluated.." << endl;
 		cout << "time is: " << taskList[j]->tr_s[0].T << endl;
@@ -104,8 +112,9 @@ void loadGlobalParameters()
 		if (method == "pontryagin")
 			taskList[j]->Control_Pontryagin(0);
 		if (method == "alt_int")
-		   //	taskList[j]->Control_AltInt(0); //Временно
-		  taskList[j]->Control_R1(0);
+			taskList[j]->Control_AltInt(0);
+		if (method == "gr1")
+			taskList[j]->Control_R1(0);
 		cout << "Control evaluated.." << endl;
 		cout << "Traectory: " << endl;
 		cout<< *taskList[j]->tr_s[0].x_i;
@@ -131,16 +140,33 @@ int _tmain(int argc, _TCHAR* argv[]) {
 		long dt = ((std::chrono::nanoseconds)(t2-t1)).count();
 		std::cout << dt << std::endl;
 	/**/
+//	  setlocale( LC_ALL,"Russian.1572" );
+	  //setlocale( LC_ALL,"RUS" );
+  //		SetConsoleCP(1251);
+	//	SetConsoleOutputCP(1251);
 
 
+	string localPath(argv[0]),pathHelper="\\Data";
+	cout<<localPath<<endl;
+	localPath = getenv("DC_PATH");  //переменная определяет где находятся данные и конф. файлы
+    //... а также результаты расчётов
+	//size_t sPos = localPath.find_last_of("\\");
+	//localPath.erase(sPos,localPath.length());
+	//sPos = localPath.find("\\.");
+	//pathHelper = localPath.substr(sPos+2,localPath.length());
+	//localPath.erase(sPos,localPath.length());
+	localPath.append(pathHelper);
+	cout<<localPath<<endl;
 	randomize();
 	cout << "Begin.." << endl;
-	loadGlobalParameters();
+	loadGlobalParameters(localPath);
 	cout << "Parameters are loaded" << endl;
 	
-	load_and_calc_tasks();
+	load_and_calc_tasks(localPath);
    //	char c;
    // cin >> c;
 
 	return 0;
 }
+
+

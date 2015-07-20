@@ -1,0 +1,1 @@
+set DC_PATH = C:\Users\alex\Documents\MSU\dc_res\Win32\Debug

@@ -47,14 +47,16 @@ __fastcall sVec::sVec(long sz) : size(sz) {
 }
 
 // ------------------------------- copy constr --------------------------------//
-sVec::sVec(const sVec &C) {
+sVec::sVec(const sVec &C): size(C.size){
+	create();
+ 	memcpy(v, C.v, size*sizeof(LDouble));
 }
 
 // ------------------------------- copy constr --------------------------------//
 __fastcall sVec::sVec(const double *vv, long sz) : size(sz) {
    //	long i;
 	create();
-	memcpy(v, vv, size*sizeof(double));
+	memcpy(v, vv, size*sizeof(LDouble));
 	// проверить и если не работает - убить, старый рабочий код ниже
 	// for (i = 0; i < size; i++)
 	// v[i] = vv[i];

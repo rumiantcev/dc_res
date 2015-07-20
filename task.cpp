@@ -428,25 +428,23 @@ void Task::Control_R1(int trNum) {
 	bool  extr_u_exist;
 	LDouble  tau_s, tau_delta, xNorm, xExtNorm;
 	VecOfVec vx_i, vu_i, vv_i;
-	Vector *rx_i;
+	Vector *r_i;
 
 	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, tcurr = tmax, p, a =
-		LDouble(_lrand() % cP->Count) / cP->Count, ccurr = _extr_e_val;
+		LDouble(_lrand() % cP->Count) / cP->Count, ccurr = _extr_e_val/5;
 
-	long jk=_lrand() % (c.Count),jj, prevInd,indExtr;
+	long jk=-1,jj, prevInd,indExtr;
 
 	j = 0;
-	k = tr_s[trNum].NetList.size();
-	tr_s[trNum].x_i = new Matrix(k, dim_x);
-	// массив векторов со значениями  x_i
-	tr_s[trNum].u_i = new Matrix(k - 1, dim_u);
-	// массив векторов со значениями  u_i
-	tr_s[trNum].v_i = new Matrix(k - 1, dim_v);
-	// массив векторов со значениями  v_i
-	k--;
-	for (m = 0; m < dim_x; m++)
-		tr_s[trNum].x_i->v->v[0][m] = tr_s[trNum].x0[m];
+	k = tr_s[trNum].NetList.size()-1;
+
+   //	for (m = 0; m < dim_x; m++)
+   //		tr_s[trNum].x_i->v->v[0][m] = tr_s[trNum].x0[m];
 	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
+	r_i =  new Vector(x_i);
+	r_i->detach();
+	vx_i.push_back(r_i);//... и сохраняем его для траектории.
+
 	t = tr_s[trNum].T; // значение t = конечному времени;
 	tau_s = tau/(tmpPNet.Count*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
 
@@ -491,10 +489,13 @@ void Task::Control_R1(int trNum) {
 		v_i=cQ->getBorderPoint(Ind,v_i);
 		//cout << Ind << " : " << v_i;
 
-		xExtNorm = c.f->v->v[jk];
-		indExtr = jk;
+
 		xNorm =  xExtNorm;
-        jk = _lrand() % (c.Count);
+		if (jk<0) {
+            jk = _lrand() % (c.Count);
+		}
+        xExtNorm = c.f->v->v[jk];
+		indExtr = jk;
 
 		 //--------ищем u_i при условии отсутствия информации о системе и наличия данных только о расстоянии до терм. множества
 		tau_delta=tau;
@@ -546,6 +547,17 @@ void Task::Control_R1(int trNum) {
 		  //	cout<< xExtNorm <<" : "<< x_i <<endl;
 			t -=tau_s;
 			tau_delta -= tau_s;
+
+		   r_i =  new Vector(x_i);
+		   r_i->detach();
+		   vx_i.push_back(r_i);
+		   //cout<<x_i;
+		   r_i =  new Vector(u_i);
+		   r_i->detach();
+		   vu_i.push_back(r_i);
+		   r_i =  new Vector(v_i);
+		   r_i->detach();
+		   vv_i.push_back(r_i);
 		}
 
 		for (m = 0; m < dim_v; m++)
@@ -559,27 +571,52 @@ void Task::Control_R1(int trNum) {
 		t -=tau_delta;
 
 	   //----------------------------------------------------------
+		r_i =  new Vector(x_i);
+		r_i->detach();
+		vx_i.push_back(r_i);
+		//cout<<x_i;
+		r_i =  new Vector(u_i);
+		r_i->detach();
+		vu_i.push_back(r_i);
+		r_i =  new Vector(v_i);
+		r_i->detach();
+		vv_i.push_back(r_i);
 	  /*
 		//находим следующий  x_i  методом  Рунге-Кутты
 		x_i = rungeCutt(x_i, u_i, v_i);
 
 		cout<<xExtNorm<<" : "<< x_i <<endl;
 
-		//сохраняем результаты расчётов
-		for (m = 0; m < dim_u; m++)
-			tr_s[trNum].u_i->v->v[j][m] = u_i[m];
-		for (m = 0; m < dim_v; m++)
-			tr_s[trNum].v_i->v->v[j][m] = v_i[m];
-		for (m = 0; m < dim_x; m++)
-			tr_s[trNum].x_i->v->v[j + 1][m] = x_i[m];
-		t -=tau;
+
 		/**/
 		j++;
 	}
+	k= vx_i.size()-1;
+	tr_s[trNum].x_i = new Matrix(k+1, dim_x);
+	// массив векторов со значениями  x_i
+	tr_s[trNum].u_i = new Matrix(k, dim_u);
+	// массив векторов со значениями  u_i
+	tr_s[trNum].v_i = new Matrix(k, dim_v);
+	// массив векторов со значениями  v_i
 
+	for (m = 0; m < dim_x; m++)
+			tr_s[trNum].x_i->v->v[0][m] = vx_i[0]->v->v[m];
+	for (j=0; j < k-1; j++) {
+		//сохраняем результаты расчётов
+		for (m = 0; m < dim_u; m++)
+			tr_s[trNum].u_i->v->v[j][m] = vu_i[j]->v->v[m];
+		for (m = 0; m < dim_v; m++)
+			tr_s[trNum].v_i->v->v[j][m] = vv_i[j]->v->v[m];
+		for (m = 0; m < dim_x; m++)
+			tr_s[trNum].x_i->v->v[j + 1][m] = vx_i[j+1]->v->v[m];
+	  // cout<<*vx_i[j+1];
+	}
 
+	for_each(vx_i.begin(), vx_i.end(), DeleteObj());
+	for_each(vu_i.begin(), vu_i.end(), DeleteObj());
+ 	for_each(vv_i.begin(), vv_i.end(), DeleteObj());
 	//--------------------------------------------------------------------
- 
+	cout<<k;
 }
 
 // -------------------------------------- control finding----------------------//

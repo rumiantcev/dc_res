@@ -431,7 +431,7 @@ void Task::Control_R1(int trNum) {
 	Vector *r_i;
 
 	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, tcurr = tmax, p, a =
-		LDouble(_lrand() % cP->Count) / cP->Count, ccurr = _extr_e_val/5;
+		LDouble(_lrand() % cP->Count) / cP->Count, ccurr = _extr_e_val;
 
 	long jk=-1,jj, prevInd,indExtr;
 

@@ -863,7 +863,7 @@ long  __fastcall TNetF::findExtrAnnealingGlobal(OpType extrOper, LDouble &extr) 
 // -------------------------- selectExtrX ------------------------------------//
 long /* !inline */ TNetF::selectExtrX(const Vector& vec, scM scmul, cCrit crit,
 	long current, long& result, LDouble &extr, OpType isMax,
-	ZeroAware isZeroAware, bool &isExtrExist, long index, TNetF& net) {
+	ZeroAware isZeroAware, bool &isExtrExist, TNetF& net) {
 	LDouble sc, val = extr;
 	bool isProxy, isGrZero;
 
@@ -924,7 +924,7 @@ long __fastcall TNetF::findExtrFastXDirection(const Vector& vec, scM scmul,
 				}
 				if (k1 != je)
 					j = selectExtrX(vec, scmul, crit, k1, j, extr, isMax,
-					isZeroAware, isExtrExist, index, net);
+					isZeroAware, isExtrExist,  net);
 				try {
 					k2 = shift(je, i, -1, borderChanged);
 				}
@@ -932,7 +932,7 @@ long __fastcall TNetF::findExtrFastXDirection(const Vector& vec, scM scmul,
 				}
 				if (k2 != je)
 					j = selectExtrX(vec, scmul, crit, k2, j, extr, isMax,
-					isZeroAware, isExtrExist, index, net);
+					isZeroAware, isExtrExist,  net);
 			}
 			if (j < 0)
 				j = shift(je, 0, 1, borderChanged);

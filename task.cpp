@@ -423,9 +423,9 @@ void Task::Control_R1(int trNum) {
 	LDouble t, min, val, extr;
 	Vector PiEtAx(PP.m()), psi(PP.v->m), extrVec(PP.v->m);
 	Vector u_i(cP->Dim), v_i(cQ->Dim), x_i(dim_x);
-	bool extr_exist;
+	//bool extr_exist;
 
-	bool  extr_u_exist;
+	//bool  extr_u_exist;
 	LDouble  tau_s, tau_delta, xNorm, xExtNorm;
 	VecOfVec vx_i, vu_i, vv_i;
 	Vector *r_i;
@@ -478,7 +478,7 @@ void Task::Control_R1(int trNum) {
 		u_i = cP->getBorderPoint(Ind, u_i);
 		prevInd = Ind;
 
-	    cout << Ind << " : " << u_i;
+		cout << Ind << " : " << u_i;
 
 		//выбираем v_i
 		extrVec = Transpose(PiEtAC) * psi;
@@ -501,7 +501,7 @@ void Task::Control_R1(int trNum) {
 		tau_delta=tau;
 		tmin = _extr_tmin_param; tcurr = tmax;
 		while (tcurr>tmin) {
-			EtA = Exponential(A, t, precision);
+			/*EtA = Exponential(A, t, precision);
 			PiEtA = PP * EtA;
 			PiEtAB = PiEtA * B;
 		   /*	PiEtAx = PiEtA * x_i;
@@ -523,10 +523,249 @@ void Task::Control_R1(int trNum) {
 					indExtr = jk;
 					tcurr = tcurr * ccurr;
 				}
-				//	else
-				//	if (p>0.9999999999)
-				//		tcurr = tcurr * ccurr;
 			}
+			a = double(_lrand() % c.Count) / double(c.Count);
+			jj = signof(a - 0.5) * tcurr * (pow((1.0 + 1.0 / tcurr), fabs(2.0 * a - 1.0)) -	1.0) * double(c.Count);
+			jk = abs(jj + jk) % c.Count;
+			 /**/
+			//tcurr = tcurr * ccurr;
+			for (m = 0; m < c.Dim; m++)
+				psi.v->v[m] = c.getIJ(indExtr, m);
+
+			cP->oporn(t, 1);
+			extrVec = Transpose(PiEtAB) * psi;
+			cP->perfomance = 0;
+			Ind = cP->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *cP);
+			for (m = 0; m < dim_u; m++)
+				u_i.v->v[m] = cP->getIJ(Ind, m);
+			u_i = cP->getBorderPoint(Ind, u_i);
+
+			x_i = rungeCutt(x_i, u_i, v_i, tau_s);
+		  //	cout<< xExtNorm <<" : "<< x_i <<endl;
+			t -=tau_s;
+			tau_delta -= tau_s;
+
+		   r_i =  new Vector(x_i);
+		   r_i->detach();
+		   vx_i.push_back(r_i);
+		   //cout<<x_i;
+		   r_i =  new Vector(u_i);
+		   r_i->detach();
+		   vu_i.push_back(r_i);
+		   r_i =  new Vector(v_i);
+		   r_i->detach();
+		   vv_i.push_back(r_i);
+		}
+
+		for (m = 0; m < dim_v; m++)
+			u_i.v->v[m] = cP->getIJ(Ind, m);
+
+		u_i = cP->getBorderPoint(Ind, u_i);
+		cout << Ind << " : " << u_i;
+
+		x_i = rungeCutt(x_i, u_i, v_i, tau_delta);
+		cout<<xExtNorm<<" : "<< x_i <<endl;
+		t -=tau_delta;
+
+	   //----------------------------------------------------------
+		r_i =  new Vector(x_i);
+		r_i->detach();
+		vx_i.push_back(r_i);
+		//cout<<x_i;
+		r_i =  new Vector(u_i);
+		r_i->detach();
+		vu_i.push_back(r_i);
+		r_i =  new Vector(v_i);
+		r_i->detach();
+		vv_i.push_back(r_i);
+	  /*
+		//находим следующий  x_i  методом  Рунге-Кутты
+		x_i = rungeCutt(x_i, u_i, v_i);
+
+		cout<<xExtNorm<<" : "<< x_i <<endl;
+
+
+		/**/
+		j++;
+	}
+	k= vx_i.size()-1;
+	tr_s[trNum].x_i = new Matrix(k+1, dim_x);
+	// массив векторов со значениями  x_i
+	tr_s[trNum].u_i = new Matrix(k, dim_u);
+	// массив векторов со значениями  u_i
+	tr_s[trNum].v_i = new Matrix(k, dim_v);
+	// массив векторов со значениями  v_i
+
+	for (m = 0; m < dim_x; m++)
+			tr_s[trNum].x_i->v->v[0][m] = vx_i[0]->v->v[m];
+	for (j=0; j < k-1; j++) {
+		//сохраняем результаты расчётов
+		for (m = 0; m < dim_u; m++)
+			tr_s[trNum].u_i->v->v[j][m] = vu_i[j]->v->v[m];
+		for (m = 0; m < dim_v; m++)
+			tr_s[trNum].v_i->v->v[j][m] = vv_i[j]->v->v[m];
+		for (m = 0; m < dim_x; m++)
+			tr_s[trNum].x_i->v->v[j + 1][m] = vx_i[j+1]->v->v[m];
+	  // cout<<*vx_i[j+1];
+	}
+	for_each(vx_i.begin(), vx_i.end(), DeleteObj());
+	for_each(vu_i.begin(), vu_i.end(), DeleteObj());
+	for_each(vv_i.begin(), vv_i.end(), DeleteObj());
+	//--------------------------------------------------------------------
+	cout<<k;
+}
+
+// -------------------------------------- control finding----------------------//
+void Task::Control_R2(int trNum) {
+	TNetF c(PP.m(), perfomance, steps), x_Net(c);
+	TNetF tmpPNet(PP.m(), perfomance, steps), tmpQNet(PP.m(), perfomance, steps);
+	long i,j,  k, m, Ind = 0;
+	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
+		EtA(A.m()); // EtA(A.m()) - единичная при t=0
+	LDouble t, min, val, extr;
+	Vector PiEtAx(PP.m()), psi(PP.v->m), extrVec(PP.v->m);
+	Vector u_i(cP->Dim), v_i(cQ->Dim), x_i(dim_x);
+	bool extr_exist;
+
+	bool  extr_u_exist, isNotExtrFound = true, borderChanged;
+	LDouble  tau_s, tau_delta, xNorm, xExtNorm;
+	VecOfVec vx_i, vu_i, vv_i;
+	Vector *r_i;
+	seekType seekPath;
+
+	long jk=-1,jj, k1,k2, prevInd,indExtr;
+
+	j = 0;
+	k = tr_s[trNum].NetList.size()-1;
+
+   //	for (m = 0; m < dim_x; m++)
+   //		tr_s[trNum].x_i->v->v[0][m] = tr_s[trNum].x0[m];
+	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
+	r_i =  new Vector(x_i);
+	r_i->detach();
+	vx_i.push_back(r_i);//... и сохраняем его для траектории.
+
+	t = tr_s[trNum].T; // значение t = конечному времени;
+	tau_s = tau/(tmpPNet.Count*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
+
+
+	while (t >= precision) {
+		EtA = Exponential(A, t, precision);
+		PiEtA = PP * EtA;
+		PiEtAB = PiEtA * B;
+		PiEtAC = PiEtA * C;
+		PiEtAx = PiEtA * x_i;
+
+		cP->oporn(t, 1);
+		cQ->oporn(t, 1);
+		for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
+				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
+				c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+		}
+		k--;
+		//выбираем psi
+		c.perfomance = 0;
+		Ind = c.GetExtrGlobal(opMin,  0, min);
+		for (m = 0; m < c.Dim; m++)
+			psi.v->v[m] = c.getIJ(Ind, m);
+		//prevInd = Ind;
+		//выбираем u_i
+		extrVec = Transpose(PiEtAB) * psi;
+		cP->perfomance = 0;
+		Ind = cP->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *cP);
+		for (m = 0; m < dim_u; m++)
+			u_i.v->v[m] = cP->getIJ(Ind, m);
+		u_i = cP->getBorderPoint(Ind, u_i);
+		prevInd = Ind;
+
+		cout << Ind << " : " << u_i;
+
+		//выбираем v_i
+		extrVec = Transpose(PiEtAC) * psi;
+		cQ->perfomance = 0;
+		Ind = cQ->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *cQ);
+		for (m = 0; m < dim_v; m++)
+			v_i.v->v[m] =   cQ->getIJ(Ind, m);
+		v_i=cQ->getBorderPoint(Ind,v_i);
+		//cout << Ind << " : " << v_i;
+
+
+		xNorm =  xExtNorm;
+		if (jk<0) {     //первый узел по любому случаен
+			jk = _lrand() % (c.Count);
+		}
+		xExtNorm = c.f->v->v[jk];
+		indExtr = jk;
+
+		 //--------ищем u_i при условии отсутствия информации о системе и наличия данных только о расстоянии до терм. множества
+		extr_exist = false;
+		tau_delta=tau;
+		seekPath.clear();
+		while (isNotExtrFound) {
+
+			xNorm = c.f->v->v[jk];
+			for (m = 0; m < c.Dim; m++)
+				psi.v->v[m] = c.getIJ(indExtr, m);
+			//шаг градиентного метода
+			if (!seekPath[jk]) {
+			  indExtr = jk;
+			  seekPath[jk] = true;
+
+				for (i = 0; i < c.Dim; i++) {
+					try {
+						k1 = c.shift(indExtr, i, 1, borderChanged);
+					}
+					catch (exInvalidMoveDirection) { // do nothing;
+					}
+					if (k1 != indExtr) {
+						xNorm = f->v->v[k1];
+						if (xExtNorm > xNorm) {
+							xExtNorm = xNorm;
+							jk = k1;
+							j = jk;
+						}
+
+					}
+
+					try {
+						k2 = c.shift(indExtr, i, -1, borderChanged);
+					}
+					catch (exInvalidMoveDirection) { // do nothing;
+					}
+					if (k2 != indExtr){
+						xNorm = f->v->v[k2];
+						if (xExtNorm > xNorm) {
+							xExtNorm = xNorm;
+							jk = k2;
+							j = jk;
+						}
+
+					}
+				}
+				if (j < 0)
+					j = c.shift(indExtr, 0, 1, borderChanged);
+
+			}
+			else{
+                isNotExtrFound = false;
+				seekPath.clear();
+			}
+
+			/*
+			if(xNorm < xExtNorm){
+				xExtNorm = xNorm;
+				indExtr = jk;
+				tcurr = tcurr * ccurr;
+			}else{
+				p = 1.0 / (1.0 + exp(-fabs(xNorm - xExtNorm) /tcurr));
+				a = double(_lrand() % c.Count) / (double)c.Count;
+				if (a > p) {
+					xExtNorm = xNorm;
+					indExtr = jk;
+					tcurr = tcurr * ccurr;
+				}
+
+
 			a = double(_lrand() % c.Count) / double(c.Count);
 			jj = signof(a - 0.5) * tcurr * (pow((1.0 + 1.0 / tcurr), fabs(2.0 * a - 1.0)) -	1.0) * double(c.Count);
 			jk = abs(jj + jk) % c.Count;
@@ -614,7 +853,7 @@ void Task::Control_R1(int trNum) {
 
 	for_each(vx_i.begin(), vx_i.end(), DeleteObj());
 	for_each(vu_i.begin(), vu_i.end(), DeleteObj());
- 	for_each(vv_i.begin(), vv_i.end(), DeleteObj());
+	for_each(vv_i.begin(), vv_i.end(), DeleteObj());
 	//--------------------------------------------------------------------
 	cout<<k;
 }

@@ -1,38 +1,30 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'c:\program files (x86)\embarcadero\studio\16.0\include\dinkumware\string',0,1,1,1,31,0,0,,
-File_1=TSourceModule,'c:\program files (x86)\embarcadero\studio\16.0\include\dinkumware\xmemory',0,1,88,1,112,0,0,,
-File_2=TSourceModule,'C:\Users\alex\Documents\MSU\dc_res\Matrix.cpp',0,1,454,10,502,0,0,,
-File_3=TSourceModule,'C:\Users\alex\Documents\MSU\dc_res\Vector.cpp',0,1,312,28,346,0,0,,
-File_4=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\task.cpp',0,1,499,37,315,0,0,,
-File_5=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\Net.cpp',0,1,1,1,1,0,0,,
-File_6=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\Matrix.cpp',0,1,1,1,1,0,0,,
-File_7=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\Netfunc.cpp',0,1,91,14,136,0,0,,{0
-File_8=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\File1.cpp',0,1,74,1,106,0,0,,
-File_9=TSourceModule,'c:\program files (x86)\embarcadero\studio\16.0\include\dinkumware\xstring',0,1,1309,1,1333,0,0,,
-File_10=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\SICx.h',0,1,1,1,1,0,0,,
-File_11=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\traectory.cpp',0,1,1,5,2,0,0,,
-File_12=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\CDataFile.cpp',0,1,629,41,657,0,0,,
-File_13=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\general.h',0,1,4,13,35,0,0,,
+File_0=TSourceModule,'c:\program files (x86)\embarcadero\studio\16.0\include\dinkumware\iosfwd',0,1,104,5,133,0,0,,
+File_1=TSourceModule,'c:\program files (x86)\embarcadero\studio\16.0\include\dinkumware\xutility',0,1,319,5,344,0,0,,
+File_2=TSourceModule,'c:\program files (x86)\embarcadero\studio\16.0\include\dinkumware\string',0,1,1,1,31,0,0,,
+File_3=TSourceModule,'c:\program files (x86)\embarcadero\studio\16.0\include\dinkumware\xmemory',0,1,88,1,112,0,0,,
+File_4=TSourceModule,'C:\Users\alex\Documents\MSU\dc_res\Matrix.cpp',0,1,454,10,502,0,0,,
+File_5=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\task.cpp',0,1,499,37,315,0,0,,
+File_6=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\Net.cpp',0,1,1,1,1,0,0,,
+File_7=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\Matrix.cpp',0,1,1,1,1,0,0,,
+File_8=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\Netfunc.cpp',0,1,91,14,136,0,0,,{0
+File_9=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\File1.cpp',0,1,74,1,106,0,0,,
+File_10=TSourceModule,'c:\program files (x86)\embarcadero\studio\16.0\include\dinkumware\xstring',0,1,1309,1,1333,0,0,,
+File_11=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\SICx.h',0,1,1,1,1,0,0,,
+File_12=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\traectory.cpp',0,1,1,5,2,0,0,,
+File_13=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\CDataFile.cpp',0,1,629,41,657,0,0,,
+File_14=TSourceModule,'C:\Users\alex\Documents\MSU\dc_new\general.h',0,1,4,13,35,0,0,,
 
 [Modules]
-Module0=C:\Users\alex\Documents\MSU\dc_res\Net.cpp
-Module1=C:\Users\alex\Documents\MSU\dc_res\Netfunc.cpp
-Module2=C:\Users\alex\Documents\MSU\dc_res\task.cpp
-Module3=C:\Users\alex\Documents\MSU\dc_res\File1.cpp
+Module0=C:\Users\alex\Documents\MSU\dc_res\task.cpp
+Module1=C:\Users\alex\Documents\MSU\dc_res\File1.cpp
+Module2=C:\Users\alex\Documents\MSU\dc_res\Netfunc.cpp
+Module3=C:\Users\alex\Documents\MSU\dc_res\Net.cpp
 Module4=C:\Users\alex\Documents\MSU\dc_res\general.h
-Module5=default.htm
-Count=6
+Module5=C:\Users\alex\Documents\MSU\dc_res\Vector.cpp
+Module6=default.htm
+Count=7
 EditWindowCount=1
-
-[C:\Users\alex\Documents\MSU\dc_res\Net.cpp]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[C:\Users\alex\Documents\MSU\dc_res\Netfunc.cpp]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
 
 [C:\Users\alex\Documents\MSU\dc_res\task.cpp]
 ModuleType=TSourceModule
@@ -44,7 +36,22 @@ ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
+[C:\Users\alex\Documents\MSU\dc_res\Netfunc.cpp]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Users\alex\Documents\MSU\dc_res\Net.cpp]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
 [C:\Users\alex\Documents\MSU\dc_res\general.h]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Users\alex\Documents\MSU\dc_res\Vector.cpp]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
@@ -53,14 +60,15 @@ FormOnTop=0
 ModuleType=TURLModule
 
 [EditWindow0]
-ViewCount=6
-CurrentEditView=C:\Users\alex\Documents\MSU\dc_res\Net.cpp
+ViewCount=7
+CurrentEditView=C:\Users\alex\Documents\MSU\dc_res\task.cpp
 View0=0
 View1=1
 View2=2
 View3=3
 View4=4
 View5=5
+View6=6
 PercentageSizes=1
 Create=1
 Visible=1
@@ -69,20 +77,20 @@ State=0
 Left=0
 Top=0
 Width=10000
-Height=9240
+Height=9202
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=10000
-ClientHeight=9240
+ClientHeight=9202
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
 LeftPanelSize=1896
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800010100000000181000000000000001680700000000000001000000005C0E000009000000446F636B536974653301000000009C1C00001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=00000800010100000000031000000000000001680700000000000001000000005C0E000009000000446F636B53697465330100000000771C00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=2000
 RightPanelClients=DockSite2,DockSite4
-RightPanelData=00000800010100000000181000000000000001D00700000000000001000000004412000009000000446F636B536974653201000000009C1C000009000000446F636B5369746534FFFFFFFF
+RightPanelData=00000800010100000000031000000000000001D00700000000000001000000004412000009000000446F636B53697465320100000000771C000009000000446F636B5369746534FFFFFFFF
 BottomPanelSize=1519
 BottomPanelClients=DockSite1,MessageView
 BottomPanelData=0000080001020100000009000000446F636B5369746531724500000000000002EF050000000000000100000000724500000F0000004D65737361676556696577466F726DFFFFFFFF
@@ -99,7 +107,7 @@ CustomEditViewType=TEditView
 Module=C:\Users\alex\Documents\MSU\dc_res\File1.cpp
 CursorX=1
 CursorY=107
-TopLine=79
+TopLine=84
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -108,20 +116,20 @@ EditViewName=C:\Users\alex\Documents\MSU\dc_res\File1.cpp
 [View2]
 CustomEditViewType=TEditView
 Module=C:\Users\alex\Documents\MSU\dc_res\task.cpp
-CursorX=17
-CursorY=744
-TopLine=703
+CursorX=82
+CursorY=726
+TopLine=695
 LeftCol=1
 Elisions=
-Bookmarks={0,703,26}{1,532,18}
+Bookmarks={0,714,23}{1,532,18}
 EditViewName=C:\Users\alex\Documents\MSU\dc_res\task.cpp
 
 [View3]
 CustomEditViewType=TEditView
 Module=C:\Users\alex\Documents\MSU\dc_res\Netfunc.cpp
-CursorX=21
-CursorY=1016
-TopLine=992
+CursorX=57
+CursorY=1497
+TopLine=1452
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -129,29 +137,42 @@ EditViewName=C:\Users\alex\Documents\MSU\dc_res\Netfunc.cpp
 
 [View4]
 CustomEditViewType=TEditView
+Module=C:\Users\alex\Documents\MSU\dc_res\Vector.cpp
+CursorX=28
+CursorY=346
+TopLine=312
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\alex\Documents\MSU\dc_res\Vector.cpp
+
+[View5]
+CustomEditViewType=TEditView
 Module=C:\Users\alex\Documents\MSU\dc_res\Net.cpp
-CursorX=59
-CursorY=490
-TopLine=467
+CursorX=14
+CursorY=487
+TopLine=449
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\Users\alex\Documents\MSU\dc_res\Net.cpp
 
-[View5]
+[View6]
 CustomEditViewType=TEditView
 Module=C:\Users\alex\Documents\MSU\dc_res\general.h
 CursorX=1
 CursorY=1
-TopLine=1
+TopLine=4
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\Users\alex\Documents\MSU\dc_res\general.h
 
 [Watches]
-Count=1
+Count=3
 Watch0='jk',256,0,18,1,0,'Watches',1
+Watch1='xExtNorm',256,0,18,1,0,'Watches',1
+Watch2='xNorm',256,0,18,1,0,'Watches',1
 
 [WatchWindow]
 WatchColumnWidth=120
@@ -175,11 +196,15 @@ Dockable=1
 StayOnTop=0
 
 [Breakpoints]
-Count=4
+Count=8
 Breakpoint0='C:\Users\alex\Documents\MSU\dc_new\CDataFile.cpp',86,'',0,1,'',1,0,0,'',1,'','','',0,''
 Breakpoint1='C:\Users\alex\Documents\MSU\dc_new\File1.cpp',107,'',0,1,'',1,0,0,'',1,'','','',0,''
 Breakpoint2='C:\Users\alex\Documents\MSU\dc_res\Netfunc.cpp',1332,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint3='C:\Users\alex\Documents\MSU\dc_res\task.cpp',698,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint3='C:\Users\alex\Documents\MSU\dc_res\task.cpp',653,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint4='C:\Users\alex\Documents\MSU\dc_res\task.cpp',789,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint5='C:\Users\alex\Documents\MSU\dc_res\task.cpp',685,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint6='C:\Users\alex\Documents\MSU\dc_res\task.cpp',718,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint7='C:\Users\alex\Documents\MSU\dc_res\task.cpp',736,'',0,1,'',1,0,0,'',1,'','','',0,''
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -196,8 +221,8 @@ Create=1
 Visible=1
 Docked=0
 State=2
-Left=1104
-Top=1250
+Left=323
+Top=1279
 Width=8932
 Height=8519
 MaxLeft=-5
@@ -206,7 +231,7 @@ MaxWidth=8932
 MaxHeight=8519
 ClientWidth=10000
 ClientHeight=9779
-BottomPanelSize=8898
+BottomPanelSize=8861
 BottomPanelClients=EditWindow0
 BottomPanelData=0000080000000000000000000000000000000000000000000000000100000000000000000C0000004564697457696E646F775F30FFFFFFFF
 
@@ -257,11 +282,11 @@ State=0
 Left=0
 Top=0
 Width=2000
-Height=2529
+Height=2490
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=2529
+ClientHeight=2490
 TBDockHeight=7154
 LRDockWidth=2000
 Dockable=1
@@ -276,11 +301,11 @@ State=0
 Left=0
 Top=0
 Width=2000
-Height=7865
+Height=7827
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=7865
+ClientHeight=7827
 TBDockHeight=4885
 LRDockWidth=5307
 Dockable=1
@@ -293,7 +318,7 @@ Visible=0
 Docked=1
 State=0
 Left=1738
-Top=-102
+Top=-106
 Width=1849
 Height=3144
 MaxLeft=-1
@@ -352,12 +377,12 @@ State=0
 Left=0
 Top=420
 Width=1896
-Height=3567
+Height=3529
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1896
-ClientHeight=3567
-TBDockHeight=8125
+ClientHeight=3529
+TBDockHeight=8087
 LRDockWidth=1896
 Dockable=1
 StayOnTop=0
@@ -372,11 +397,11 @@ State=0
 Left=0
 Top=0
 Width=2000
-Height=7865
+Height=7827
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=7865
+ClientHeight=7827
 TBDockHeight=5962
 LRDockWidth=2510
 Dockable=1
@@ -389,7 +414,7 @@ Visible=0
 Docked=1
 State=0
 Left=501
-Top=-15
+Top=-19
 Width=2844
 Height=6202
 MaxLeft=-1
@@ -408,7 +433,7 @@ Visible=0
 Docked=1
 State=0
 Left=192
-Top=267
+Top=263
 Width=276
 Height=365
 MaxLeft=-1
@@ -577,11 +602,11 @@ State=0
 Left=0
 Top=0
 Width=2000
-Height=7865
+Height=7827
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=7865
+ClientHeight=7827
 TBDockHeight=4885
 LRDockWidth=7151
 Dockable=1
@@ -851,7 +876,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
 ClientHeight=4596
-TBDockHeight=8125
+TBDockHeight=8087
 LRDockWidth=2000
 Dockable=1
 StayOnTop=0
@@ -875,7 +900,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=1896
 ClientHeight=3558
-TBDockHeight=8125
+TBDockHeight=8087
 LRDockWidth=1896
 Dockable=1
 StayOnTop=0
@@ -894,12 +919,12 @@ State=0
 Left=0
 Top=528
 Width=2000
-Height=2529
+Height=2490
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=2529
-TBDockHeight=8125
+ClientHeight=2490
+TBDockHeight=8087
 LRDockWidth=2000
 Dockable=1
 StayOnTop=0

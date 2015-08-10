@@ -105,6 +105,8 @@ void loadGlobalParameters(string localPath)
 			taskList[j]->TimeCalc_AltInt(0);
 		if (method == "gr1")
 			taskList[j]->TimeCalc_AltInt(0);
+		if (method == "gr2")
+			taskList[j]->TimeCalc_AltInt(0);
 		cout << "Time evaluated.." << endl;
 		out_f << "Time evaluated.." << endl;
 		cout << "time is: " << taskList[j]->tr_s[0].T << endl;
@@ -114,7 +116,8 @@ void loadGlobalParameters(string localPath)
 		if (method == "alt_int")
 			taskList[j]->Control_AltInt(0);
 		if (method == "gr1")
-			//taskList[j]->Control_R1(0);
+			taskList[j]->Control_R1(0);
+		if (method == "gr2")
 			taskList[j]->Control_R2(0);
 		cout << "Control evaluated.." << endl;
 		cout << "Traectory: " << endl;

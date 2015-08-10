@@ -578,17 +578,10 @@ void Task::Control_R1(int trNum) {
 		r_i =  new Vector(v_i);
 		r_i->detach();
 		vv_i.push_back(r_i);
-	  /*
-		//находим следующий  x_i  методом  Рунге-Кутты
-		x_i = rungeCutt(x_i, u_i, v_i);
 
-		cout<<xExtNorm<<" : "<< x_i <<endl;
-
-
-		/**/
 		j++;
 	}
-	k= vx_i.size()-1;
+	k= vx_i.size();
 	tr_s[trNum].x_i = new Matrix(k+1, dim_x);
 	// массив векторов со значениями  x_i
 	tr_s[trNum].u_i = new Matrix(k, dim_u);
@@ -627,13 +620,14 @@ void Task::Control_R2(int trNum) {
 	Vector u_i(cP->Dim), v_i(cQ->Dim), x_i(dim_x);
 	bool extr_exist;
 
-	bool  extr_u_exist, isNotExtrFound = true, borderChanged;
+	bool  extr_u_exist, isNotExtrFound, borderChanged;
 	LDouble  tau_s, tau_delta, xNorm, xExtNorm;
 	VecOfVec vx_i, vu_i, vv_i;
 	Vector *r_i;
 	seekType seekPath;
 
-	long jk=-1,jj, k1,k2, prevInd,indExtr;
+	long jk=-1,jj, prevInd,indExtr;
+	int currPlateNorm, currDirection=-1, prevDirection = -1, moveSign = 1, exitSign = 0, exitLim = (c.Dim-1)*2;
 
 	j = 0;
 	k = tr_s[trNum].NetList.size()-1;
@@ -689,88 +683,87 @@ void Task::Control_R2(int trNum) {
 		v_i=cQ->getBorderPoint(Ind,v_i);
 		//cout << Ind << " : " << v_i;
 
-
-		xNorm =  xExtNorm;
-		if (jk<0) {     //первый узел по любому случаен
+		if (jk<0){      //первый узел по любому случаен
 			jk = _lrand() % (c.Count);
+			indExtr = jk;
+			currDirection= rand()%c.Dim;
 		}
-		xExtNorm = c.f->v->v[jk];
-		indExtr = jk;
+
+        //отладочное - закомментировать потом
+	  //	jk = 21;
+	  //	indExtr = jk;
+	  //	moveSign = -1;
+	  //	currDirection = 0;
+
+		xExtNorm = c.f->v->v[indExtr];
+		xNorm = xExtNorm;
+		jk = indExtr; //по ходу игры начальный узел поиска со следующего шага берём лучший с предыдущего шага
+		currPlateNorm = jk / (c.NumOfPoints * 2);
+        if (currDirection==currPlateNorm)
+			currDirection= (currDirection+1)%c.Dim;
+		//moveSign = 1;
+		borderChanged = false;
 
 		 //--------ищем u_i при условии отсутствия информации о системе и наличия данных только о расстоянии до терм. множества
 		extr_exist = false;
 		tau_delta=tau;
 		seekPath.clear();
+
+		isNotExtrFound = true;
+        exitSign  = 0;
 		while (isNotExtrFound) {
 
-			xNorm = c.f->v->v[jk];
-			for (m = 0; m < c.Dim; m++)
-				psi.v->v[m] = c.getIJ(indExtr, m);
 			//шаг градиентного метода
-			if (!seekPath[jk]) {
-			  indExtr = jk;
-			  seekPath[jk] = true;
+			if (exitSign<exitLim) {
+               c.wasteCache();
+			   prevInd = jk;
+				//jk= 67; currDirection = 0;
+				jk = c.shift(jk, currDirection, moveSign, borderChanged);  //проверить jk= 66, currDirection = 1;
+			   if(borderChanged){ //при переходе на другую грань меняем соотв. образом нормаль
+				currPlateNorm = jk / (c.NumOfPoints * 2);
+				if (currDirection==currPlateNorm) //Если же следующее направление совпадает с нормалью просто выбираем слеюующее напраавление
+						currDirection= (currPlateNorm+1)%(c.Dim);
+				exitSign  = 0;
+                borderChanged = false;
+			   }
+			   if (prevInd == jk) {   //попытка сдвига не туда - МЕНЯЕМ НАПРАВЛЕНИЕ
+				currDirection= (currDirection+1)%(c.Dim-1);
+				if ((prevDirection == currDirection)&&(c.Dim>2))//если в данном направлении уже ходили и есть куда поворачивать (Dim>2) - переходим на следующее
+						currDirection = (currDirection +1)%c.Dim;
+					else
+						moveSign *= -1; //если не ходили или размерность 2, то просто меняем знак  движения
+			   }
+			   else{
+				xNorm = c.f->v->v[jk];
 
-				for (i = 0; i < c.Dim; i++) {
-					try {
-						k1 = c.shift(indExtr, i, 1, borderChanged);
-					}
-					catch (exInvalidMoveDirection) { // do nothing;
-					}
-					if (k1 != indExtr) {
-						xNorm = f->v->v[k1];
-						if (xExtNorm > xNorm) {
-							xExtNorm = xNorm;
-							jk = k1;
-							j = jk;
-						}
-
-					}
-
-					try {
-						k2 = c.shift(indExtr, i, -1, borderChanged);
-					}
-					catch (exInvalidMoveDirection) { // do nothing;
-					}
-					if (k2 != indExtr){
-						xNorm = f->v->v[k2];
-						if (xExtNorm > xNorm) {
-							xExtNorm = xNorm;
-							jk = k2;
-							j = jk;
-						}
-
-					}
+				if (xNorm <= xExtNorm) {
+					if (xNorm < xExtNorm){
+						xExtNorm = xNorm;
+						indExtr = jk;
+					}else
+						exitSign++;
+				  //	exitSign = 0;//если нашли куда куда ходить, то  счётчик сбрасываем
 				}
-				if (j < 0)
-					j = c.shift(indExtr, 0, 1, borderChanged);
-
+				else{//меняем направление
+					if ((prevDirection == currDirection)&&(c.Dim>2))//если в данном направлении уже ходили и есть куда поворачивать (Dim>2) - переходим на следующее
+						currDirection = currDirection +1%c.Dim;
+					else
+						moveSign *= -1; //если не ходили или размерность 2, то просто меняем знак  движения
+					if (currDirection==currPlateNorm) //Если же следующее направление совпадает с нормалью просто выбираем слеюующее напраавление
+						currDirection= (currPlateNorm+1)%c.Dim;
+					exitSign++;
+				}
+			   }
+			 // seekPath[jk] = true;
+			  prevDirection = currDirection; //запоминаем предыдущее направление
 			}
 			else{
-                isNotExtrFound = false;
-				seekPath.clear();
+				if(exitSign>=exitLim){ //всюду потыкались и не нашли экстремума - выходим
+					isNotExtrFound = false;
+				   //	seekPath.clear();
+				}
 			}
 
-			/*
-			if(xNorm < xExtNorm){
-				xExtNorm = xNorm;
-				indExtr = jk;
-				tcurr = tcurr * ccurr;
-			}else{
-				p = 1.0 / (1.0 + exp(-fabs(xNorm - xExtNorm) /tcurr));
-				a = double(_lrand() % c.Count) / (double)c.Count;
-				if (a > p) {
-					xExtNorm = xNorm;
-					indExtr = jk;
-					tcurr = tcurr * ccurr;
-				}
-
-
-			a = double(_lrand() % c.Count) / double(c.Count);
-			jj = signof(a - 0.5) * tcurr * (pow((1.0 + 1.0 / tcurr), fabs(2.0 * a - 1.0)) -	1.0) * double(c.Count);
-			jk = abs(jj + jk) % c.Count;
-			 /**/
-			//tcurr = tcurr * ccurr;
 			for (m = 0; m < c.Dim; m++)
 				psi.v->v[m] = c.getIJ(indExtr, m);
 
@@ -778,6 +771,7 @@ void Task::Control_R2(int trNum) {
 			extrVec = Transpose(PiEtAB) * psi;
 			cP->perfomance = 0;
 			Ind = cP->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *cP);
+            /**/
 			for (m = 0; m < dim_u; m++)
 				u_i.v->v[m] = cP->getIJ(Ind, m);
 			u_i = cP->getBorderPoint(Ind, u_i);
@@ -820,14 +814,7 @@ void Task::Control_R2(int trNum) {
 		r_i =  new Vector(v_i);
 		r_i->detach();
 		vv_i.push_back(r_i);
-	  /*
-		//находим следующий  x_i  методом  Рунге-Кутты
-		x_i = rungeCutt(x_i, u_i, v_i);
 
-		cout<<xExtNorm<<" : "<< x_i <<endl;
-
-
-		/**/
 		j++;
 	}
 	k= vx_i.size()-1;
@@ -840,7 +827,7 @@ void Task::Control_R2(int trNum) {
 
 	for (m = 0; m < dim_x; m++)
 			tr_s[trNum].x_i->v->v[0][m] = vx_i[0]->v->v[m];
-	for (j=0; j < k-1; j++) {
+	for (j=0; j < k; j++) {
 		//сохраняем результаты расчётов
 		for (m = 0; m < dim_u; m++)
 			tr_s[trNum].u_i->v->v[j][m] = vu_i[j]->v->v[m];

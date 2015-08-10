@@ -624,7 +624,7 @@ void Task::Control_R2(int trNum) {
 	LDouble  tau_s, tau_delta, xNorm, xExtNorm;
 	VecOfVec vx_i, vu_i, vv_i;
 	Vector *r_i;
-	seekType seekPath;
+	//seekType seekPath;
 
 	long jk=-1,jj, prevInd,indExtr;
 	int currPlateNorm, currDirection=-1, prevDirection = -1, moveSign = 1, exitSign = 0, exitLim = (c.Dim-1)*2;
@@ -707,7 +707,7 @@ void Task::Control_R2(int trNum) {
 		 //--------ищем u_i при условии отсутствия информации о системе и наличия данных только о расстоянии до терм. множества
 		extr_exist = false;
 		tau_delta=tau;
-		seekPath.clear();
+	   //	seekPath.clear();
 
 		isNotExtrFound = true;
         exitSign  = 0;

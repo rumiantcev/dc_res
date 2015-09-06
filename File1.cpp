@@ -63,6 +63,8 @@ void loadGlobalParameters(string localPath)
 	int j = 0;
 	ofstream out_f;
 	Task* t = NULL;
+	clock_t before;
+	double elapsed;
 
 	CDataFile DFile(std::string(localPath+"\\control.ini").c_str());
 	Report(E_INFO, "[doSomething] The file <control.ini> contains %d sections, & %d keys.",
@@ -75,6 +77,7 @@ void loadGlobalParameters(string localPath)
 	i++;
 
 	while (i!= NULL) {
+
 		section = (t_Section*)&(*i);
 		fileName = localPath+"\\";
 		fileName+= section->Keys[0].szValue;//fileName = DFile.GetValue(section->szName, "file");
@@ -98,7 +101,7 @@ void loadGlobalParameters(string localPath)
 		taskList[j]->cP->perfomance  = taskList[j]->perfomance;
 		taskList[j]->cQ->perfomance  = taskList[j]->perfomance;
 		taskList[j]->cM->perfomance  = taskList[j]->perfomance;
-
+		before = clock(); //замер времени начала выполнения расчётов
 		if (method == "pontryagin")
 			taskList[j]->TimeCalc_Pontryagin(0);
 		if (method == "alt_int")
@@ -119,12 +122,15 @@ void loadGlobalParameters(string localPath)
 			taskList[j]->Control_R1(0);
 		if (method == "gr2")
 			taskList[j]->Control_R2(0);
+		elapsed = clock()-before;  //замер времени начала выполнения расчётов
 		cout << "Control evaluated.." << endl;
 		cout << "Traectory: " << endl;
 		cout<< *taskList[j]->tr_s[0].x_i;
+		cout<< "Evaluation time: "<<elapsed<<endl;   //вывод времени на экран
 		out_f << "Control evaluated.." << endl;
 		out_f << "Traectory: " <<  endl;
 		out_f << *taskList[j]->tr_s[0].x_i;
+		out_f << "Evaluation time: "<<elapsed<<endl; //вывод времени в файл
 		out_f.flush();
 		out_f.close();
 		j++;

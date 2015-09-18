@@ -47,7 +47,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <fstream.h>
+#include <fstream>
 #include <float.h>
 
 #ifdef WIN32
@@ -689,11 +689,11 @@ SectionItor	CDataFile::GetFirstSectionIter(){
 
 SectionItor	CDataFile::GetNextSectionIter(SectionItor i){
   if (i==m_Sections.end())
-	return NULL;
+	return i/*NULL*/;
   else {
 	i++;
 	if (i==m_Sections.end()) {
-		return NULL;
+		return i/*NULL*/;
 	}
 	else	return i;
   }

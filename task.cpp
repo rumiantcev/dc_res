@@ -663,7 +663,7 @@ void Task::Control_R2(int trNum) {
 		for (m = 0; m < c.Dim; m++)
 			psi.v->v[m] = c.getIJ(Ind, m);
 		//prevInd = Ind;
-		//выбираем u_i
+		//выбираем u_i  чисто для контроля работы метода - в принципе данный кусок можно комменитровать
 		extrVec = Transpose(PiEtAB) * psi;
 		cP->perfomance = 0;
 		Ind = cP->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *cP);

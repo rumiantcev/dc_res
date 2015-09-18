@@ -282,7 +282,7 @@ void __fastcall TNet::create(long Dim /* long perf, long Res */) {
 	for (j = 0; j < NumOfSur; j++) {
 		ind = long(j * 0.5); // № текущей координаты
 		md = (ind + 1) % Dim; // номер координаты по которой происходит экономия памяти
-		(ind == 0 ? mm = 1 : mm = 0);  //с каккой координаты начинаются изменения - если нулевая координата тиксирована, то с первой,
+		(ind == 0 ? mm = 1 : mm = 0);  //с какой координаты начинаются изменения - если нулевая координата фиксирована, то с первой,
 		//в противном случае  с нулевой
 		normalDir = (j % 2) * 2 - 1;
 		// направление нормали, а также какой конец будем исключать из построения сетки - верхний или нижний
@@ -508,11 +508,11 @@ long __fastcall TNet::shift(long current, int coordNumber, int step,
 		// Вычисляем точку, на которую осуществляем переход
 		int i, j = _dim - 1;
 		for (i = _dim - 1; i > newPlateNorm; --i) {
-			ind += powVec_1->v->v[j];// * c->v->v[i];
+			ind +=  powVec_1->v->v[j];// * c->v->v[i];
 			--j;
 		}
 		for (i = newPlateNorm - 1; i >= 0; --i) {
-			ind += powVec_1->v->v[j];// * c->v->v[i];
+			ind +=  powVec_1->v->v[j];// * c->v->v[i];
 			--j;
 		}
 		if (ind == Count) {

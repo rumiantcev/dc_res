@@ -43,7 +43,7 @@ void loadGlobalParameters(string localPath)
 {
 	string fileName = localPath+"\\dconsole.ini";
 	cout<<fileName<<endl;
-   //	CDataFile DFile("C:\\Users\\alex\\Documents\\MSU\\dc_res\\Win32\\Debug\\dconsole.ini");
+  // 	CDataFile DFile("C:\\Users\\alex\\Documents\\MSU\\dc_res\\Data\\dconsole.ini");
 	CDataFile DFile(fileName);
 	Report(E_INFO, "[doSomething] The file <control.ini> contains %d sections, & %d keys.",
 				   DFile.SectionCount(), DFile.KeyCount());
@@ -75,9 +75,7 @@ void loadGlobalParameters(string localPath)
 	string fileName, method, opt,v_control;
 	string sectionName;
 	i++;
-
-	while (i!= NULL) {
-
+	while (i!=/* NULL*/DFile.m_Sections.end()/**/) {
 		section = (t_Section*)&(*i);
 		fileName = localPath+"\\";
 		fileName+= section->Keys[0].szValue;//fileName = DFile.GetValue(section->szName, "file");
@@ -134,49 +132,50 @@ void loadGlobalParameters(string localPath)
 		out_f.flush();
 		out_f.close();
 		j++;
-		i = DFile.GetNextSectionIter(i);
-   }
+		i++;
+		//i = DFile.GetNextSectionIter(i);
+	}
+
 
 	for_each(taskList.begin(), taskList.end(), DeleteObj());
 }
 
-int _tmain(int argc, _TCHAR* argv[]) {
-	//	setlocale (LC_ALL, "RUS");
-	/*auto t1 = std::chrono::high_resolution_clock::now();
-		int s=0;
-		for (int i=0; i<10; ++i)
-			s+=i;
-		auto t2 = std::chrono::high_resolution_clock::now();
-		long dt = ((std::chrono::nanoseconds)(t2-t1)).count();
-		std::cout << dt << std::endl;
-	/**/
-//	  setlocale( LC_ALL,"Russian.1572" );
-	  //setlocale( LC_ALL,"RUS" );
-  //		SetConsoleCP(1251);
-	//	SetConsoleOutputCP(1251);
 
+int _tmain(int argc, _TCHAR* argv[]) {
+//тест открытия файла
+/*fstream File;
+File.open("C:\\Users\\alex\\Documents\\MSU\\dc_res\\Data\\dconsole.ini", ios::in|ios::nocreate);
+if (File.is_open()) {
+	cout<<"ok"<<endl;
+}
+else{
+	cout<<"no"<<endl;
+};
+
+
+
+File.close();
+*/
+
+///
+  //	  setlocale( LC_ALL,"Russian.1572" );
+  //setlocale( LC_ALL,"RUS" );
+  //		SetConsoleCP(1251);
+  //	SetConsoleOutputCP(1251);
 
 	string localPath(argv[0]),pathHelper="\\Data";
 	cout<<localPath<<endl;
-	localPath = getenv("DC_PATH");  //переменная определяет где находятся данные и конф. файлы
-    //... а также результаты расчётов
-	//size_t sPos = localPath.find_last_of("\\");
-	//localPath.erase(sPos,localPath.length());
-	//sPos = localPath.find("\\.");
-	//pathHelper = localPath.substr(sPos+2,localPath.length());
-	//localPath.erase(sPos,localPath.length());
+	localPath = getenv("DC_PATH");  //переменная определяет где находятся данные и конф. файлы ... а также результаты расчётов
+
 	localPath.append(pathHelper);
 	cout<<localPath<<endl;
 	randomize();
 	cout << "Begin.." << endl;
 	loadGlobalParameters(localPath);
 	cout << "Parameters are loaded" << endl;
-	
+
 	load_and_calc_tasks(localPath);
-   //	char c;
-   // cin >> c;
+
 
 	return 0;
 }
-
-

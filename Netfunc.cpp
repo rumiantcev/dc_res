@@ -8,17 +8,17 @@
 // -----------------------------------------------------------------------------//
 LDouble convCriteria(long num, LDouble sk, const TNetF *v) {
 	return sk;
-};
+}
 
 // -----------------------------------------------------------------------------//
 LDouble convCriteria1(long num, LDouble sk, const TNetF *v) {
 	return (v->f->v->v[num]) / sk;
-};
+}
 
 // -----------------------------------------------------------------------------//
 LDouble convCriteria2(long num, LDouble sk, const TNetF *v) {
 	return v->f->v->v[num] * sk;
-};
+}
 
 // ------------------------------------Create----------------------------------//
 /* !inline */
@@ -49,7 +49,7 @@ __fastcall TNetF::TNetF(int dim, long perf, long res)
 	initNetFDefault();
 	create(dim );
 	SetFunc("0");
-};
+}
 
 // ------------------------------constructor ----------------------------------//
 __fastcall TNetF::TNetF(int Dim, long perf, long res, string fstr)
@@ -67,7 +67,7 @@ __fastcall TNetF::TNetF(long mm, int nn, long perf, long res)
 	f = new Vector(mm);
 	create(nn );
 	SetFunc("0");
-};
+}
 
 // ------------------------copy constructor-----------------------------------//
 __fastcall TNetF::TNetF(TNet& Net) : TNet(Net) {
@@ -75,28 +75,28 @@ __fastcall TNetF::TNetF(TNet& Net) : TNet(Net) {
 	create(Dim );
 	SetFunc("0");
 
-};
+}
 
 /* */// ------------------------copy constructor-----------------------------------//
 __fastcall TNetF::TNetF(TNet& Net, const string& fstr) : TNet(Net) {
 	initNetFDefault();
 	create(Dim);
 	SetFunc(fstr);
-};
+}
 
 // ------------------------copy constructor-----------------------------------//
 __fastcall TNetF::TNetF(const TNetF& NetF) : TNet(NetF) {
 	initNetFDefault();
 	copyNetFFrom(NetF, false);
 	SetFunc(NetF.fStr);
-};
+}
 
 /* */// ------------------------copy constructor-----------------------------------//
 __fastcall TNetF::TNetF(TNetF& Net, const string& fstr) : TNet(Net) {
 	initNetFDefault();
 	copyNetFFrom(Net, false);
 	SetFunc(fstr);
-};
+}
 
 // ------------------------------- destructor ---------------------------------//
 void TNetF:: operator delete(void *p) {
@@ -106,7 +106,7 @@ void TNetF:: operator delete(void *p) {
 		delete(void*) p;
 	else
 		p = NULL;
-};
+}
 
 // ---------------------------- destructor-------------------------------------//
 __fastcall TNetF::~TNetF() {
@@ -131,8 +131,7 @@ __fastcall TNetF::~TNetF() {
 		delete[]vars;
 		vars = NULL;
 	}
-	// destroy();
-};
+}
 
 // -------------------------------- << ----------------------------------------//
 ostream& __fastcall operator << (ostream& out_data, TNetF& C) {
@@ -158,7 +157,7 @@ ostream& __fastcall operator << (ostream& out_data, TNetF& C) {
 	}
 	/* */
 	return out_data;
-};
+}
 
 // ----------------------------------- >> -------------------------------------//
 istream& __fastcall operator >> (istream& in_data, TNetF& C) {
@@ -191,15 +190,15 @@ istream& __fastcall operator >> (istream& in_data, TNetF& C) {
 					j++;
 					if (j > C.Dim)
 						i++;
-				};
-			};
-		};
+				}
+			}
+		}
 	in_data.get(c);
 	while (c != ';' && c != EOF)
 		in_data.get(c);
 	in_data.get(c);
 	return in_data;
-};
+}
 // ----------------------------------- = --------------------------------------//
 TNetF& __fastcall TNetF:: operator = (const TNetF & NetF) {
 	if (this == &NetF)
@@ -213,7 +212,7 @@ TNetF& __fastcall TNetF:: operator = (const TNetF & NetF) {
 	copyNetFrom(NetF);
 	copyNetFFrom(NetF, true);
 	return *this;
-};
+}
 
 // ----------------------------------- + --------------------------------------//
 TNetF& __fastcall TNetF:: operator += (const TNetF& B) {
@@ -239,7 +238,7 @@ TNetF& __fastcall TNetF:: operator += (const TNetF& B) {
 // ----------------------------------- + --------------------------------------//
 const TNetF __fastcall operator +(const TNetF& A, const TNetF& B) {
 	return TNetF(A) += B;
-};
+}
 
 // ----------------------------------- Геометрическая - ----------------------//
 TNetF& __fastcall TNetF:: operator -= (const TNetF& B) {
@@ -307,7 +306,7 @@ TNetF& __fastcall TNetF:: operator -= (const TNetF& B) {
 // ----------------------------------- Геометрическая - ----------------------//
 const TNetF __fastcall operator -(const TNetF& A, const TNetF& B) {
 	return TNetF(A) -= B;
-};
+}
 
 // ------------------------------------Update---------------------------------//
 void __fastcall TNetF::update() {
@@ -369,7 +368,7 @@ void __fastcall TNetF::detach() {
 		for (i = 0; i < vv->v->size; i++)
 			f->v->v[i] = vv->v->v[i];
 		delete vv;
-	};
+	}
 }
 
 // ----------------------------------- * --------------------------------------//
@@ -394,7 +393,7 @@ TNetF& __fastcall TNetF:: operator *= (const Matrix& A) {
 // ----------------------------------- * --------------------------------------//
 const TNetF __fastcall operator*(const Matrix &A, const TNetF& B) {
 	return TNetF(B) *= A;
-};
+}
 
 // ----------------------------------- * --------------------------------------//
 TNetF& __fastcall TNetF:: operator *= (const LDouble &a) {
@@ -413,12 +412,12 @@ TNetF& __fastcall TNetF:: operator *= (const LDouble &a) {
 // ----------------------------------- * --------------------------------------//
 const TNetF __fastcall operator *(const double a, const TNetF& B) {
 	return TNetF(B) *= a;
-};
+}
 
 // ----------------------------------- + --------------------------------------//
 /* const TNetF __fastcall operator +(const double a, const TNetF& B) {
  return TNetF(B) += a;
- };
+ }
 /* */
 // ------------------------------------AddVariables---------------------------//
 void __fastcall TNetF::AddVariables() {
@@ -473,14 +472,14 @@ LDouble __fastcall TNetF::oporn(const Vector &x, LDouble t, int sign) {
 #endif
 	result = sic_exec(&sic, &err);
 	return result;
-};
+}
 
 // ---------------------------------------------------------------------------
 LDouble __fastcall TNetF::oporn(const Vector &x, LDouble t,
 	const string &funcStr, int sign) {
 	SetFunc(funcStr);
 	return oporn(x, t, sign);
-};
+}
 
 
 // ---------------------------------------------------------------------------//
@@ -500,14 +499,14 @@ void __fastcall TNetF::oporn(LDouble t, int sign) {
 		for (j = 0; j < Dim; j++)
 			vv[j] = getIJ(i, j);
 		f->v->v[i] = oporn(vv, t, sign);
-	};
-};
+	}
+}
 
 // ---------------------------------------------------------------------------//
 TNetF __fastcall TNetF::opornx(LDouble t, int sign) {
 	oporn(t, sign);
 	return *this;
-};
+}
 
 // ---------------
 LDouble __fastcall TNetF::oporn(const Vector &x, LDouble t, int sign,
@@ -515,7 +514,7 @@ LDouble __fastcall TNetF::oporn(const Vector &x, LDouble t, int sign,
 	umx = true;
 	Vector xx = A * x;
 	return oporn(xx, t, sign);
-};
+}
 
 // ---------------------------------------------------------------------------//
 void __fastcall TNetF::oporn(LDouble t, int sign, const Matrix &A) {
@@ -526,8 +525,8 @@ void __fastcall TNetF::oporn(LDouble t, int sign, const Matrix &A) {
 		for (j = 0; j < Dim; j++)
 			vv.v[j] = v->v->v[i][j];
 		f->v->v[i] = oporn(vv, t, sign, A);
-	};
-};
+	}
+}
 // ---------------------------------------------------------------------------//
 
 void /* !inline */ __fastcall TNetF::SetFunc(const string& fstr) {
@@ -887,7 +886,7 @@ long __fastcall TNetF::GetExtrDirection(const Vector& vec, scM scmul,
 		 // Fast Evaluator
 
 	return -1;
-};
+}
 
 // ----------------------------- GetExtrGlobal---------------------------------------//
 long __fastcall TNetF::GetExtrGlobal(OpType extrOper, long index, LDouble& extr) {
@@ -901,7 +900,7 @@ long __fastcall TNetF::GetExtrGlobal(OpType extrOper, long index, LDouble& extr)
 		return findExtrFastXGlobal(extrOper, index, extr); /* */ // Fast Evaluator
 	}
 	return -1;
-};
+}
 
 // -----------------------------------------------------------------------------//
 LDouble  __fastcall scm(long num, const Vector &vec, TNetF *v, alphType* coeff) {
@@ -1074,10 +1073,9 @@ TNet __fastcall TNetF::Points(bool compactPoints) {
 		for (j = 0; j < Dim; j++)
 			result.v->v->v[i][j] = alpha[i] * getIJ(i, j);
 		i++;
-	};
-
+	}
 	return result;
-};
+}
 
 // -----------------------------------------------------------------------------//
 Vector __fastcall TNetF::getBorderPoint(long index, const Vector& psi) {

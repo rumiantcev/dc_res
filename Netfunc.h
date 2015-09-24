@@ -167,5 +167,5 @@ extern LDouble  convCriteria2(long num, LDouble sk, const TNetF *v);
 extern LDouble __fastcall  scm (long num, const Vector &vec, TNetF *v, alphType* coeff);
 extern LDouble __fastcall scm1(long num, const Vector &vec, TNetF *v, alphType* coeff);
 extern LDouble __fastcall scm2(long num, const Vector &vec, TNetF *v, alphType* coeff);
-// };
+
 #endif

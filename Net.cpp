@@ -16,10 +16,10 @@ double __fastcall TNet:: operator()(long i, int j) {
 		if ((v->v->linkCount > 1) && (!updated))
 			update();
 	return getIJ(i, j);
-};
+}
 /* */
 // ------------------------------- operator [] --------------------------------//
-///*!inline*/  const double& __fastcall TNet::operator [](long i) const {f->v[i];};
+///*!inline*/  const double& __fastcall TNet::operator [](long i) const {f->v[i];}
 // ------------------------------- getVecAt -----------------------------------//
 
 Vector* __fastcall TNet::getVecAt(long i) {
@@ -84,7 +84,7 @@ __fastcall TNet::TNet(int dim, long perf, long res, bool virt)
 __fastcall TNet::TNet(long mm, long nn, long perf, long res) {
 	initNetDefault(); // инициаизируем по умолчанию
 	create(mm, nn, perf, res);
-};
+}
 
 /* */// ------------------------copy constructor-----------------------------------//
 __fastcall TNet::TNet(const TNet& Net) {
@@ -193,12 +193,10 @@ void __fastcall TNet::dynUpdate() {
 		if (!u_mx->updated)
 			u_mx->update();
 		MVMul(cache, cache);
-		// umx = true;
-	};
+	}
 	if (!uvec) {
 		for (j = 0; j < Dim; j++)
 			(*cache)[j] += u_vec->v->v[j];
-		// uvec = true;
 	}
 }
 
@@ -229,11 +227,10 @@ void __fastcall TNet::update() {
 				MVMul(v->v->v[k], vv->v->v[k]);
 			delete v;
 			v = vv;
-		};
+		}
 		umx = true;
-	};
+	}
 	if (!uvec) {
-		// MVMul(u_vec->v->v, u_vec->v->v);
 		for (i = 0; i < Count; i++)
 			for (j = 0; j < Dim; j++)
 				v->v->v[i][j] += u_vec->v->v[j];
@@ -277,7 +274,6 @@ void __fastcall TNet::create(long Dim /* long perf, long Res */) {
 
 	// Count = NumOfPoints * NumOfSur;  //Общее количество точек
 	v = new Matrix(Count, Dim); // Создаём матрицу координат
-	// cout<<*v<<endl;
 
 	for (j = 0; j < NumOfSur; j++) {
 		ind = long(j * 0.5); // № текущей координаты
@@ -296,9 +292,7 @@ void __fastcall TNet::create(long Dim /* long perf, long Res */) {
 			// иначе в размеры матрицы можно не влезть
 		}
 		curr = (j * NumOfPoints); // первая точка текущей гиперплоскости
-		// coordNum = 0;
 		for (i = 0; i < NumOfPoints; i++) {
-			// cout<<baseV<<endl;
 			memcpy(v->v->v[curr], baseV.v->v, Dim*sizeof(LDouble));   //Копируем базовый вектор
 			val = v->v->v[curr][mm] + step;    //приращиваем текущую координату
 			if (i == NumOfPoints - 1)//если дошли до конца грани - выходим
@@ -323,49 +317,9 @@ void __fastcall TNet::create(long Dim /* long perf, long Res */) {
 			}
 			else
 				baseV.v->v[mm] = val; //корректируем базовый вектор (текущую координату) для использования при следующем копировании
-			// (ind == 0 ? mm = 1 : mm = 0);
 			curr++;
 		}
-
 	}
-
-	/* for (j = 0; j < NumOfSur; j++) {
-	 ind = long(j * 0.5); //№ текущей координаты
-	 md = j % 2;  //??направление нормали
-	 curr = (j * NumOfPoints);  //первая точка текущей гиперплоскости
-	 p = 2 * nn * md - nn;
-	 for (mm = 0; mm < Dim; mm++) {
-	 exclude[mm] = nn + p;
-	 p = -p;
-	 }
-	 cout<<exclude<<endl;
-	 for (i = 1; i <= NumOfPoints; i++) {
-	 if (j - ind * 2 == 0)              //заполнение 1 и -1 на концах, некорректно работает для прямоугольников
-	 v->v->v[curr][ind] = -1.0;
-	 else
-	 v->v->v[curr][ind] = 1.0;
-
-	 ff = i - 1;
-	 mm = 0;
-	 for (k = 0; k < Dim; k++) {
-	 s = (ff % Res);
-	 ff = ff / Res;
-	 val = 2 / (double)(Res - 1) * s - 1;
-	 if (k != ind)
-	 val += exclude[++mm];
-	 if (v->v->v[curr][k] == 0) {
-
-	 v->v->v[curr][k] = val;
-	 }
-	 else {
-	 if ((++k) < Dim) {
-	 v->v->v[curr][k] = val;
-	 }
-	 }
-	 }
-	 curr++;
-	 }
-	 } /* */
 }
 
 /* */// ------------------------------------Create----------------------------------//
@@ -522,7 +476,7 @@ long __fastcall TNet::shift(long current, int coordNumber, int step,
 			// cout<<(*this)<<endl;
 		}
 		return ind;
-	};
+	}
 }
 
 /* */// ------------------------------------Detach----------------------------------//
@@ -539,7 +493,7 @@ void __fastcall TNet::detach() {
 				for (j = 0; j < Dim; j++)
 					v->v->v[i][j] = vv->v->v[i][j];
 			v->v->linkCount = 1;
-		};
+		}
 	if (u_vec != NULL)
 		u_vec->detach();
 	if (u_mx != NULL)
@@ -550,7 +504,7 @@ void __fastcall TNet::detach() {
 		powVec_1->detach();
 	if (cache != NULL)
 		cache->detach();
-};
+}
 
 /* */// -------------------------------- << ----------------------------------------//
 ostream& __fastcall operator << (ostream& out_data, TNet& C) {
@@ -578,7 +532,7 @@ ostream& __fastcall operator << (ostream& out_data, TNet& C) {
 		out_data << endl;
 	}
 	return out_data;
-};
+}
 
 /* */// ----------------------------------- >> -------------------------------------//
 istream& __fastcall operator >> (istream& in_data, TNet& C) {
@@ -587,7 +541,7 @@ istream& __fastcall operator >> (istream& in_data, TNet& C) {
 		C.v = new Matrix(C.Count, C.Res);
 	in_data >> *C.v;
 	return in_data;
-};
+}
 /* */// ----------------------------------- = --------------------------------------//
 TNet& __fastcall TNet:: operator = (const TNet & Net) {
 	if (this == &Net)
@@ -600,7 +554,7 @@ TNet& __fastcall TNet:: operator = (const TNet & Net) {
 		}
 	copyNetFrom(Net);
 	return *this;
-};
+}
 
 /* */// ----------------------------------- * --------------------------------------//
 TNet& __fastcall TNet:: operator *= (const Matrix& A) {
@@ -626,7 +580,7 @@ TNet& __fastcall TNet:: operator *= (const Matrix& A) {
 const TNet __fastcall operator*(const Matrix &A, const TNet& B) {
 	TNet result = B;
 	return TNet(B) *= A;
-};
+}
 
 /* */// ----------------------------------- * --------------------------------------//
 /* TNet& __fastcall TNet:: operator *= (const double &a) {
@@ -638,7 +592,7 @@ const TNet __fastcall operator*(const Matrix &A, const TNet& B) {
 /* */// ----------------------------------- * --------------------------------------//
 const TNet __fastcall operator *(const double& a, const TNet& B) {
 	return TNet(B) *= a;
-};
+}
 
 /* */// ----------------------------------- + --------------------------------------//
 TNet& __fastcall TNet:: operator += (const TNet& B) {
@@ -651,11 +605,8 @@ TNet& __fastcall TNet:: operator += (const TNet& B) {
 		upd += B.upd;
 	}
 	else {
-		// if(updated) update();
 		if (!B.updated)
 			pB->update();
-		// for(i=0;i<A.m;i++)
-		// result.f->v[i]=A.f->v[i]+B.f->v[i];
 		for (i = 0; i < Count; i++)
 			for (j = 0; j < Dim; j++)
 				v->v->v[i][j] += coeff * pB->v->v->v[i][j];
@@ -667,19 +618,16 @@ TNet& __fastcall TNet:: operator += (const TNet& B) {
 /* */// ----------------------------------- + --------------------------------------//
 const TNet __fastcall operator +(const TNet& A, const TNet& B) {
 	return TNet(A) += B;
-};
+}
 
 /* */// ----------------------------------- + --------------------------------------//
 TNet& __fastcall TNet:: operator += (const Vector& A) {
 	if (umx)
 		update();
-	if (u_vec != NULL) {
+	if (u_vec != NULL)
 		*u_vec = *u_vec + A;
-	}
-	else {
+	else
 		u_vec = new Vector(A);
-		// *u_vec=A;
-	};
 	updated = false;
 	uvec = false;
 	return *this;
@@ -688,7 +636,7 @@ TNet& __fastcall TNet:: operator += (const Vector& A) {
 /* */// ----------------------------------- + --------------------------------------//
 const TNet __fastcall operator +(const Vector& A, const TNet& B) {
 	return TNet(B) += A;
-};
+}
 
 /* */// ------------------------------ Clear ---------------------------------------//
 

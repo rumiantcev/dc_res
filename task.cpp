@@ -27,8 +27,7 @@ Task::Task() : A(1, 1), B(1, 1), C(1, 1), PP(1, 1), /* x0(1), */ Level(0) {
 Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, double prec,
 	double eps, LDouble delta, LDouble tmax, long st, short perf, long stat,
 	int tr_count) : A(dimX, dimX), B(dimX, dimU), C(dimX, dimV),
-	PP(dimM, dimX) // ,x0(dimX)
-	/* */ {
+	PP(dimM, dimX) {
 	Traectory tr;
 	Vector x_0(dimX);
 	tr.x0 = x_0;
@@ -51,14 +50,13 @@ Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, double prec,
 	dim_m = dimM;
 	steps = st;
 	cP = new TNetF(dim_u, perf, st, "0");
-	// cout<<*cP;
 	cQ = new TNetF(dim_v, perf, st, "0");
 	cM = new TNetF(dim_m, perf, st, "0");
 	Level = 2;
 	IndI = 1;
 	v_control = 0;
 	
-};
+}
 
 // -----------------------------destructor----------------------------------//
 Task::~Task() {
@@ -100,12 +98,12 @@ Task::Task(const Task& ts) : A(ts.A.m(), ts.A.n()), B(ts.B.m(), ts.B.n()),
 	steps = ts.steps;
 	Level = ts.Level;
 	v_control = ts.v_control;
-};
+}
 
 // ---------------------------- destructor ------------------------------------//
 // ------------------------------- Time calc-----------------------------------//
 /*LDouble Task::TimeCalc() {
-};
+}
   /**/
 // ------------------------------- Time calc-----------------------------------//
 LDouble Task::TimeCalc_Pontryagin(int trNum) {
@@ -238,7 +236,6 @@ LDouble Task::TimeCalc_AltInt(int trNum) {
 		c = c + tmpPNet;
 		c -= tmpQNet; // геометрическа€ разность  - пока не оптимально считаетс€
 		c.update();
-		// cout<<c;
 
 		// опорна€ функци€ PiEtA*x0 - строим пользу€сь тем что это просто скал€рное произведение
 		for (i = 0; i < x0Net.Count; i++)
@@ -251,7 +248,6 @@ LDouble Task::TimeCalc_AltInt(int trNum) {
 		Ind = Net.GetExtrGlobal(opMin,   Ind, min);
 		tr_s[trNum].psiExtr.push_back(Ind);
 		cout << min << " : " << Ind << " : " << t << endl;
-	   //	cout << Net;
 	}
 	tr_s[trNum].T = t;
 	/* */
@@ -292,7 +288,6 @@ Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn, LDo
 // ------------------------------------- Get V --------------------------------//
 Vector Task::GetV(TNetF *w, TNetF *v, const Vector& x, const Matrix& PiEtA) {
 	Vector result(dim_v), tempRes(dim_x);
-
 
 	LDouble extr;
 	Matrix PiEtAC(A.m(), A.n());
@@ -375,7 +370,6 @@ void Task::Control_AltInt(int trNum) {
 		for (m = 0; m < dim_u; m++)
 			u_i.v->v[m] = cP->getIJ(Ind, m);
 		u_i = cP->getBorderPoint(Ind, u_i);
-	   //	cout << Ind << " : " << u_i;
 
 		//выбираем v_i
 		extrVec = Transpose(PiEtAC) * psi;
@@ -384,7 +378,6 @@ void Task::Control_AltInt(int trNum) {
 		for (m = 0; m < dim_v; m++)
 			v_i.v->v[m] =   cQ->getIJ(Ind, m);
 		v_i=cQ->getBorderPoint(Ind,v_i);
-		//cout << Ind << " : " << v_i;
 		cout << (j) * tau << " : " << x_i;
 
 		//находим следующий  x_i  методом  –унге- утты
@@ -414,9 +407,6 @@ void Task::Control_R1(int trNum) {
 	LDouble t, min,  extr;
 	Vector PiEtAx(PP.m()), psi(PP.v->m), extrVec(PP.v->m);
 	Vector u_i(cP->Dim), v_i(cQ->Dim), x_i(dim_x);
-	//bool extr_exist;
-
-	//bool  extr_u_exist;
 	LDouble  tau_s, tau_delta, xNorm, xExtNorm;
 	VecOfVec vx_i, vu_i, vv_i;
 	Vector *r_i;
@@ -507,8 +497,6 @@ void Task::Control_R1(int trNum) {
 			a = double(_lrand() % c.Count) / double(c.Count);
 			jj = signof(a - 0.5) * tcurr * (pow((1.0 + 1.0 / tcurr), fabs(2.0 * a - 1.0)) -	1.0) * double(c.Count);
 			jk = abs(jj + jk) % c.Count;
-			 /**/
-			//tcurr = tcurr * ccurr;
 			for (m = 0; m < c.Dim; m++)
 				psi.v->v[m] = c.getIJ(indExtr, m);
 
@@ -521,14 +509,12 @@ void Task::Control_R1(int trNum) {
 			u_i = cP->getBorderPoint(Ind, u_i);
 
 			x_i = rungeCutt(x_i, u_i, v_i, tau_s);
-		  //	cout<< xExtNorm <<" : "<< x_i <<endl;
 			t -=tau_s;
 			tau_delta -= tau_s;
 
 		   r_i =  new Vector(x_i);
 		   r_i->detach();
 		   vx_i.push_back(r_i);
-		   //cout<<x_i;
 		   r_i =  new Vector(u_i);
 		   r_i->detach();
 		   vu_i.push_back(r_i);
@@ -579,7 +565,6 @@ void Task::Control_R1(int trNum) {
 			tr_s[trNum].v_i->v->v[j][m] = vv_i[j]->v->v[m];
 		for (m = 0; m < dim_x; m++)
 			tr_s[trNum].x_i->v->v[j + 1][m] = vx_i[j+1]->v->v[m];
-	  // cout<<*vx_i[j+1];
 	}
 	for_each(vx_i.begin(), vx_i.end(), DeleteObj());
 	for_each(vu_i.begin(), vu_i.end(), DeleteObj());
@@ -611,8 +596,6 @@ void Task::Control_R2(int trNum) {
 	j = 0;
 	k = tr_s[trNum].NetList.size()-1;
 
-   //	for (m = 0; m < dim_x; m++)
-   //		tr_s[trNum].x_i->v->v[0][m] = tr_s[trNum].x0[m];
 	x_i = tr_s[trNum].x0; // заполн€ем x_i  начальным значением
 	r_i =  new Vector(x_i);
 	r_i->detach();
@@ -1006,9 +989,9 @@ void Task::saveTask(char *fileName) {
 	 tmpNet=(TNet*)NetList->Items[i];
 	 Net=(*tmpNet);
 	 out_f<<Net;
-	 };
+	 }
 	 out_f<<'\n';
-	 }; */
+	 } */
 
 	/* Vector *vec;
 	 vec=(Vector*)selList->Items[0];
@@ -1018,7 +1001,7 @@ void Task::saveTask(char *fileName) {
 	 {
 	 vec=(Vector*)selList->Items[i];
 	 out_f<<(*vec);
-	 };
+	 }
 	 out_f<<'\n';
 
 	 vec=(Vector*)contList->Items[0];
@@ -1028,7 +1011,7 @@ void Task::saveTask(char *fileName) {
 	 {
 	 vec=(Vector*)contList->Items[i];
 	 out_f<<(*vec);
-	 };
+	 }
 	 out_f<<'\n';
 
 	 vec=(Vector*)vList->Items[0];
@@ -1038,14 +1021,14 @@ void Task::saveTask(char *fileName) {
 	 {
 	 vec=(Vector*)vList->Items[i];
 	 out_f<<(*vec);
-	 };
+	 }
 	 out_f<<'\n';
 
-	 };
+	 }
 	/* */
 	// out_f.flush();
 	out_f.close();
-};
+}
 
 // ------------------------------ loadTask ------------------------------------//
 Task* Task::loadTask(/*istream& in_f*/string szFileName) {
@@ -1334,7 +1317,7 @@ Task* Task::loadTask(/*istream& in_f*/string szFileName) {
 /* istream& operator >>(istream& in_f, Task* res)
  {
  return in_f;
- };
+ }
 /* */
 // ---------------------- changes default function zero value--------------------
 void __fastcall Task::setFuncToNetF(TNetF& net, string func) {

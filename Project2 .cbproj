@@ -144,8 +144,8 @@
         <BCC_AddProjectDirToIncludePath>true</BCC_AddProjectDirToIncludePath>
         <BCC_CPPCompileAlways>true</BCC_CPPCompileAlways>
         <BCC_EnableBatchCompilation>true</BCC_EnableBatchCompilation>
-        <VerInfo_Build>29</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.29;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Build>30</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.30;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <BCC_HonorMemPtrPrecision>true</BCC_HonorMemPtrPrecision>
@@ -325,6 +325,7 @@
                 </Excluded_Packages>
                 <Language>
                     <Language Name="ProjectLang">$00000419</Language>
+                    <Language Name="ActiveLang">RUS</Language>
                 </Language>
                 <Resource_DLL_Projects>
                     <Resource_DLL_Projects Name="Item0">Русский (Россия)*$00000419*RUS*RUS</Resource_DLL_Projects>

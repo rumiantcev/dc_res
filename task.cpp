@@ -628,6 +628,7 @@ void Task::Control_R2(int trNum) {
 
 	long jk=-1,jj, prevInd,indExtr;
 	int currPlateNorm, currDirection=-1, prevDirection = -1, moveSign = 1, exitSign = 0, exitLim = (c.Dim-1)*2;
+	int extrDirection;
 
 	j = 0;
 	k = tr_s[trNum].NetList.size()-1;
@@ -660,6 +661,7 @@ void Task::Control_R2(int trNum) {
 		//выбираем psi
 		c.perfomance = 0;
 		Ind = c.GetExtrGlobal(opMin,  0, min);
+		cout << Ind << " : ";
 		for (m = 0; m < c.Dim; m++)
 			psi.v->v[m] = c.getIJ(Ind, m);
 		//prevInd = Ind;
@@ -686,7 +688,8 @@ void Task::Control_R2(int trNum) {
 		if (jk<0){      //первый узел по любому случаен
 			jk = _lrand() % (c.Count);
 			indExtr = jk;
-			currDirection= rand()%c.Dim;
+			currDirection = rand()%c.Dim;
+			extrDirection = currDirection;
 		}
 
         //отладочное - закомментировать потом
@@ -710,7 +713,7 @@ void Task::Control_R2(int trNum) {
 	   //	seekPath.clear();
 
 		isNotExtrFound = true;
-        exitSign  = 0;
+		exitSign  = 0;
 		while (isNotExtrFound) {
 
 			//шаг градиентного метода
@@ -726,22 +729,27 @@ void Task::Control_R2(int trNum) {
 				exitSign  = 0;
                 borderChanged = false;
 			   }
+
 			   if (prevInd == jk) {   //попытка сдвига не туда - МЕНЯЕМ НАПРАВЛЕНИЕ
 				currDirection= (currDirection+1)%(c.Dim-1);
 				if ((prevDirection == currDirection)&&(c.Dim>2))//если в данном направлении уже ходили и есть куда поворачивать (Dim>2) - переходим на следующее
 						currDirection = (currDirection +1)%c.Dim;
 					else
 						moveSign *= -1; //если не ходили или размерность 2, то просто меняем знак  движения
-			   }
-			   else{
+			   }else{
 				xNorm = c.f->v->v[jk];
 
 				if (xNorm <= xExtNorm) {
 					if (xNorm < xExtNorm){
 						xExtNorm = xNorm;
 						indExtr = jk;
-					}else
+						extrDirection = currDirection;
+					}else {
 						exitSign++;
+						jk = indExtr;
+						prevInd = indExtr;
+						currDirection = extrDirection;
+					}
 				  //	exitSign = 0;//если нашли куда куда ходить, то  счётчик сбрасываем
 				}
 				else{//меняем направление
@@ -752,6 +760,9 @@ void Task::Control_R2(int trNum) {
 					if (currDirection==currPlateNorm) //Если же следующее направление совпадает с нормалью просто выбираем слеюующее напраавление
 						currDirection= (currPlateNorm+1)%c.Dim;
 					exitSign++;
+					jk = indExtr;
+					prevInd = indExtr;
+					currDirection = extrDirection;
 				}
 			   }
 			 // seekPath[jk] = true;

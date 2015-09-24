@@ -142,21 +142,12 @@ void loadGlobalParameters(string localPath)
 
 
 int _tmain(int argc, _TCHAR* argv[]) {
-//тест открытия файла
-/*fstream File;
-File.open("C:\\Users\\alex\\Documents\\MSU\\dc_res\\Data\\dconsole.ini", ios::in|ios::nocreate);
-if (File.is_open()) {
-	cout<<"ok"<<endl;
-}
-else{
-	cout<<"no"<<endl;
-};
 
-
-
-File.close();
-*/
-
+  #pragma omp parallel
+  {
+    // Code inside this region runs in parallel.
+    printf("Hello!\n");
+  }
 ///
   //	  setlocale( LC_ALL,"Russian.1572" );
   //setlocale( LC_ALL,"RUS" );

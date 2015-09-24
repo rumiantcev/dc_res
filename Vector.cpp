@@ -26,12 +26,8 @@ long __fastcall Vector::size() const {
  } */
 // ------------------------------- destructor ---------------------------------//
 __fastcall Vector::~Vector() {
-	// if (--v->linkCount==0)
-	{
 		delete v;
 		v = NULL;
-	}
-
 }
 
 // ------------------------------- constructor --------------------------------//
@@ -60,7 +56,6 @@ __fastcall Vector::Vector(const string& str, long size) {
 	long k;
 	string::const_iterator i, j;
 	create(size);
-	// i = &str[str.find('[', 0)];
 	i = find(str.begin(), str.end(), '[');
 	j = ++i;
 	string _val;
@@ -76,8 +71,6 @@ __fastcall Vector::Vector(const string& str, long size) {
 Vector& __fastcall Vector:: operator = (const Vector & C) {
 	if (this == &C)
 		return*this;
-	// ! assert(C.v->size==v->size);
-	// if(--v->linkCount==0)
 	delete v;
 	v = C.v;
 	upd = C.upd;
@@ -98,16 +91,12 @@ Vector& __fastcall Vector:: operator = (const double & c) {
 // ---------------------------- += --------------------------------------------//
 Vector& __fastcall Vector:: operator += (const Vector& A) {
 	long i;
-	// assert(A.v->size==v->size);
 	double coeff = A.upd / upd;
 	if (A.v == v)
 		upd += A.upd;
-	// !updated=false;
 	else {
-		// if(!updated) update();
 		if (v->linkCount > 1)
 			detach();
-		// if(!A.updated) A.update();
 		for (i = 0; i < A.v->size; i++)
 			v->v[i] += coeff * A.v->v[i];
 	}
@@ -118,16 +107,12 @@ Vector& __fastcall Vector:: operator += (const Vector& A) {
 Vector& __fastcall Vector::vSum(const Vector& A) // added for profiling
 {
 	long i;
-	// double coeff=A.upd/upd;
 	if (A.v == v) {
 		upd += A.upd;
-		// !updated=false;
 	}
 	else {
-		// if(!updated) update();
 		if (v->linkCount > 1)
 			detach();
-		// if(!A.updated) A.update();
 		for (i = 0; i < A.v->size; i++)
 			v->v[i] += A.v->v[i];
 	}
@@ -148,21 +133,17 @@ const double __fastcall operator *(const Vector& A, const Vector &B) {
 	for (i = 0; i < A.v->size; i++)
 		res += A.v->v[i] * B.v->v[i];
 	res *= B.upd * A.upd;
-
 	return res;
 
 }
 
 const double __fastcall scMul(const Vector& A, const Vector &B)
-	// added for profiling
 {
 	long i;
 	double res = 0;
 	for (i = 0; i < A.v->size; i++)
 		res += A.v->v[i] * B.v->v[i];
-
 	return res;
-
 }
 
 // ------------------------------ * -------------------------------------------//
@@ -186,7 +167,6 @@ const Vector __fastcall operator*(const double &scalar, const Vector &A) {
 ostream& __fastcall operator << (ostream& out_data, Vector& C) {
 	long i;
 	// ≈сли прос€т вывести пустой вектор - возвращаем NULL
-	// if   {}
 	if ((&C == NULL) || (C.v == NULL)) {
 		out_data << "NULL;";
 		return out_data;

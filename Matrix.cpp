@@ -98,10 +98,8 @@ Matrix& __fastcall Matrix:: operator += (const Matrix& A) {
 		upd += A.upd;
 	}
 	else {
-		// if(!updated) update();
 		if (v->linkCount > 1)
 			detach();
-		// if(!A.updated) pA->update();
 		for (i = 0; i < A.v->m; i++)
 			for (j = 0; j < A.v->n; j++)
 				v->v[i][j] += coeff * A.v->v[i][j];
@@ -119,14 +117,11 @@ const Matrix __fastcall operator +(const Matrix& A, const Matrix& B) {
 Matrix& __fastcall Matrix:: operator *= (const Matrix& B) {
 	long i, j, k;
 
-	// Matrix *pB = (Matrix*)(&B);
 	sMx *result = new(sMx)(v->m, B.v->n);
 	double sum;
 
-	// if(!updated) update();
 	if (v->linkCount > 1)
 		detach();
-	// if(!B.updated) pB->update();
 	for (i = 0; i < v->m; i++)
 		for (j = 0; j < B.v->n; j++) {
 			sum = 0;
@@ -268,7 +263,6 @@ istream& __fastcall operator >> (istream& in_data, Matrix& C) {
 Matrix& __fastcall Matrix:: operator = (const Matrix & C) {
 	if (this == &C)
 		return*this;
-	// if(--v->linkCount==0)
 	delete v;
 	v = C.v;
 	upd = C.upd;
@@ -312,12 +306,9 @@ Matrix __fastcall Exponential(Matrix& A, double t, double delta) {
 		A.update();
 	Vector x0(A.v->m);
 	Matrix E(A.v->m), B(A.v->m, A.v->n), Bn(A.v->m, A.v->n); // ,
-	// result(A.v->m, A.v->n), tB(A.v->m, A.v->n);
-	// long n = long(t / delta + 1);
 	long i, k, md;
 	double tp;
 	double norm = abs(t) * A.Norm();
-	// double l1=log10(abs(t)*A.Norm()), l2= log10(2.0);
 	if (norm >= 1)
 		md = ceil(log10(norm) / log10(2.0));
 	else
@@ -328,10 +319,7 @@ Matrix __fastcall Exponential(Matrix& A, double t, double delta) {
 	k = 0;
 	while ((Bn.Norm() > delta) && (k < 10)) {
 		k = k + 1;
-		// Bn.update();
 		Bn *= (tp / k)* (A);
-		// cout << Bn;
-		// norm = Bn.Norm();
 		B = B + Bn;
 	}
 	for (i = 0; i < md; i++) {

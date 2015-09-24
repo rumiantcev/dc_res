@@ -246,12 +246,12 @@ TNetF& __fastcall TNetF:: operator -= (const TNetF& B) {
 	long i, j, m;
 	Vector vec(Dim), st(Dim);
 	TNetF st0Net(Dim, perfomance, Res);
-	LDouble coeff = (LDouble)Dim / Count, val;
+	LDouble coeff = (LDouble)Dim / Count;
 	bool extr_exist, *L;
 	FindPath ynPath = perfomance > 1 ? yPath : nPath;
 
-	long k = 1, jj;
-	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, t = tmax, p, a =
+	long k = 1;
+	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, t = tmax, a =
 		double(_lrand() % Count) / Count, c = _extr_e_val;
 
 	TNetF* pB = (TNetF*)&B;
@@ -617,11 +617,6 @@ long  __fastcall TNetF::findExtrAnnealingDirection(const Vector& vec, scM scmul,
 		_extr_e_val;
 
 	bool isGrZero, isExtrExist = false, isExtr;
-
-	clock_t b0;
-	double e0, e1, e2, e3, e4, e5;
-
-
 
 	j = _lrand() % (net.Count);
 	while (t > tmin) {
@@ -1024,14 +1019,12 @@ void __fastcall TNetF::Conv(bool *L) {
 	TNetF st0Net(Dim, perfomance, NumOfPoints);
 	Vector vec(Dim), st(Dim);
 	bool extr_exist;
-	LDouble extr;
 	pathType path;
 	pathType::iterator pitr;
 	alphType::iterator where;
 	FindPath ynPath = perfomance > 1 ? yPath : nPath;
 
-	long jj;
-	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, t = tmax, p, a =
+	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, t = tmax, a =
 		double(_lrand() % st0Net.Count) / st0Net.Count, c = _extr_e_val;
 	k = 1;
 	// расчёт опорной функции центра Штейнера
@@ -1088,9 +1081,8 @@ TNet __fastcall TNetF::Points(bool compactPoints) {
 
 // -----------------------------------------------------------------------------//
 Vector __fastcall TNetF::getBorderPoint(long index, const Vector& psi) {
-	LDouble extr, val, sk;
-	long i, Ind;
-  	bool extr_exist = false;
+	LDouble extr;
+	bool extr_exist = false;
 	Vector result = *getVecAt(index);
 	result.update();
 	 GetExtrDirection(psi, scm, convCriteria1, opMin, ZAware, index, NULL, extr, *this);

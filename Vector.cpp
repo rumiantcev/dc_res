@@ -308,7 +308,6 @@ Vector* __fastcall Vector::copy(Vector* src, Vector* dst) {
 /* TODO -orum -crepair :  Перенести функцию в TNet */
 void __fastcall Vector::norm(const int& halfRes) {
 	int i;
-	// cout<<*this;
 	double acc = 0;
 	for (i = 0; i < v->size; ++i) {
 		v->v[i] -= halfRes;
@@ -318,14 +317,12 @@ void __fastcall Vector::norm(const int& halfRes) {
 	if (acc != 0)
 		for (i = 0; i < v->size; ++i)
 			v->v[i] /= acc;
-	// cout<<*this;
 }
 
 // ------------------------------------Get real Vector norm-------------------//
 // Вычисляет норму  вектора
 LDouble __fastcall Vector::norm() {
 	int i;
-	// cout<<*this;
 	double acc = 0;
 	for (i = 0; i < v->size; ++i)
 		acc += (v->v[i]*v->v[i]);

@@ -27,8 +27,7 @@ Task::Task() : A(1, 1), B(1, 1), C(1, 1), PP(1, 1), /* x0(1), */ Level(0) {
 Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, double prec,
 	double eps, LDouble delta, LDouble tmax, long st, short perf, long stat,
 	int tr_count) : A(dimX, dimX), B(dimX, dimU), C(dimX, dimV),
-	PP(dimM, dimX) // ,x0(dimX)
-	/* */ {
+	PP(dimM, dimX) {
 	Traectory tr;
 	Vector x_0(dimX);
 	tr.x0 = x_0;
@@ -51,15 +50,13 @@ Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, double prec,
 	dim_m = dimM;
 	steps = st;
 	cP = new TNetF(dim_u, perf, st, "0");
-	// cout<<*cP;
 	cQ = new TNetF(dim_v, perf, st, "0");
 	cM = new TNetF(dim_m, perf, st, "0");
 	Level = 2;
 	IndI = 1;
 	v_control = 0;
-	/* */
-	// traectoryCount=tr_count;
-};
+	
+}
 
 // -----------------------------destructor----------------------------------//
 Task::~Task() {
@@ -101,12 +98,12 @@ Task::Task(const Task& ts) : A(ts.A.m(), ts.A.n()), B(ts.B.m(), ts.B.n()),
 	steps = ts.steps;
 	Level = ts.Level;
 	v_control = ts.v_control;
-};
+}
 
 // ---------------------------- destructor ------------------------------------//
 // ------------------------------- Time calc-----------------------------------//
 /*LDouble Task::TimeCalc() {
-};
+}
   /**/
 // ------------------------------- Time calc-----------------------------------//
 LDouble Task::TimeCalc_Pontryagin(int trNum) {
@@ -192,18 +189,16 @@ LDouble Task::TimeCalc_AltInt(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), tmpPNet(*cP), tmpQNet(*cQ), Net(c),
 		x0Net(c), tmpNet(c);
 	long i, Ind = 0;
-	//pathType path;
+
     // интегрирование методом трапеций по двум точкам
 	intEtA = (0.5 * tau) * (Exponential(A, 0, precision) + Exponential(A, -tau,
 		precision));
 	intEtA.update();
-	// cout<<intEtA;
 
 	m2Net.oporn(t0, 1); // опорное значение сетки по M2
 	c = m2Net;
 	tr_s[trNum].NetList.push_back(new TNetF(c));
 
-	// cout<<c;
 
 	EtA = Exponential(A, t, precision);
 	PiEtA = PP * EtA;
@@ -241,7 +236,6 @@ LDouble Task::TimeCalc_AltInt(int trNum) {
 		c = c + tmpPNet;
 		c -= tmpQNet; // геометрическая разность  - пока не оптимально считается
 		c.update();
-		// cout<<c;
 
 		// опорная функция PiEtA*x0 - строим пользуясь тем что это просто скалярное произведение
 		for (i = 0; i < x0Net.Count; i++)
@@ -254,7 +248,6 @@ LDouble Task::TimeCalc_AltInt(int trNum) {
 		Ind = Net.GetExtrGlobal(opMin,   Ind, min);
 		tr_s[trNum].psiExtr.push_back(Ind);
 		cout << min << " : " << Ind << " : " << t << endl;
-	   //	cout << Net;
 	}
 	tr_s[trNum].T = t;
 	/* */
@@ -296,11 +289,6 @@ Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn, LDo
 Vector Task::GetV(TNetF *w, TNetF *v, const Vector& x, const Matrix& PiEtA) {
 	Vector result(dim_v), tempRes(dim_x);
 
-	/* int i;
-	 for(i=0; i<dim_v; i++) result[i]=0;
-	/* */
-
-   //	pathType path;
 	LDouble extr;
 	Matrix PiEtAC(A.m(), A.n());
 	PiEtAC = PiEtA * C;
@@ -308,26 +296,24 @@ Vector Task::GetV(TNetF *w, TNetF *v, const Vector& x, const Matrix& PiEtA) {
 	long i = v->GetExtrDirection(tempRes, scm, convCriteria, opMax, nZAware,
 		 i, 0, extr,  *v);
 	result = *v->getVecAt(i);
-	// cout<<"J: "<<i<<endl;
-	/* */
+
 	return result;
 }
 
 // ------------------------------------- Get V --------------------------------//
 Vector Task::GetU(TNetF *w, TNetF *u, const Vector& x, const Matrix& PiEtA) {
 	Vector result(dim_u), tempRes(dim_x);
-   //	pathType path;
+
 	LDouble extr;
 	Matrix PiEtAB(A.m(), A.n());
 	PiEtAB = PiEtA * B;
 	tempRes = Transpose(PiEtAB) * x;
-	// u->perfomance=2;
+
 	long i = u->GetExtrDirection(tempRes, scm, convCriteria, opMax, nZAware,
 		 i, 0, extr, *u);
-	// cout<<"I: "<<i<<", psi_u: ["<<x[0]<<","<<x[1]<<"];"<<endl;
-	// cout<<tempRes<<PiEtAB;
+
 	result = *u->getVecAt(i);
-	/* */
+
 	return result;
 }
 
@@ -338,10 +324,10 @@ void Task::Control_AltInt(int trNum) {
 	long i, j, k, m, Ind = 0;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
-	LDouble t, min, val, extr;
+	LDouble t, min,  extr;
 	Vector PiEtAx(PP.m()), psi(PP.v->m), extrVec(PP.v->m);
 	Vector u_i(cP->Dim), v_i(cQ->Dim), x_i(dim_x);
-	bool extr_exist;
+	//bool extr_exist;
 
 	j = 0;
 	k = tr_s[trNum].NetList.size();
@@ -384,7 +370,6 @@ void Task::Control_AltInt(int trNum) {
 		for (m = 0; m < dim_u; m++)
 			u_i.v->v[m] = cP->getIJ(Ind, m);
 		u_i = cP->getBorderPoint(Ind, u_i);
-	   //	cout << Ind << " : " << u_i;
 
 		//выбираем v_i
 		extrVec = Transpose(PiEtAC) * psi;
@@ -393,7 +378,6 @@ void Task::Control_AltInt(int trNum) {
 		for (m = 0; m < dim_v; m++)
 			v_i.v->v[m] =   cQ->getIJ(Ind, m);
 		v_i=cQ->getBorderPoint(Ind,v_i);
-		//cout << Ind << " : " << v_i;
 		cout << (j) * tau << " : " << x_i;
 
 		//находим следующий  x_i  методом  Рунге-Кутты
@@ -420,12 +404,9 @@ void Task::Control_R1(int trNum) {
 	long i,j,  k, m, Ind = 0;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
-	LDouble t, min, val, extr;
+	LDouble t, min,  extr;
 	Vector PiEtAx(PP.m()), psi(PP.v->m), extrVec(PP.v->m);
 	Vector u_i(cP->Dim), v_i(cQ->Dim), x_i(dim_x);
-	bool extr_exist;
-
-	bool  extr_u_exist;
 	LDouble  tau_s, tau_delta, xNorm, xExtNorm;
 	VecOfVec vx_i, vu_i, vv_i;
 	Vector *r_i;
@@ -438,8 +419,6 @@ void Task::Control_R1(int trNum) {
 	j = 0;
 	k = tr_s[trNum].NetList.size()-1;
 
-   //	for (m = 0; m < dim_x; m++)
-   //		tr_s[trNum].x_i->v->v[0][m] = tr_s[trNum].x0[m];
 	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
 	r_i =  new Vector(x_i);
 	r_i->detach();
@@ -478,7 +457,7 @@ void Task::Control_R1(int trNum) {
 		u_i = cP->getBorderPoint(Ind, u_i);
 		prevInd = Ind;
 
-	    cout << Ind << " : " << u_i;
+		cout << Ind << " : " << u_i;
 
 		//выбираем v_i
 		extrVec = Transpose(PiEtAC) * psi;
@@ -487,28 +466,19 @@ void Task::Control_R1(int trNum) {
 		for (m = 0; m < dim_v; m++)
 			v_i.v->v[m] =   cQ->getIJ(Ind, m);
 		v_i=cQ->getBorderPoint(Ind,v_i);
-		//cout << Ind << " : " << v_i;
 
-
-		xNorm =  xExtNorm;
 		if (jk<0) {
             jk = _lrand() % (c.Count);
 		}
-        xExtNorm = c.f->v->v[jk];
+		xExtNorm = c.f->v->v[jk];
+		xNorm =  xExtNorm;
 		indExtr = jk;
 
 		 //--------ищем u_i при условии отсутствия информации о системе и наличия данных только о расстоянии до терм. множества
 		tau_delta=tau;
 		tmin = _extr_tmin_param; tcurr = tmax;
 		while (tcurr>tmin) {
-			EtA = Exponential(A, t, precision);
-			PiEtA = PP * EtA;
-			PiEtAB = PiEtA * B;
-		   /*	PiEtAx = PiEtA * x_i;
-			for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
-				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
-				c.f->v->v[i] = tr_s[trNum].NetList[k+1]->f->v->v[i] - x_Net.f->v->v[i];
-			}/**/
+
 			xNorm = c.f->v->v[jk];
 			//шаг метода annealing
 			if(xNorm < xExtNorm){
@@ -523,15 +493,10 @@ void Task::Control_R1(int trNum) {
 					indExtr = jk;
 					tcurr = tcurr * ccurr;
 				}
-				//	else
-				//	if (p>0.9999999999)
-				//		tcurr = tcurr * ccurr;
 			}
 			a = double(_lrand() % c.Count) / double(c.Count);
 			jj = signof(a - 0.5) * tcurr * (pow((1.0 + 1.0 / tcurr), fabs(2.0 * a - 1.0)) -	1.0) * double(c.Count);
 			jk = abs(jj + jk) % c.Count;
-			 /**/
-			//tcurr = tcurr * ccurr;
 			for (m = 0; m < c.Dim; m++)
 				psi.v->v[m] = c.getIJ(indExtr, m);
 
@@ -539,6 +504,225 @@ void Task::Control_R1(int trNum) {
 			extrVec = Transpose(PiEtAB) * psi;
 			cP->perfomance = 0;
 			Ind = cP->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *cP);
+			for (m = 0; m < dim_u; m++)
+				u_i.v->v[m] = cP->getIJ(Ind, m);
+			u_i = cP->getBorderPoint(Ind, u_i);
+
+			x_i = rungeCutt(x_i, u_i, v_i, tau_s);
+			t -=tau_s;
+			tau_delta -= tau_s;
+
+		   r_i =  new Vector(x_i);
+		   r_i->detach();
+		   vx_i.push_back(r_i);
+		   r_i =  new Vector(u_i);
+		   r_i->detach();
+		   vu_i.push_back(r_i);
+		   r_i =  new Vector(v_i);
+		   r_i->detach();
+		   vv_i.push_back(r_i);
+		}
+
+		for (m = 0; m < dim_v; m++)
+			u_i.v->v[m] = cP->getIJ(Ind, m);
+
+		u_i = cP->getBorderPoint(Ind, u_i);
+		cout << Ind << " : " << u_i;
+
+		x_i = rungeCutt(x_i, u_i, v_i, tau_delta);
+		cout<<xExtNorm<<" : "<< x_i <<endl;
+		t -=tau_delta;
+
+	   //----------------------------------------------------------
+		r_i =  new Vector(x_i);
+		r_i->detach();
+		vx_i.push_back(r_i);
+		//cout<<x_i;
+		r_i =  new Vector(u_i);
+		r_i->detach();
+		vu_i.push_back(r_i);
+		r_i =  new Vector(v_i);
+		r_i->detach();
+		vv_i.push_back(r_i);
+
+		j++;
+	}
+	k= vx_i.size();
+	tr_s[trNum].x_i = new Matrix(k+1, dim_x);
+	// массив векторов со значениями  x_i
+	tr_s[trNum].u_i = new Matrix(k, dim_u);
+	// массив векторов со значениями  u_i
+	tr_s[trNum].v_i = new Matrix(k, dim_v);
+	// массив векторов со значениями  v_i
+
+	for (m = 0; m < dim_x; m++)
+			tr_s[trNum].x_i->v->v[0][m] = vx_i[0]->v->v[m];
+	for (j=0; j < k-1; j++) {
+		//сохраняем результаты расчётов
+		for (m = 0; m < dim_u; m++)
+			tr_s[trNum].u_i->v->v[j][m] = vu_i[j]->v->v[m];
+		for (m = 0; m < dim_v; m++)
+			tr_s[trNum].v_i->v->v[j][m] = vv_i[j]->v->v[m];
+		for (m = 0; m < dim_x; m++)
+			tr_s[trNum].x_i->v->v[j + 1][m] = vx_i[j+1]->v->v[m];
+	}
+	for_each(vx_i.begin(), vx_i.end(), DeleteObj());
+	for_each(vu_i.begin(), vu_i.end(), DeleteObj());
+	for_each(vv_i.begin(), vv_i.end(), DeleteObj());
+	//--------------------------------------------------------------------
+	cout<<k;
+}
+
+// -------------------------------------- control finding----------------------//
+void Task::Control_R2(int trNum) {
+	TNetF c(PP.m(), perfomance, steps), x_Net(c);
+	TNetF tmpPNet(PP.m(), perfomance, steps), tmpQNet(PP.m(), perfomance, steps);
+	long i,j,  k, m, Ind = 0;
+	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
+		EtA(A.m()); // EtA(A.m()) - единичная при t=0
+	LDouble t, min,  extr;
+	Vector PiEtAx(PP.m()), psi(PP.v->m), extrVec(PP.v->m);
+	Vector u_i(cP->Dim), v_i(cQ->Dim), x_i(dim_x);
+	bool extr_exist;
+
+	bool  isNotExtrFound, borderChanged;
+	LDouble  tau_s, tau_delta, xNorm, xExtNorm;
+	VecOfVec vx_i, vu_i, vv_i;
+	Vector *r_i;
+
+	long jk=-1, prevInd,indExtr;
+	int currPlateNorm, currDirection=-1, prevDirection = -1, moveSign = 1, exitSign = 0, exitLim = (c.Dim-1)*2;
+
+	j = 0;
+	k = tr_s[trNum].NetList.size()-1;
+
+	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
+	r_i =  new Vector(x_i);
+	r_i->detach();
+	vx_i.push_back(r_i);//... и сохраняем его для траектории.
+
+	t = tr_s[trNum].T; // значение t = конечному времени;
+	tau_s = tau/(tmpPNet.Count*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
+
+
+	while (t >= precision) {
+		EtA = Exponential(A, t, precision);
+		PiEtA = PP * EtA;
+		PiEtAB = PiEtA * B;
+		PiEtAC = PiEtA * C;
+		PiEtAx = PiEtA * x_i;
+
+		cP->oporn(t, 1);
+		cQ->oporn(t, 1);
+		for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
+				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
+				c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+		}
+		k--;
+		//выбираем psi
+		c.perfomance = 0;
+		Ind = c.GetExtrGlobal(opMin,  0, min);
+		for (m = 0; m < c.Dim; m++)
+			psi.v->v[m] = c.getIJ(Ind, m);
+		//выбираем u_i  чисто для контроля работы метода - в принципе данный кусок можно комменитровать
+		extrVec = Transpose(PiEtAB) * psi;
+		cP->perfomance = 0;
+		Ind = cP->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *cP);
+		for (m = 0; m < dim_u; m++)
+			u_i.v->v[m] = cP->getIJ(Ind, m);
+		u_i = cP->getBorderPoint(Ind, u_i);
+		prevInd = Ind;
+
+		cout << Ind << " : " << u_i;
+
+		//выбираем v_i
+		extrVec = Transpose(PiEtAC) * psi;
+		cQ->perfomance = 0;
+		Ind = cQ->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *cQ);
+		for (m = 0; m < dim_v; m++)
+			v_i.v->v[m] =   cQ->getIJ(Ind, m);
+		v_i=cQ->getBorderPoint(Ind,v_i);
+
+		if (jk<0){      //первый узел по любому случаен
+			jk = _lrand() % (c.Count);
+			indExtr = jk;
+			currDirection= rand()%c.Dim;
+		}
+
+		xExtNorm = c.f->v->v[indExtr];
+		xNorm = xExtNorm;
+		jk = indExtr; //по ходу игры начальный узел поиска со следующего шага берём лучший с предыдущего шага
+		currPlateNorm = jk / (c.NumOfPoints * 2);
+        if (currDirection==currPlateNorm)
+			currDirection= (currDirection+1)%c.Dim;
+		borderChanged = false;
+
+		 //--------ищем u_i при условии отсутствия информации о системе и наличия данных только о расстоянии до терм. множества
+		extr_exist = false;
+		tau_delta=tau;
+
+		isNotExtrFound = true;
+        exitSign  = 0;
+		while (isNotExtrFound) {
+
+			//шаг градиентного метода
+			if (exitSign<exitLim) {
+               c.wasteCache();
+			   prevInd = jk;
+				//jk= 67; currDirection = 0;
+				jk = c.shift(jk, currDirection, moveSign, borderChanged);  //проверить jk= 66, currDirection = 1;
+			   if(borderChanged){ //при переходе на другую грань меняем соотв. образом нормаль
+				currPlateNorm = jk / (c.NumOfPoints * 2);
+				if (currDirection==currPlateNorm) //Если же следующее направление совпадает с нормалью просто выбираем слеюующее напраавление
+						currDirection= (currPlateNorm+1)%(c.Dim);
+				exitSign  = 0;
+                borderChanged = false;
+			   }
+			   if (prevInd == jk) {   //попытка сдвига не туда - МЕНЯЕМ НАПРАВЛЕНИЕ
+				currDirection= (currDirection+1)%(c.Dim-1);
+				if ((prevDirection == currDirection)&&(c.Dim>2))//если в данном направлении уже ходили и есть куда поворачивать (Dim>2) - переходим на следующее
+						currDirection = (currDirection +1)%c.Dim;
+					else
+						moveSign *= -1; //если не ходили или размерность 2, то просто меняем знак  движения
+			   }
+			   else{
+				xNorm = c.f->v->v[jk];
+
+				if (xNorm <= xExtNorm) {
+					if (xNorm < xExtNorm){
+						xExtNorm = xNorm;
+						indExtr = jk;
+					}else
+						exitSign++;
+				  //	exitSign = 0;//если нашли куда куда ходить, то  счётчик сбрасываем
+				}
+				else{//меняем направление
+					if ((prevDirection == currDirection)&&(c.Dim>2))//если в данном направлении уже ходили и есть куда поворачивать (Dim>2) - переходим на следующее
+						currDirection = currDirection +1%c.Dim;
+					else
+						moveSign *= -1; //если не ходили или размерность 2, то просто меняем знак  движения
+					if (currDirection==currPlateNorm) //Если же следующее направление совпадает с нормалью просто выбираем слеюующее напраавление
+						currDirection= (currPlateNorm+1)%c.Dim;
+					exitSign++;
+				}
+			   }
+			  prevDirection = currDirection; //запоминаем предыдущее направление
+			}
+			else{
+				if(exitSign>=exitLim){ //всюду потыкались и не нашли экстремума - выходим
+					isNotExtrFound = false;
+				   //	seekPath.clear();
+				}
+			}
+
+			for (m = 0; m < c.Dim; m++)
+				psi.v->v[m] = c.getIJ(indExtr, m);
+
+			cP->oporn(t, 1);
+			extrVec = Transpose(PiEtAB) * psi;
+			cP->perfomance = 0;
+			Ind = cP->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *cP);
+            /**/
 			for (m = 0; m < dim_u; m++)
 				u_i.v->v[m] = cP->getIJ(Ind, m);
 			u_i = cP->getBorderPoint(Ind, u_i);
@@ -581,14 +765,7 @@ void Task::Control_R1(int trNum) {
 		r_i =  new Vector(v_i);
 		r_i->detach();
 		vv_i.push_back(r_i);
-	  /*
-		//находим следующий  x_i  методом  Рунге-Кутты
-		x_i = rungeCutt(x_i, u_i, v_i);
 
-		cout<<xExtNorm<<" : "<< x_i <<endl;
-
-
-		/**/
 		j++;
 	}
 	k= vx_i.size()-1;
@@ -601,7 +778,7 @@ void Task::Control_R1(int trNum) {
 
 	for (m = 0; m < dim_x; m++)
 			tr_s[trNum].x_i->v->v[0][m] = vx_i[0]->v->v[m];
-	for (j=0; j < k-1; j++) {
+	for (j=0; j < k; j++) {
 		//сохраняем результаты расчётов
 		for (m = 0; m < dim_u; m++)
 			tr_s[trNum].u_i->v->v[j][m] = vu_i[j]->v->v[m];
@@ -614,7 +791,7 @@ void Task::Control_R1(int trNum) {
 
 	for_each(vx_i.begin(), vx_i.end(), DeleteObj());
 	for_each(vu_i.begin(), vu_i.end(), DeleteObj());
- 	for_each(vv_i.begin(), vv_i.end(), DeleteObj());
+	for_each(vv_i.begin(), vv_i.end(), DeleteObj());
 	//--------------------------------------------------------------------
 	cout<<k;
 }
@@ -693,8 +870,7 @@ void Task::Control_Pontryagin(int trNum) {
 		cout << (j) * tau << " : " << x_i;
 		x_i = rungeCutt(x_i, u_i, v_i);
 
-		// tr_s[trNum].u_i[k]=(&u_i);
-		// tr_s[trNum].v_i[k]=(&v_i);
+
 		for (m = 0; m < dim_u; m++)
 			tr_s[trNum].u_i->v->v[j][m] = u_i[m];
 		for (m = 0; m < dim_v; m++)
@@ -702,8 +878,7 @@ void Task::Control_Pontryagin(int trNum) {
 		for (m = 0; m < dim_x; m++)
 			tr_s[trNum].x_i->v->v[j + 1][m] = x_i[m];
 
-		// cout<<*tr_s[trNum].u_i[k]<<*tr_s[trNum].v_i[k];
-		t -= tau;
+			t -= tau;
 		j++;
 	}
 
@@ -814,9 +989,9 @@ void Task::saveTask(char *fileName) {
 	 tmpNet=(TNet*)NetList->Items[i];
 	 Net=(*tmpNet);
 	 out_f<<Net;
-	 };
+	 }
 	 out_f<<'\n';
-	 }; */
+	 } */
 
 	/* Vector *vec;
 	 vec=(Vector*)selList->Items[0];
@@ -826,7 +1001,7 @@ void Task::saveTask(char *fileName) {
 	 {
 	 vec=(Vector*)selList->Items[i];
 	 out_f<<(*vec);
-	 };
+	 }
 	 out_f<<'\n';
 
 	 vec=(Vector*)contList->Items[0];
@@ -836,7 +1011,7 @@ void Task::saveTask(char *fileName) {
 	 {
 	 vec=(Vector*)contList->Items[i];
 	 out_f<<(*vec);
-	 };
+	 }
 	 out_f<<'\n';
 
 	 vec=(Vector*)vList->Items[0];
@@ -846,14 +1021,14 @@ void Task::saveTask(char *fileName) {
 	 {
 	 vec=(Vector*)vList->Items[i];
 	 out_f<<(*vec);
-	 };
+	 }
 	 out_f<<'\n';
 
-	 };
+	 }
 	/* */
 	// out_f.flush();
 	out_f.close();
-};
+}
 
 // ------------------------------ loadTask ------------------------------------//
 Task* Task::loadTask(/*istream& in_f*/string szFileName) {
@@ -1142,7 +1317,7 @@ Task* Task::loadTask(/*istream& in_f*/string szFileName) {
 /* istream& operator >>(istream& in_f, Task* res)
  {
  return in_f;
- };
+ }
 /* */
 // ---------------------- changes default function zero value--------------------
 void __fastcall Task::setFuncToNetF(TNetF& net, string func) {

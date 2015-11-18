@@ -5,8 +5,9 @@
 //---------------------------------------------------------------------------
 
 #include <vector>
-#include <fstream.h>
+#include <fstream>
 #include <string>
+#include <stdlib>
 
 // Globally defined structures, defines, & types
 //////////////////////////////////////////////////////////////////////////////////
@@ -258,9 +259,8 @@ protected:
 // Data
 public:
 	long		m_Flags;		// Our settings flags.
-
-protected:
 	SectionList	m_Sections;		// Our list of sections
+protected:
 	t_Str		m_szFileName;	// The filename to write to
 	bool		m_bDirty;		// Tracks whether or not data has changed.
 };

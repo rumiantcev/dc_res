@@ -74,7 +74,7 @@ public:
 			update();
 		return v->v[i];
 	}
-	// /*!inline*/ const double operator [](long i) const{return v->v[i];};
+	// /*!inline*/ const double operator [](long i) const{return v->v[i];}
 	static Vector* __fastcall copy(Vector* src, Vector* dst);
 	void __fastcall norm(const int& halfRes);
 	LDouble __fastcall norm();

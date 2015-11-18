@@ -74,6 +74,7 @@ public:
 	Vector* __fastcall parseCoordinateForShift(long current);
 	long __fastcall shift(long current, int coordNumber, int step,
 		bool& borderChanged) throw(exInvalidMoveDirection);
+	virtual void wasteCache();
 
 private:
 	virtual /* */ void __fastcall create(long dim /* , long perf, long res */);

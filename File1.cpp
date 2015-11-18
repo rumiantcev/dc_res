@@ -43,7 +43,7 @@ void loadGlobalParameters(string localPath)
 {
 	string fileName = localPath+"\\dconsole.ini";
 	cout<<fileName<<endl;
-   //	CDataFile DFile("C:\\Users\\alex\\Documents\\MSU\\dc_res\\Win32\\Debug\\dconsole.ini");
+  // 	CDataFile DFile("C:\\Users\\alex\\Documents\\MSU\\dc_res\\Data\\dconsole.ini");
 	CDataFile DFile(fileName);
 	Report(E_INFO, "[doSomething] The file <control.ini> contains %d sections, & %d keys.",
 				   DFile.SectionCount(), DFile.KeyCount());
@@ -63,6 +63,8 @@ void loadGlobalParameters(string localPath)
 	int j = 0;
 	ofstream out_f;
 	Task* t = NULL;
+	clock_t before;
+	double elapsed;
 
 	CDataFile DFile(std::string(localPath+"\\control.ini").c_str());
 	Report(E_INFO, "[doSomething] The file <control.ini> contains %d sections, & %d keys.",
@@ -73,8 +75,7 @@ void loadGlobalParameters(string localPath)
 	string fileName, method, opt,v_control;
 	string sectionName;
 	i++;
-
-	while (i!= NULL) {
+	while (i!=/* NULL*/DFile.m_Sections.end()/**/) {
 		section = (t_Section*)&(*i);
 		fileName = localPath+"\\";
 		fileName+= section->Keys[0].szValue;//fileName = DFile.GetValue(section->szName, "file");
@@ -98,12 +99,14 @@ void loadGlobalParameters(string localPath)
 		taskList[j]->cP->perfomance  = taskList[j]->perfomance;
 		taskList[j]->cQ->perfomance  = taskList[j]->perfomance;
 		taskList[j]->cM->perfomance  = taskList[j]->perfomance;
-
+		before = clock(); //замер времени начала выполнения расчётов
 		if (method == "pontryagin")
 			taskList[j]->TimeCalc_Pontryagin(0);
 		if (method == "alt_int")
 			taskList[j]->TimeCalc_AltInt(0);
 		if (method == "gr1")
+			taskList[j]->TimeCalc_AltInt(0);
+		if (method == "gr2")
 			taskList[j]->TimeCalc_AltInt(0);
 		cout << "Time evaluated.." << endl;
 		out_f << "Time evaluated.." << endl;
@@ -115,58 +118,55 @@ void loadGlobalParameters(string localPath)
 			taskList[j]->Control_AltInt(0);
 		if (method == "gr1")
 			taskList[j]->Control_R1(0);
+		if (method == "gr2")
+			taskList[j]->Control_R2(0);
+		elapsed = clock()-before;  //замер времени начала выполнения расчётов
 		cout << "Control evaluated.." << endl;
 		cout << "Traectory: " << endl;
 		cout<< *taskList[j]->tr_s[0].x_i;
+		cout<< "Evaluation time: "<<elapsed<<endl;   //вывод времени на экран
 		out_f << "Control evaluated.." << endl;
 		out_f << "Traectory: " <<  endl;
 		out_f << *taskList[j]->tr_s[0].x_i;
+		out_f << "Evaluation time: "<<elapsed<<endl; //вывод времени в файл
 		out_f.flush();
 		out_f.close();
 		j++;
-		i = DFile.GetNextSectionIter(i);
-   }
+		i++;
+		//i = DFile.GetNextSectionIter(i);
+	}
+
 
 	for_each(taskList.begin(), taskList.end(), DeleteObj());
 }
 
-int _tmain(int argc, _TCHAR* argv[]) {
-	//	setlocale (LC_ALL, "RUS");
-	/*auto t1 = std::chrono::high_resolution_clock::now();
-		int s=0;
-		for (int i=0; i<10; ++i)
-			s+=i;
-		auto t2 = std::chrono::high_resolution_clock::now();
-		long dt = ((std::chrono::nanoseconds)(t2-t1)).count();
-		std::cout << dt << std::endl;
-	/**/
-//	  setlocale( LC_ALL,"Russian.1572" );
-	  //setlocale( LC_ALL,"RUS" );
-  //		SetConsoleCP(1251);
-	//	SetConsoleOutputCP(1251);
 
+int _tmain(int argc, _TCHAR* argv[]) {
+
+  #pragma omp parallel
+  {
+    // Code inside this region runs in parallel.
+    printf("Hello!\n");
+  }
+///
+  //	  setlocale( LC_ALL,"Russian.1572" );
+  //setlocale( LC_ALL,"RUS" );
+  //		SetConsoleCP(1251);
+  //	SetConsoleOutputCP(1251);
 
 	string localPath(argv[0]),pathHelper="\\Data";
 	cout<<localPath<<endl;
-	localPath = getenv("DC_PATH");  //переменная определяет где находятся данные и конф. файлы
-    //... а также результаты расчётов
-	//size_t sPos = localPath.find_last_of("\\");
-	//localPath.erase(sPos,localPath.length());
-	//sPos = localPath.find("\\.");
-	//pathHelper = localPath.substr(sPos+2,localPath.length());
-	//localPath.erase(sPos,localPath.length());
+	localPath = getenv("DC_PATH");  //переменная определяет где находятся данные и конф. файлы ... а также результаты расчётов
+
 	localPath.append(pathHelper);
 	cout<<localPath<<endl;
 	randomize();
 	cout << "Begin.." << endl;
 	loadGlobalParameters(localPath);
 	cout << "Parameters are loaded" << endl;
-	
+
 	load_and_calc_tasks(localPath);
-   //	char c;
-   // cin >> c;
+
 
 	return 0;
 }
-
-

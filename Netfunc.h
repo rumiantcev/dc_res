@@ -118,6 +118,9 @@ public:
 	void __fastcall saveAsVrml(string);
 	void __fastcall smoothFunction(double epsilon);
 	virtual /* !inline */ Vector* __fastcall getVecAt(long i);
+	long /* !inline */ selectExtrX(const Vector& vec, scM scmul, cCrit crit,
+		long current, long& result, LDouble &extr, OpType extrOper,
+		ZeroAware isZeroAware, bool &isExtrExist, TNetF& net);
 
 protected:
 	// Поиск экстермума в направлении заданном вектором vec перебором
@@ -139,9 +142,7 @@ protected:
 	virtual void __fastcall makeAlpha(alphType& alpha,  bool* L,
 		 TNetF& net);
 
-	long /* !inline */ selectExtrX(const Vector& vec, scM scmul, cCrit crit,
-		long current, long& result, LDouble &extr, OpType extrOper,
-		ZeroAware isZeroAware, bool &isExtrExist, long index, TNetF& net);
+
 	long __fastcall findExtrFastXDirection(const Vector& vec, scM scmul,
 	cCrit crit, OpType extrOper, ZeroAware isZeroAware, long index, alphType* coeff,
 	LDouble& extr, 	TNetF& net);
@@ -166,5 +167,5 @@ extern LDouble  convCriteria2(long num, LDouble sk, const TNetF *v);
 extern LDouble __fastcall  scm (long num, const Vector &vec, TNetF *v, alphType* coeff);
 extern LDouble __fastcall scm1(long num, const Vector &vec, TNetF *v, alphType* coeff);
 extern LDouble __fastcall scm2(long num, const Vector &vec, TNetF *v, alphType* coeff);
-// };
+
 #endif

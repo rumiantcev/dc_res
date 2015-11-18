@@ -37,7 +37,7 @@ namespace Dll {
 	 };
 	 __property AnsiString Msg = {read = message, write = message};
 	 };
-	/* */
+	 */
 
 	class EDllError /* : public Exception */ {
 	private:
@@ -53,7 +53,7 @@ namespace Dll {
 			Name = a_Name;
 		};
 
-		/* __property/* */
+		/* __property */
 		std::string Name; // = {read = m_Name, write = m_Name};
 	};
 
@@ -357,4 +357,4 @@ namespace Dll {
 	/* */
 }
 /* */
-#endif  _DLL_H_
+#endif _DLL_H_

@@ -42,10 +42,10 @@ typedef std::list<long>pathType;
 inline int signof(LDouble a) { return (a == 0.0) ? 0 : (a<0 ? -1 : 1); }
 
 //глобальные переменные используемые в методе отжига
-LDouble _extr_e_param  = -0.8;
-LDouble _extr_t0_param  = 1.0;
-LDouble _extr_tmin_param  = 0.0001;
-LDouble _extr_e_val = exp(_extr_e_param);
+static LDouble _extr_e_param  = -0.8;
+static LDouble _extr_t0_param  = 1.0;
+static LDouble _extr_tmin_param  = 0.0001;
+static LDouble _extr_e_val = exp(_extr_e_param);
 
 //очистка ссылок в векторах объектов
 struct DeleteObj {

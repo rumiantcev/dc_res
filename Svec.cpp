@@ -28,7 +28,7 @@ __fastcall sVec::~sVec() {
 }
 
 // ------------------------------- destroy ------------------------------------//
-///*!inline*/ void __fastcall sVec::destroy(){delete[] v; size =0;linkTo=NULL;};
+///*!inline*/ void __fastcall sVec::destroy(){delete[] v; size =0;linkTo=NULL;}
 // ------------------------------- create ------------------------------------//
 void __fastcall sVec::create() {
 	try {
@@ -54,11 +54,7 @@ sVec::sVec(const sVec &C): size(C.size){
 
 // ------------------------------- copy constr --------------------------------//
 __fastcall sVec::sVec(const double *vv, long sz) : size(sz) {
-   //	long i;
 	create();
 	memcpy(v, vv, size*sizeof(LDouble));
-	// проверить и если не работает - убить, старый рабочий код ниже
-	// for (i = 0; i < size; i++)
-	// v[i] = vv[i];
 }
 // ---------------------------------------------------------------------------

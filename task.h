@@ -63,6 +63,7 @@ public:
 	virtual void Control_AltInt(int trNum);
 	virtual void Control_Pontryagin(int trNum);
 	virtual void Control_R1(int trNum);
+	virtual void Control_R2(int trNum);
 	// virtual long ImageWake()
 
 	void saveTask(char *);

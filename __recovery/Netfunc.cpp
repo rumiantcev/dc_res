@@ -54,7 +54,7 @@ __fastcall TNetF::TNetF(int dim, long perf, long res)
 // ------------------------------constructor ----------------------------------//
 __fastcall TNetF::TNetF(int Dim, long perf, long res, string fstr)
 	: TNet(Dim, perf, res, true) {
-	/* TODO -orum -caddon : Сделать конструктор с возможностью переключения Virt/Non Virt net */
+	/* TODO -orum -caddon : РЎРґРµР»Р°С‚СЊ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊСЋ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ Virt/Non Virt net */
 	initNetFDefault();
 	create(Dim );
 	SetFunc(fstr);
@@ -134,7 +134,7 @@ __fastcall TNetF::~TNetF() {
 }
 
 // -------------------------------- << ----------------------------------------//
-ostream& __fastcall operator << (ostream& out_data, const TNetF& C) {
+ostream& __fastcall operator << (ostream& out_data, TNetF& C) {
 	long SurfaceDim = C.Dim - 1;
 	long NumOfSur = C.Dim * 2;
 	long NumOfPoints = C.Res;
@@ -240,7 +240,7 @@ const TNetF __fastcall operator +(const TNetF& A, const TNetF& B) {
 	return TNetF(A) += B;
 }
 
-// ----------------------------------- Геометрическая - ----------------------//
+// ----------------------------------- Р“РµРѕРјРµС‚СЂРёС‡РµСЃРєР°СЏ - ----------------------//
 TNetF& __fastcall TNetF:: operator -= (const TNetF& B) {
 	long i, j, m;
 	Vector vec(Dim), st(Dim);
@@ -267,7 +267,7 @@ TNetF& __fastcall TNetF:: operator -= (const TNetF& B) {
 	}
 	for (i = 0; i < Count; i++)
 		f->v->v[i] -= pB->f->v->v[i];
-	// расчёт опорной функции центра Штейнера
+	// СЂР°СЃС‡С‘С‚ РѕРїРѕСЂРЅРѕР№ С„СѓРЅРєС†РёРё С†РµРЅС‚СЂР° РЁС‚РµР№РЅРµСЂР°
 	st = 0;
 	for (i = 0; i < Count; /* i=i+2 */ i++) {
 		for (m = 0; m < Dim; m++)
@@ -276,18 +276,18 @@ TNetF& __fastcall TNetF:: operator -= (const TNetF& B) {
 	}
 	st *= coeff;
 
-	// сдвигаем множество "на центр Штейнера" так чтобы 0 был в центре
+	// СЃРґРІРёРіР°РµРј РјРЅРѕР¶РµСЃС‚РІРѕ "РЅР° С†РµРЅС‚СЂ РЁС‚РµР№РЅРµСЂР°" С‚Р°Рє С‡С‚РѕР±С‹ 0 Р±С‹Р» РІ С†РµРЅС‚СЂРµ
 	for (i = 0; i < st0Net.Count; i++) {
 		st0Net.f->v->v[i] = scm(i, st, &st0Net,0);
 		f->v->v[i] -= st0Net.f->v->v[i];
 	}
-	// рассчитываем lambda_i
+	// СЂР°СЃСЃС‡РёС‚С‹РІР°РµРј lambda_i
 	L = new bool[Count];
 	// alpha.clear();
 	alpha.reserve(Count);
 
 	makeAlpha(alpha, L, st0Net);
-	// Собственно овыпукление и сдвиг множества обратно
+	// РЎРѕР±СЃС‚РІРµРЅРЅРѕ РѕРІС‹РїСѓРєР»РµРЅРёРµ Рё СЃРґРІРёРі РјРЅРѕР¶РµСЃС‚РІР° РѕР±СЂР°С‚РЅРѕ
 	for (i = 0; i < st0Net.Count; i++) {
 		if (L[i]) {
 			extr_exist = false;
@@ -303,7 +303,7 @@ TNetF& __fastcall TNetF:: operator -= (const TNetF& B) {
 	return *this;
 }
 
-// ----------------------------------- Геометрическая - ----------------------//
+// ----------------------------------- Р“РµРѕРјРµС‚СЂРёС‡РµСЃРєР°СЏ - ----------------------//
 const TNetF __fastcall operator -(const TNetF& A, const TNetF& B) {
 	return TNetF(A) -= B;
 }
@@ -315,15 +315,15 @@ void __fastcall TNetF::update() {
 	detach();
 	if (!isVirtual) {
 		long i, j;
-		if (!updated) { // обновляем за счет матрицы или множителя
+		if (!updated) { // РѕР±РЅРѕРІР»СЏРµРј Р·Р° СЃС‡РµС‚ РјР°С‚СЂРёС†С‹ РёР»Рё РјРЅРѕР¶РёС‚РµР»СЏ
 			updated = true;
 			if (!umx) {
 				if (u_mx->v->m != Dim)
-				{ // в случае если поменялась размерность - создаём новую сетку
+				{ // РІ СЃР»СѓС‡Р°Рµ РµСЃР»Рё РїРѕРјРµРЅСЏР»Р°СЃСЊ СЂР°Р·РјРµСЂРЅРѕСЃС‚СЊ - СЃРѕР·РґР°С‘Рј РЅРѕРІСѓСЋ СЃРµС‚РєСѓ
 					res = new Vector(u_mx->v->m);
 					f1 = new TNetF(u_mx->v->m, perfomance, Res);
 				}
-				else { // иначе оперируем с существующей
+				else { // РёРЅР°С‡Рµ РѕРїРµСЂРёСЂСѓРµРј СЃ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµР№
 					res = new Vector(Dim);
 					f1 = this;
 				}
@@ -573,7 +573,7 @@ void /* !inline */ __fastcall TNetF::SetFunc(const string& fstr) {
 // -------------------------- findExtrDirectionSlow ----------------------------------//
 long __fastcall TNetF::findExtrSlowDirection(const Vector& vec, scM scmul,
 	cCrit crit, ZeroAware isZeroAware, OpType extrOper, long index, alphType* coeff, LDouble &extr,  TNetF& net) {
-	// Поиск максимума скалярного произведения scmul на сетке простым перебором в направлении заданного вектора
+	// РџРѕРёСЃРє РјР°РєСЃРёРјСѓРјР° СЃРєР°Р»СЏСЂРЅРѕРіРѕ РїСЂРѕРёР·РІРµРґРµРЅРёСЏ scmul РЅР° СЃРµС‚РєРµ РїСЂРѕСЃС‚С‹Рј РїРµСЂРµР±РѕСЂРѕРј РІ РЅР°РїСЂР°РІР»РµРЅРёРё Р·Р°РґР°РЅРЅРѕРіРѕ РІРµРєС‚РѕСЂР°
 
 	long i, j = 0;
 	LDouble val, sc;
@@ -581,13 +581,13 @@ long __fastcall TNetF::findExtrSlowDirection(const Vector& vec, scM scmul,
 
 	for (i = 0; i < Count; i++) {
 		sc = scmul(i, vec, &net,coeff);
-		// на будущее
-		// считаем скалярное произведение текущего вектора  сетки (сurrent)  и заданного (vec)
+		// РЅР° Р±СѓРґСѓС‰РµРµ
+		// СЃС‡РёС‚Р°РµРј СЃРєР°Р»СЏСЂРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ С‚РµРєСѓС‰РµРіРѕ РІРµРєС‚РѕСЂР°  СЃРµС‚РєРё (СЃurrent)  Рё Р·Р°РґР°РЅРЅРѕРіРѕ (vec)
 		isGrZero = sc > zeroPrecision;
 		if ((isZeroAware == nZAware) || ((isZeroAware == ZAware) && isGrZero)){
 			val = crit(i, sc, this);
 			if (!isExtrExist){
-				// Если экстремума  ещё не было - берём первое значение и запоминаем как экстремум
+				// Р•СЃР»Рё СЌРєСЃС‚СЂРµРјСѓРјР°  РµС‰С‘ РЅРµ Р±С‹Р»Рѕ - Р±РµСЂС‘Рј РїРµСЂРІРѕРµ Р·РЅР°С‡РµРЅРёРµ Рё Р·Р°РїРѕРјРёРЅР°РµРј РєР°Рє СЌРєСЃС‚СЂРµРјСѓРј
 				isExtrExist = true;
 				extr = val;
 				j = i;
@@ -624,7 +624,7 @@ long  __fastcall TNetF::findExtrAnnealingDirection(const Vector& vec, scM scmul,
 		if ((isZeroAware == nZAware) || ((isZeroAware == ZAware) && isGrZero)) {
 			val = crit(j, sc, this);
 			if (!isExtrExist) {
-				// Если экстремума  ещё не было - берём первое значение и запоминаем как экстремум
+				// Р•СЃР»Рё СЌРєСЃС‚СЂРµРјСѓРјР°  РµС‰С‘ РЅРµ Р±С‹Р»Рѕ - Р±РµСЂС‘Рј РїРµСЂРІРѕРµ Р·РЅР°С‡РµРЅРёРµ Рё Р·Р°РїРѕРјРёРЅР°РµРј РєР°Рє СЌРєСЃС‚СЂРµРјСѓРј
 				isExtrExist = true;
 				extr = val;
 			}
@@ -655,7 +655,7 @@ long  __fastcall TNetF::findExtrAnnealingDirection(const Vector& vec, scM scmul,
 
 // -------------------------- findExtrSlowGlobal ----------------------------------//
 long __fastcall TNetF::findExtrSlowGlobal(OpType extrOper, LDouble &extr) {
-	// Поиск минимума опорной функции на сетке простым перебором
+	// РџРѕРёСЃРє РјРёРЅРёРјСѓРјР° РѕРїРѕСЂРЅРѕР№ С„СѓРЅРєС†РёРё РЅР° СЃРµС‚РєРµ РїСЂРѕСЃС‚С‹Рј РїРµСЂРµР±РѕСЂРѕРј
 	long i, j = 0;
 	LDouble val;
 	bool isExtr;
@@ -675,7 +675,7 @@ long __fastcall TNetF::findExtrSlowGlobal(OpType extrOper, LDouble &extr) {
 
 // -------------------------- findExtrAnnealingGlobal ----------------------------------//
 long  __fastcall TNetF::findExtrAnnealingGlobal(OpType extrOper, LDouble &extr) {
-	// Поиск максимума опорной функции на сетке методом отжига
+	// РџРѕРёСЃРє РјР°РєСЃРёРјСѓРјР° РѕРїРѕСЂРЅРѕР№ С„СѓРЅРєС†РёРё РЅР° СЃРµС‚РєРµ РјРµС‚РѕРґРѕРј РѕС‚Р¶РёРіР°
 	long  j=_lrand() % (Count), jj;
 	LDouble val;
 	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, t = tmax, p, a, c =
@@ -718,12 +718,12 @@ long /* !inline */ TNetF::selectExtrX(const Vector& vec, scM scmul, cCrit crit,
 	bool isProxy, isGrZero;
 
 	sc = (*scmul)(current, vec, &net,0);
-	// считаем скалярное произведение текущего вектора  сетки (сurrent)  и заданного (vec)
+	// СЃС‡РёС‚Р°РµРј СЃРєР°Р»СЏСЂРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ С‚РµРєСѓС‰РµРіРѕ РІРµРєС‚РѕСЂР°  СЃРµС‚РєРё (СЃurrent)  Рё Р·Р°РґР°РЅРЅРѕРіРѕ (vec)
 	isGrZero = sc > zeroPrecision;
 	if ((isZeroAware == nZAware) || ((isZeroAware == ZAware) && isGrZero)) {
 		val = (*crit)(current, sc, this);
 		if (!isExtrExist)
-			// Если экстремума  ещё не было - берём первое значение и запоминаем как экстремум
+			// Р•СЃР»Рё СЌРєСЃС‚СЂРµРјСѓРјР°  РµС‰С‘ РЅРµ Р±С‹Р»Рѕ - Р±РµСЂС‘Рј РїРµСЂРІРѕРµ Р·РЅР°С‡РµРЅРёРµ Рё Р·Р°РїРѕРјРёРЅР°РµРј РєР°Рє СЌРєСЃС‚СЂРµРјСѓРј
 		{
 			isExtrExist = true;
 			extr = val;
@@ -731,7 +731,7 @@ long /* !inline */ TNetF::selectExtrX(const Vector& vec, scM scmul, cCrit crit,
 		}
 		else {
 			isMax == opMax ? isProxy = val >= extr : isProxy = val <= extr;
-			// если ищем максимум, то проверяем на то что новое значение >= запомненному, если минимум -<= запомненному
+			// РµСЃР»Рё РёС‰РµРј РјР°РєСЃРёРјСѓРј, С‚Рѕ РїСЂРѕРІРµСЂСЏРµРј РЅР° С‚Рѕ С‡С‚Рѕ РЅРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ >= Р·Р°РїРѕРјРЅРµРЅРЅРѕРјСѓ, РµСЃР»Рё РјРёРЅРёРјСѓРј -<= Р·Р°РїРѕРјРЅРµРЅРЅРѕРјСѓ
 			if (isProxy) {
 				extr = val;
 				result = current;
@@ -747,7 +747,7 @@ long /* !inline */ TNetF::selectExtrX(const Vector& vec, scM scmul, cCrit crit,
 long __fastcall TNetF::findExtrFastXDirection(const Vector& vec, scM scmul,
 	cCrit crit, OpType isMax, ZeroAware isZeroAware, long index, alphType* coeff, LDouble &extr,
 	TNetF& net){
-	// Поиск экстремума скалярного произведения scmul на сетке в направлении заданного вектора пользуясь тем, что функция выпуклого коспакта также выпуклая
+	// РџРѕРёСЃРє СЌРєСЃС‚СЂРµРјСѓРјР° СЃРєР°Р»СЏСЂРЅРѕРіРѕ РїСЂРѕРёР·РІРµРґРµРЅРёСЏ scmul РЅР° СЃРµС‚РєРµ РІ РЅР°РїСЂР°РІР»РµРЅРёРё Р·Р°РґР°РЅРЅРѕРіРѕ РІРµРєС‚РѕСЂР° РїРѕР»СЊР·СѓСЏСЃСЊ С‚РµРј, С‡С‚Рѕ С„СѓРЅРєС†РёСЏ РІС‹РїСѓРєР»РѕРіРѕ РєРѕСЃРїР°РєС‚Р° С‚Р°РєР¶Рµ РІС‹РїСѓРєР»Р°СЏ
 
 	long i, j = index, je, k1, k2;
 	bool isExtrExist = false, isNotExtrFound = true, borderChanged;
@@ -756,7 +756,7 @@ long __fastcall TNetF::findExtrFastXDirection(const Vector& vec, scM scmul,
 	seekPath.clear();
 
 	while (isNotExtrFound) {
-		/* DONE -orum -crepair : Переделать критерий выхода из цикла */
+		/* DONE -orum -crepair : РџРµСЂРµРґРµР»Р°С‚СЊ РєСЂРёС‚РµСЂРёР№ РІС‹С…РѕРґР° РёР· С†РёРєР»Р° */
 		if (!seekPath[j]) {
 			je = j;
 			seekPath[j] = true;
@@ -794,7 +794,7 @@ long __fastcall TNetF::findExtrFastXDirection(const Vector& vec, scM scmul,
 // -------------------------- findExtrFastXGlobal ----------------------------------//
 long __fastcall TNetF::findExtrFastXGlobal(OpType isMax, long index,
 	LDouble &extr)
-	// Поиск экстремума опорной функции пользуясь тем, что функция выпуклого коспакта также выпуклая
+	// РџРѕРёСЃРє СЌРєСЃС‚СЂРµРјСѓРјР° РѕРїРѕСЂРЅРѕР№ С„СѓРЅРєС†РёРё РїРѕР»СЊР·СѓСЏСЃСЊ С‚РµРј, С‡С‚Рѕ С„СѓРЅРєС†РёСЏ РІС‹РїСѓРєР»РѕРіРѕ РєРѕСЃРїР°РєС‚Р° С‚Р°РєР¶Рµ РІС‹РїСѓРєР»Р°СЏ
 {
 	long i, j = index, je, k1, k2;
 	LDouble val;
@@ -804,7 +804,7 @@ long __fastcall TNetF::findExtrFastXGlobal(OpType isMax, long index,
 	seekPath.clear();
 
 	while (isNotExtrFound) {
-		/* DONE -orum -crepair : Переделать критерий выхода из цикла */
+		/* DONE -orum -crepair : РџРµСЂРµРґРµР»Р°С‚СЊ РєСЂРёС‚РµСЂРёР№ РІС‹С…РѕРґР° РёР· С†РёРєР»Р° */
 		if (!seekPath[j]) {
 			je = j;
 			seekPath[j] = true;
@@ -867,7 +867,7 @@ long __fastcall TNetF::findExtrFastXGlobal(OpType isMax, long index,
 	return j;
 }
 
-// ----------------------------- GetExtr в направлении заданного вектора------//
+// ----------------------------- GetExtr РІ РЅР°РїСЂР°РІР»РµРЅРёРё Р·Р°РґР°РЅРЅРѕРіРѕ РІРµРєС‚РѕСЂР°------//
 long __fastcall TNetF::GetExtrDirection(const Vector& vec, scM scmul,
 	cCrit crit, OpType extrOper, ZeroAware isZeroAware, long index, alphType* coeff, LDouble& extr,
 	TNetF& net) {
@@ -930,7 +930,7 @@ LDouble __fastcall scm2(long num, const Vector &vec, TNetF *v, alphType* coeff) 
 
 // -----------------------------------------------------------------------------//
 /* !inline */
-/* DONE : Восстановить Функционирование поиска */
+/* DONE : Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ Р¤СѓРЅРєС†РёРѕРЅРёСЂРѕРІР°РЅРёРµ РїРѕРёСЃРєР° */
 void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 	long i, j, m;
 	LDouble extr, sk;
@@ -952,7 +952,7 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 
 		extr_exist = false;
 		if (perfomance == optNone) {
-			// поиск последовательным перебором
+			// РїРѕРёСЃРє РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅС‹Рј РїРµСЂРµР±РѕСЂРѕРј
 			for (j = 0; j < net.Count; j++) {
 				sk = scm(j, vec, &net,NULL);
 				if (sk > 0.0) {
@@ -969,7 +969,7 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 			}
 		}
 		if (perfomance == optAnnealing) {
-			// поиск методом эмуляции отжига
+			// РїРѕРёСЃРє РјРµС‚РѕРґРѕРј СЌРјСѓР»СЏС†РёРё РѕС‚Р¶РёРіР°
 
 			j = _lrand() % (net.Count);
 			while (t > tmin) {
@@ -985,25 +985,25 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 					else if (alpha[i] >= extr) {
 						alpha[i] = extr;
 						t = t * c;
-						// t = tmax / k; // раскомменировать Если отжиг по Коши
-						//k++;  // раскомменировать Если отжиг по Коши
+						// t = tmax / k; // СЂР°СЃРєРѕРјРјРµРЅРёСЂРѕРІР°С‚СЊ Р•СЃР»Рё РѕС‚Р¶РёРі РїРѕ РљРѕС€Рё
+						//k++;  // СЂР°СЃРєРѕРјРјРµРЅРёСЂРѕРІР°С‚СЊ Р•СЃР»Рё РѕС‚Р¶РёРі РїРѕ РљРѕС€Рё
 					}
 					else {
 						p = 1 / (1 + exp(-fabs(alpha[i] - extr) / t));
-						// p= t/(M_PI*(pow(fabs(extr-alpha[i])/net.Count,2)+pow(t,2)));  // раскомменировать Если отжиг по Коши
+						// p= t/(M_PI*(pow(fabs(extr-alpha[i])/net.Count,2)+pow(t,2)));  // СЂР°СЃРєРѕРјРјРµРЅРёСЂРѕРІР°С‚СЊ Р•СЃР»Рё РѕС‚Р¶РёРі РїРѕ РљРѕС€Рё
 						a = double(_lrand() % net.Count) / net.Count;
 						if (a > p) {
 							alpha[i] = extr;
 							t = t * c;
-							// t = tmax / k; // раскомменировать Если отжиг по Коши
-							//k++;    // раскомменировать Если отжиг по Коши
+							// t = tmax / k; // СЂР°СЃРєРѕРјРјРµРЅРёСЂРѕРІР°С‚СЊ Р•СЃР»Рё РѕС‚Р¶РёРі РїРѕ РљРѕС€Рё
+							//k++;    // СЂР°СЃРєРѕРјРјРµРЅРёСЂРѕРІР°С‚СЊ Р•СЃР»Рё РѕС‚Р¶РёРі РїРѕ РљРѕС€Рё
 						}
 					}
 				}
 				a = double(_lrand() % net.Count) / net.Count;
 				jj = signof(a - 0.5) * t * (pow((1 + 1 / t), abs(2 * a - 1)) -
 					1) * net.Count;
-				// jj = t * tan(M_PI*(a-0.5))*net.Count;  // раскомменировать Если отжиг по Коши
+				// jj = t * tan(M_PI*(a-0.5))*net.Count;  // СЂР°СЃРєРѕРјРјРµРЅРёСЂРѕРІР°С‚СЊ Р•СЃР»Рё РѕС‚Р¶РёРі РїРѕ РљРѕС€Рё
 				j = abs(jj + j) % net.Count;
 			}
 		}
@@ -1026,7 +1026,7 @@ void __fastcall TNetF::Conv(bool *L) {
 	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, t = tmax, a =
 		double(_lrand() % st0Net.Count) / st0Net.Count, c = _extr_e_val;
 	k = 1;
-	// расчёт опорной функции центра Штейнера
+	// СЂР°СЃС‡С‘С‚ РѕРїРѕСЂРЅРѕР№ С„СѓРЅРєС†РёРё С†РµРЅС‚СЂР° РЁС‚РµР№РЅРµСЂР°
 	st = 0;
 	for (i = 0; i < Count; i++) {
 		for (m = 0; m < Dim; m++)
@@ -1035,17 +1035,17 @@ void __fastcall TNetF::Conv(bool *L) {
 	}
 	st *= coeff;
 
-	// сдвигаем множество "на центр Штайнера" так чтобы 0 был в центре
+	// СЃРґРІРёРіР°РµРј РјРЅРѕР¶РµСЃС‚РІРѕ "РЅР° С†РµРЅС‚СЂ РЁС‚Р°Р№РЅРµСЂР°" С‚Р°Рє С‡С‚РѕР±С‹ 0 Р±С‹Р» РІ С†РµРЅС‚СЂРµ
 	for (i = 0; i < st0Net.Count; i++) {
 		st0Net.f->v->v[i] = scm(i, st, &st0Net,0);
 		f->v->v[i] -= st0Net.f->v->v[i];
 	}
 
-	// рассчитываем lambda_i
+	// СЂР°СЃСЃС‡РёС‚С‹РІР°РµРј lambda_i
 	makeAlpha(alpha, L, st0Net);
 
 
-	// собственно овыпукляем и сдвигаем назад
+	// СЃРѕР±СЃС‚РІРµРЅРЅРѕ РѕРІС‹РїСѓРєР»СЏРµРј Рё СЃРґРІРёРіР°РµРј РЅР°Р·Р°Рґ
 	for (i = 0; i < st0Net.Count; i++) {
 		if (L[i]) {
 			extr_exist = false;
@@ -1054,7 +1054,7 @@ void __fastcall TNetF::Conv(bool *L) {
 			 j = GetExtrDirection(vec, scm1, convCriteria, opMax, nZAware, i, &alpha,  f->v->v[i],  st0Net);
 		}
 		f->v->v[i] += st0Net.f->v->v[i];
-		// сдвиг множества выпуклой оболочки на исходное место
+		// СЃРґРІРёРі РјРЅРѕР¶РµСЃС‚РІР° РІС‹РїСѓРєР»РѕР№ РѕР±РѕР»РѕС‡РєРё РЅР° РёСЃС…РѕРґРЅРѕРµ РјРµСЃС‚Рѕ
 	}
 	alpha.clear();
 }
@@ -1096,7 +1096,7 @@ void __fastcall TNetF::saveAsVrml(string) {
 }
 
 // ------------------------------ Clear ---------------------------------------//
-// Зануление функциональной сети
+// Р—Р°РЅСѓР»РµРЅРёРµ С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅРѕР№ СЃРµС‚Рё
 void __fastcall TNetF::Clear() {
 	long i; // ,j;
 	TNet::Clear();
@@ -1154,11 +1154,11 @@ void __fastcall TNetF::dynUpdate() {
 		updated = true;
 		if (!umx) {
 			if (u_mx->v->m != Dim)
-			{ // в случае если поменялась размерность - создаём новую сетку
+			{ // РІ СЃР»СѓС‡Р°Рµ РµСЃР»Рё РїРѕРјРµРЅСЏР»Р°СЃСЊ СЂР°Р·РјРµСЂРЅРѕСЃС‚СЊ - СЃРѕР·РґР°С‘Рј РЅРѕРІСѓСЋ СЃРµС‚РєСѓ
 				res = new Vector(u_mx->v->m);
 				f1 = new TNetF(u_mx->v->m, perfomance, Res);
 			}
-			else { // иначе оперируем с существующей
+			else { // РёРЅР°С‡Рµ РѕРїРµСЂРёСЂСѓРµРј СЃ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµР№
 				res = new Vector(Dim);
 				f1 = this;
 			}

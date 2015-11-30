@@ -32,11 +32,11 @@ public:
 
 	OpType operType;
 	bool /* toPoint, */ alphaMode; // ,updated;
-	// double upd;  //кешированный коэффициент умножения
-	// Matrix *u_mx;   	//кешированная матрица
-	// ,isPoint; //учитывать или не учитывать длины векторов по определённому направлению
-	LDouble zeroPrecision; // Точность округления до 0;
-	alphType alpha; // длины вектора множества по определённому направлению
+	// double upd;  //РєРµС€РёСЂРѕРІР°РЅРЅС‹Р№ РєРѕСЌС„С„РёС†РёРµРЅС‚ СѓРјРЅРѕР¶РµРЅРёСЏ
+	// Matrix *u_mx;   	//РєРµС€РёСЂРѕРІР°РЅРЅР°СЏ РјР°С‚СЂРёС†Р°
+	// ,isPoint; //СѓС‡РёС‚С‹РІР°С‚СЊ РёР»Рё РЅРµ СѓС‡РёС‚С‹РІР°С‚СЊ РґР»РёРЅС‹ РІРµРєС‚РѕСЂРѕРІ РїРѕ РѕРїСЂРµРґРµР»С‘РЅРЅРѕРјСѓ РЅР°РїСЂР°РІР»РµРЅРёСЋ
+	LDouble zeroPrecision; // РўРѕС‡РЅРѕСЃС‚СЊ РѕРєСЂСѓРіР»РµРЅРёСЏ РґРѕ 0;
+	alphType alpha; // РґР»РёРЅС‹ РІРµРєС‚РѕСЂР° РјРЅРѕР¶РµСЃС‚РІР° РїРѕ РѕРїСЂРµРґРµР»С‘РЅРЅРѕРјСѓ РЅР°РїСЂР°РІР»РµРЅРёСЋ
 	Vector *f;
 	TNet *net;
 	string fStr;
@@ -44,8 +44,8 @@ public:
 
 	// double updSum;
 
-	TDll *dll; // библиотека с калькулятором
-	TSIC_Data sic; // сам калькулятор
+	TDll *dll; // Р±РёР±Р»РёРѕС‚РµРєР° СЃ РєР°Р»СЊРєСѓР»СЏС‚РѕСЂРѕРј
+	TSIC_Data sic; // СЃР°Рј РєР°Р»СЊРєСѓР»СЏС‚РѕСЂ
 	// TRapidEvaluator       *func;
 	double *vars;
 	double t;
@@ -67,7 +67,7 @@ public:
 	virtual void __fastcall create(long /* , long, long */);
 	virtual void __fastcall detach();
 
-	friend ostream& __fastcall operator << (ostream&, const TNetF&); // Ok
+	friend ostream& __fastcall operator << (ostream&, TNetF&); // Ok
 	friend istream& __fastcall operator >> (istream&, TNetF&); // Ok
 
 	inline  double __fastcall getIJ(long current, int coordNumber);
@@ -79,13 +79,13 @@ public:
 	/* !inline */ TNetF& __fastcall operator += (const TNetF&);
 	/* !inline */ TNetF& __fastcall operator -= (const TNetF&);
 	/* !inline */
-	// TNetF& __fastcall operator += (const double &); Не имеет смысла
+	// TNetF& __fastcall operator += (const double &); РќРµ РёРјРµРµС‚ СЃРјС‹СЃР»Р°
 
 	friend const TNetF __fastcall operator *(const Matrix&, const TNetF&);
 	friend const TNetF __fastcall operator *(const LDouble, const TNetF&);
 	friend const TNetF __fastcall operator +(const TNetF&, const TNetF&); // Ok
 	friend const TNetF __fastcall operator -(const TNetF&, const TNetF&);
-	// friend const TNetF __fastcall operator +(const double, const TNetF&); //не имеет смысла
+	// friend const TNetF __fastcall operator +(const double, const TNetF&); //РЅРµ РёРјРµРµС‚ СЃРјС‹СЃР»Р°
 	// friend TNetF __fastcall operator *(double &,TNetF&); // Changes in update()
 
 	LDouble __fastcall oporn(const Vector &x, LDouble t, int sign);
@@ -102,19 +102,19 @@ public:
 	long __fastcall GetExtrDirection(const Vector& vec, scM scmul,
 	cCrit crit, OpType extrOper, ZeroAware isZeroAware, long index, alphType* coeff,
 	LDouble& extr, 	TNetF& net);
-	// Поиск экстермума в направлении заданном вектором vec
+	// РџРѕРёСЃРє СЌРєСЃС‚РµСЂРјСѓРјР° РІ РЅР°РїСЂР°РІР»РµРЅРёРё Р·Р°РґР°РЅРЅРѕРј РІРµРєС‚РѕСЂРѕРј vec
 	long __fastcall GetExtrGlobal(OpType extrOper, long index, LDouble& extr);
-	// Поиск экстермума на опорной функции
+	// РџРѕРёСЃРє СЌРєСЃС‚РµСЂРјСѓРјР° РЅР° РѕРїРѕСЂРЅРѕР№ С„СѓРЅРєС†РёРё
 
 	void __fastcall Clear(); // Ok
 	// /*!inline*/ double& Vector operator[](long i);
 	// /*!inline*/  const double& operator [](long i)const;
 
 	void /* !inline */ __fastcall SetFunc(const string& fstr); // Ok
-	void __fastcall Conv(bool *); // выпуклая оболочка
+	void __fastcall Conv(bool *); // РІС‹РїСѓРєР»Р°СЏ РѕР±РѕР»РѕС‡РєР°
 	void __fastcall ConvSerial(bool *, const Vector & a);
 	TNet __fastcall Points(bool compactPoints);
-	// Конвертация из опорной функции в сетку из точек по границе множества
+	// РљРѕРЅРІРµСЂС‚Р°С†РёСЏ РёР· РѕРїРѕСЂРЅРѕР№ С„СѓРЅРєС†РёРё РІ СЃРµС‚РєСѓ РёР· С‚РѕС‡РµРє РїРѕ РіСЂР°РЅРёС†Рµ РјРЅРѕР¶РµСЃС‚РІР°
 	void __fastcall saveAsVrml(string);
 	void __fastcall smoothFunction(double epsilon);
 	virtual /* !inline */ Vector* __fastcall getVecAt(long i);
@@ -123,18 +123,18 @@ public:
 		ZeroAware isZeroAware, bool &isExtrExist, TNetF& net);
 
 protected:
-	// Поиск экстермума в направлении заданном вектором vec перебором
+	// РџРѕРёСЃРє СЌРєСЃС‚РµСЂРјСѓРјР° РІ РЅР°РїСЂР°РІР»РµРЅРёРё Р·Р°РґР°РЅРЅРѕРј РІРµРєС‚РѕСЂРѕРј vec РїРµСЂРµР±РѕСЂРѕРј
 	long __fastcall findExtrSlowDirection(const Vector& vec, scM scmul,
 	cCrit crit,  ZeroAware isZeroAware,OpType extrOper, long index, alphType* coeff, LDouble& extr, TNetF& net);
-	// Поиск экстермума в направлении заданном вектором vec методом отжига
+	// РџРѕРёСЃРє СЌРєСЃС‚РµСЂРјСѓРјР° РІ РЅР°РїСЂР°РІР»РµРЅРёРё Р·Р°РґР°РЅРЅРѕРј РІРµРєС‚РѕСЂРѕРј vec РјРµС‚РѕРґРѕРј РѕС‚Р¶РёРіР°
 	long __fastcall findExtrAnnealingDirection(const Vector& vec, scM scmul,
 	cCrit crit,  ZeroAware isZeroAware,OpType extrOper, long index, alphType* coeff, LDouble& extr, TNetF& net);
 
 
 	long __fastcall findExtrSlowGlobal(OpType extrOper,LDouble &extr);
-	// Поиск экстермума на опорной функции перебором
+	// РџРѕРёСЃРє СЌРєСЃС‚РµСЂРјСѓРјР° РЅР° РѕРїРѕСЂРЅРѕР№ С„СѓРЅРєС†РёРё РїРµСЂРµР±РѕСЂРѕРј
 	long __fastcall findExtrAnnealingGlobal(OpType extrOper, LDouble &extr);
-	// Поиск экстермума на опорной функции методом отжига
+	// РџРѕРёСЃРє СЌРєСЃС‚РµСЂРјСѓРјР° РЅР° РѕРїРѕСЂРЅРѕР№ С„СѓРЅРєС†РёРё РјРµС‚РѕРґРѕРј РѕС‚Р¶РёРіР°
 
 	void __fastcall AddVariables();
 	// void __fastcall SetVariables(const DynamicArray<double> &vv);
@@ -146,10 +146,10 @@ protected:
 	long __fastcall findExtrFastXDirection(const Vector& vec, scM scmul,
 	cCrit crit, OpType extrOper, ZeroAware isZeroAware, long index, alphType* coeff,
 	LDouble& extr, 	TNetF& net);
-	// Поиск экстермума в направлении заданном вектором vec
+	// РџРѕРёСЃРє СЌРєСЃС‚РµСЂРјСѓРјР° РІ РЅР°РїСЂР°РІР»РµРЅРёРё Р·Р°РґР°РЅРЅРѕРј РІРµРєС‚РѕСЂРѕРј vec
 	long __fastcall findExtrFastXGlobal(OpType extrOper,
 		 long index, LDouble& extr);
-	// Поиск экстермума на оп. функции в целом пользуясь выпуклостью
+	// РџРѕРёСЃРє СЌРєСЃС‚РµСЂРјСѓРјР° РЅР° РѕРї. С„СѓРЅРєС†РёРё РІ С†РµР»РѕРј РїРѕР»СЊР·СѓСЏСЃСЊ РІС‹РїСѓРєР»РѕСЃС‚СЊСЋ
 
 public:
 	void /* !inline */ __fastcall initNetFDefault();

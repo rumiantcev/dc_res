@@ -388,7 +388,7 @@ Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 		index = k;
 		for (int i = k + 1; i < n; i++) {
 			if (abs(a.v->v[i][k]) > max) {
-				max = a.v->v[i][k];
+				max = abs(a.v->v[i][k]);
 				index = i;
 			}
 		}
@@ -410,7 +410,7 @@ Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 		// Нормализация уравнений
 		for (i = k; i < n; i++) {
 			double temp = a.v->v[i][k];
-			if (temp < epsilon)
+			if (abs(temp) < epsilon)
 				continue; // для нулевого коэффициента пропустить
 			for (int j = 0; j < n; j++) {
 				a.v->v[i][j] = a.v->v[i][j] / temp;

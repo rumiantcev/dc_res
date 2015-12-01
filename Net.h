@@ -86,7 +86,7 @@ private:
 public:
 	double __fastcall getIJ(long ID, int coordNumber);
 
-	friend ostream& __fastcall operator << (ostream&, const TNet&);
+	friend ostream& __fastcall operator << (ostream&,  TNet&);
 	friend istream& __fastcall operator >> (istream&, TNet&);
 
 	/* !inline */ TNet& __fastcall operator *= (const Matrix&);

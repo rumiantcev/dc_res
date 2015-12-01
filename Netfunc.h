@@ -67,7 +67,7 @@ public:
 	virtual void __fastcall create(long /* , long, long */);
 	virtual void __fastcall detach();
 
-	friend ostream& __fastcall operator << (ostream&, const TNetF&); // Ok
+	friend ostream& __fastcall operator << (ostream&, TNetF&); // Ok
 	friend istream& __fastcall operator >> (istream&, TNetF&); // Ok
 
 	inline  double __fastcall getIJ(long current, int coordNumber);

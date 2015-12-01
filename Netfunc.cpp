@@ -134,7 +134,7 @@ __fastcall TNetF::~TNetF() {
 }
 
 // -------------------------------- << ----------------------------------------//
-ostream& __fastcall operator << (ostream& out_data, const TNetF& C) {
+ostream& __fastcall operator << (ostream& out_data, TNetF& C) {
 	long SurfaceDim = C.Dim - 1;
 	long NumOfSur = C.Dim * 2;
 	long NumOfPoints = C.Res;

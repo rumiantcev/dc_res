@@ -372,7 +372,7 @@ void __fastcall Matrix::SetCol(const Vector& vec, long j) {
 
 // ---------------------------- Solve -----------------------------------------//
 Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
-   	Vector y(b), result(A.m());
+	Vector y(b), result(A.m());
 	Matrix a(A);
 	LDouble max, temp;
 	long i,j, k, n, index;
@@ -386,51 +386,46 @@ Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 		// Поиск строки с максимальным A[i][k]
 		max = abs(a.v->v[k][k]);
 		index = k;
-		for (int i = k + 1; i < n; i++) {
+		for (int i = k + 1; i < n; i++)
 			if (abs(a.v->v[i][k]) > max) {
 				max = abs(a.v->v[i][k]);
 				index = i;
 			}
-		}
+
 		// Перестановка строк
 		if (max < epsilon) {
 			// нет ненулевых диагональных элементов
 			cout << "Решение получить невозможно из-за нулевого столбца ";
-			cout << index << "матрицы A" << endl;
+			cout << index << " матрицы A" << endl;
 			return 0;
 		}
 		for (j = 0; j < n; j++) {
 			temp = a.v->v[k][j];
 			a.v->v[k][j] = a.v->v[index][j];
 			a.v->v[index][j] = temp;
+		}
 			temp = y[k];
 			y[k] = y[index];
 			y[index] = temp;
-		}
 		// Нормализация уравнений
 		for (i = k; i < n; i++) {
-			double temp = a.v->v[i][k];
-			if (abs(temp) < epsilon)
-				continue; // для нулевого коэффициента пропустить
-			for (int j = 0; j < n; j++) {
-				a.v->v[i][j] = a.v->v[i][j] / temp;
-			}
-			y[i] = y[i] / temp;
-			if (i == k)
-				continue; // уравнение не вычитать само из себя
-			for (j = 0; j < n; j++) {
-				a.v->v[i][j] = a.v->v[i][j] - a.v->v[k][j];
-			}
-			y[i] = y[i] - y[k];
+			temp = a.v->v[i][k];
+			if (abs(temp) < epsilon) continue; // для нулевого коэффициента пропуск
+			for (int j = 0; j < n; j++)
+				a.v->v[i][j] /=  temp;
+			y[i] /= temp;
+			if (i == k)  continue; // уравнение не вычитать само из себя
+			for (j = 0; j < n; j++)
+				a.v->v[i][j] -= a.v->v[k][j];
+			y[i] -= y[k];
 		}
 		k++;
 	}
 	// обратная подстановка
 	for (k = n - 1; k >= 0; k--) {
 		result[k] = y[k];
-		for (i = 0; i < k; i++) {
-			y[i] = y[i] - a.v->v[i][k] * result[k];
-		}
+		for (i = 0; i < k; i++)
+			y[i] -= a.v->v[i][k] * result[k];
 	}
 	return result;
 }

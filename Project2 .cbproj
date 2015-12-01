@@ -232,6 +232,10 @@
             <BuildOrder>0</BuildOrder>
             <PCH>true</PCH>
         </PCHCompile>
+        <CppCompile Include="pr_task.cpp">
+            <DependentOn>pr_task.h</DependentOn>
+            <BuildOrder>24</BuildOrder>
+        </CppCompile>
         <None Include="SICx.h">
             <BuildOrder>14</BuildOrder>
         </None>

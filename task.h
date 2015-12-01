@@ -69,7 +69,6 @@ public:
 	// virtual long ImageWake()
 
 	void saveTask(char *);
-	static Task* loadTask(/*istream&*/ string);
 	// friend istream& operator >>(istream& in_f, Task* res);
 	
 	void __fastcall setFuncToNetF(TNetF& net, string func);

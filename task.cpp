@@ -285,38 +285,6 @@ Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn, LDo
 	// return tau*(A*xn+B*un+C*vn)+xn; //Euler method
 }
 
-// ------------------------------------- Get V --------------------------------//
-Vector Task::GetV(TNetF *w, TNetF *v, const Vector& x, const Matrix& PiEtA) {
-	Vector result(dim_v), tempRes(dim_x);
-
-	LDouble extr;
-	Matrix PiEtAC(A.m(), A.n());
-	PiEtAC = PiEtA * C;
-	tempRes = Transpose(PiEtAC) * x;
-	long i = v->GetExtrDirection(tempRes, scm, convCriteria, opMax, nZAware,
-		 i, 0, extr,  *v);
-	result = *v->getVecAt(i);
-
-	return result;
-}
-
-// ------------------------------------- Get V --------------------------------//
-Vector Task::GetU(TNetF *w, TNetF *u, const Vector& x, const Matrix& PiEtA) {
-	Vector result(dim_u), tempRes(dim_x);
-
-	LDouble extr;
-	Matrix PiEtAB(A.m(), A.n());
-	PiEtAB = PiEtA * B;
-	tempRes = Transpose(PiEtAB) * x;
-
-	long i = u->GetExtrDirection(tempRes, scm, convCriteria, opMax, nZAware,
-		 i, 0, extr, *u);
-
-	result = *u->getVecAt(i);
-
-	return result;
-}
-
 // -------------------------------------- control finding----------------------//
 void Task::Control_AltInt(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);

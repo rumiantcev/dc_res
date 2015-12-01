@@ -168,7 +168,6 @@
         <TASM_Debugging>None</TASM_Debugging>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
         <Debugger_EnvVars>DC_PATH=C:\Users\alex\Documents\MSU\dc_res;$(Debugger_EnvVars)</Debugger_EnvVars>
         <Debugger_IncludeSystemVars>true</Debugger_IncludeSystemVars>
         <BCC_HonorMemPtrPrecision>true</BCC_HonorMemPtrPrecision>
@@ -253,6 +252,10 @@
         <CppCompile Include="task.cpp">
             <DependentOn>task.h</DependentOn>
             <BuildOrder>17</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="taskloader.cpp">
+            <DependentOn>taskloader.h</DependentOn>
+            <BuildOrder>25</BuildOrder>
         </CppCompile>
         <None Include="TESTx.h">
             <BuildOrder>12</BuildOrder>
@@ -375,6 +378,12 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName=".\Win32\Debug\Project2 .tds" Configuration="Debug" Class="DebugSymbols">
+                    <Platform Name="Win32">
+                        <RemoteName>Project2_.tds</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libPCRE.dylib" Class="DependencyModule">
                     <Platform Name="iOSSimulator">
                         <Overwrite>true</Overwrite>
@@ -382,12 +391,6 @@
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\iossim32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="iOSSimulator">
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName=".\Win32\Debug\Project2 .tds" Configuration="Debug" Class="DebugSymbols">
-                    <Platform Name="Win32">
-                        <RemoteName>Project2_.tds</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

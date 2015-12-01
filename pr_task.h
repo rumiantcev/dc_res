@@ -13,7 +13,7 @@ class PR_Task: public Task {
 	double eps, LDouble delta, LDouble tmax, long st, short perf, long stat,
 	int tr_count);
 		~PR_Task();
-		PR_Task* loadTask(string szFileName);
+	 //	PR_Task* loadTask(string szFileName);
 
 
 };

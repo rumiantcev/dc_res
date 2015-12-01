@@ -35,7 +35,9 @@ public:
 	vector<Traectory>tr_s;
 
 	TNetF *cP, *cQ, *cM;
-	// Опорный фкнкции на сетках для множеств упраления предледовантеля, убегающего и терминального множества
+	// Опорные функции на сетках для множеств упраления предледовантеля, убегающего и терминального множества
+
+
 	long dim_x, dim_u, dim_v, dim_m1, dim_m, steps;
 	// long maxWayLength;      //длина максимального пути по времени в шагах по tau.
 	double epsilon,
@@ -69,8 +71,7 @@ public:
 	void saveTask(char *);
 	static Task* loadTask(/*istream&*/ string);
 	// friend istream& operator >>(istream& in_f, Task* res);
-	Vector GetV(TNetF *w, TNetF *u, const Vector& x, const Matrix& PiEtA);
-	Vector GetU(TNetF *w, TNetF *u, const Vector& x, const Matrix& PiEtA);
+	
 	void __fastcall setFuncToNetF(TNetF& net, string func);
 	virtual long ImageUp();
 

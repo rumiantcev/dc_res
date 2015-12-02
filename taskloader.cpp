@@ -381,16 +381,19 @@ Task* TaskLoader::loadTask(string szFileName) {
 		// Значение опорных функций  множеств преследователей
 		if (meth==1) {
 			in_f.get(c);
-			while (c != EOF){
-				while (c != '[')
+			while (c != '[')
 					in_f.get(c);
+			while (!in_f.eof()){
+				while ((c != '[')&&(!in_f.eof()))
+					in_f.get(c);
+				if (in_f.eof())  break;
 				in_f.get(long_buf, 256, ']');
 				tmpStr = new string(long_buf);
 				tmpPRNet  =  new TNetF(*res->cM);
 				res->setFuncToNetF(*(tmpPRNet), *tmpStr);
 				((PR_Task *)res)->PursuerList.push_back(tmpPRNet);
 				delete tmpStr;
-				in_f.get(c);
+			  	in_f.get(c);
 			}
 		}
 

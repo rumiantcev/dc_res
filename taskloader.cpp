@@ -336,7 +336,7 @@ Task* TaskLoader::loadTask(string szFileName) {
 									Lev, 1);
 				break;
 		default:
-			res = new PR_Task(dx, du, dv, dm, ts, prec, eps, tt, maxT, stp, perf,
+			res = new Task(dx, du, dv, dm, ts, prec, eps, tt, maxT, stp, perf,
 									Lev, 1);
 		}
 

@@ -230,11 +230,11 @@ LDouble Task::TimeCalc_AltInt(int trNum) {
 		tmpQNet.oporn(t, 1);
 		tmpPNet *= PiEtAkB;
 		tmpQNet *= PiEtAkC;
-        tmpPNet.update();
+		tmpPNet.update();
 		tmpQNet.update();
 
 		c = c + tmpPNet;
-		c -= tmpQNet; // геометрическая разность  - пока не оптимально считается
+		c -= tmpQNet; // геометрическая разность
 		c.update();
 
 		// опорная функция PiEtA*x0 - строим пользуясь тем что это просто скалярное произведение

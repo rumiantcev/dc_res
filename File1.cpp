@@ -35,6 +35,7 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
+
 	string localPath = getenv("DC_PATH");  //переменная определяет где находятся данные и конф. файлы ... а также результаты расчётов
 	TaskLoader tl(localPath);
 	cout<<localPath<<endl;

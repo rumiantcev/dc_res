@@ -13,21 +13,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <locale>
-//#include <chrono>
+#include <locale.h>
+#include <windows.h>
 #include<time.h>
 #include <io.h>
 
-//#include "Matrix.h"
-//#include "Net.h"
-//#include "Netfunc.h"
 #include "task.h"
-//#include "dll.h"
-//#include "SICx.h"
 #include "taskloader.h"
-
-//#include <float.h>	// needed for the FLT_MIN define
-
 #include "CDataFile.h"
 
 
@@ -35,21 +27,16 @@
 
 using namespace Dll;
 using namespace::std;
-typedef vector<Task*>VecOfTask;
 
 int _tmain(int argc, _TCHAR* argv[]) {
 
-	randomize();
-  //	  setlocale( LC_ALL,"Russian.1572" );
-  //setlocale( LC_ALL,"RUS" );
-  //		SetConsoleCP(1251);
-  //	SetConsoleOutputCP(1251);
-  //	string localPath(argv[0]),pathHelper="\\Data";
- //	cout<<localPath<<endl;
-    string localPath = getenv("DC_PATH");  //переменная определяет где находятся данные и конф. файлы ... а также результаты расчётов
-	TaskLoader tl(localPath);
+	randomize();   //инициализируем рандомизатор
+	setlocale( LC_ALL,"Russian.1572" ); //устанавливаем локаль русского язяка так, чтобы десятичным разделителем была точка, а не запятая
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
 
-	//localPath.append(pathHelper);
+	string localPath = getenv("DC_PATH");  //переменная определяет где находятся данные и конф. файлы ... а также результаты расчётов
+	TaskLoader tl(localPath);
 	cout<<localPath<<endl;
 
 	cout << "Begin.." << endl;

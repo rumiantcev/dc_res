@@ -378,7 +378,7 @@ Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 	long i,j, k, n, index;
 
 	if (!a.updated) a.update();
-	if (!a.updated) y.update();
+	if (!y.updated) y.update();
 	n = A.m();
 	k = 0;
 
@@ -386,7 +386,7 @@ Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 		// Поиск строки с максимальным A[i][k]
 		max = abs(a.v->v[k][k]);
 		index = k;
-		for (int i = k + 1; i < n; i++)
+		for (i = k + 1; i < n; i++)
 			if (abs(a.v->v[i][k]) > max) {
 				max = abs(a.v->v[i][k]);
 				index = i;
@@ -411,7 +411,7 @@ Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 		for (i = k; i < n; i++) {
 			temp = a.v->v[i][k];
 			if (abs(temp) < epsilon) continue; // для нулевого коэффициента пропуск
-			for (int j = 0; j < n; j++)
+			for (j = 0; j < n; j++)
 				a.v->v[i][j] /=  temp;
 			y[i] /= temp;
 			if (i == k)  continue; // уравнение не вычитать само из себя

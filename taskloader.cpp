@@ -42,6 +42,7 @@ void TaskLoader::load_and_calc_tasks(){
 	Task* t = NULL;
 	clock_t before;
 	double elapsed;
+	PR_Task *prTask;
 
 	CDataFile DFile(std::string(localPath+"\\control.ini").c_str());
 	Report(E_INFO, "[doSomething] The file <control.ini> contains %d sections, & %d keys.",
@@ -85,6 +86,11 @@ void TaskLoader::load_and_calc_tasks(){
 			taskList[j]->TimeCalc_AltInt(0);
 		if (method == "gr2")
 			taskList[j]->TimeCalc_AltInt(0);
+		if (method == "pursue_run"){
+			prTask = (PR_Task*)taskList[j];
+			prTask->calcPursuerSets(0);
+			prTask->TimeCalc_PR(0);
+		}
 		cout << "Time evaluated.." << endl;
 		out_f << "Time evaluated.." << endl;
 		cout << "time is: " << taskList[j]->tr_s[0].T << endl;
@@ -97,7 +103,11 @@ void TaskLoader::load_and_calc_tasks(){
 			taskList[j]->Control_R1(0);
 		if (method == "gr2")
 			taskList[j]->Control_R2(0);
-		elapsed = clock()-before;  //замер времени начала выполнения расчётов
+		if (method == "pursue_run"){
+			prTask = (PR_Task*)taskList[j];
+			prTask->Control_PR(0);
+		}
+		elapsed = clock()-before;  //замер времени начала выполнения расчётов
 		cout << "Control evaluated.." << endl;
 		cout << "Traectory: " << endl;
 		cout<< *taskList[j]->tr_s[0].x_i;

@@ -271,14 +271,14 @@ Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn) {
 }
 // ------------------------------------- rungeCutt ----------------------------//
 // Интегрирование для НЕстандартного шага по времени
-Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn, LDouble tau) {
+Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn, LDouble tau_z) {
 	Vector K1(A.m()), K2(A.m()), K3(A.m()), K4(A.m()), result(A.m());
 
 	K1 = (A * xn + (-1)* B * un + C * vn);
 	K2 = (A * (xn + 0.5 * tau * K1) + (-1)* B * un + C * vn);
 	K3 = (A * (xn + 0.5 * tau * K2) + (-1)* B * un + C * vn);
 	K4 = (A * (xn + tau * K3) + (-1)* B * un + C * vn);
-	result = xn + tau / 6 * (K1 + 2 * (K2 + K3) + K4);
+	result = xn + tau_z / 6 * (K1 + 2 * (K2 + K3) + K4);
 	result.update();
 	return result;
 	/* */

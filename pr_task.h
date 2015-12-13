@@ -10,11 +10,13 @@ class PR_Task: public Task {
 		vector<TNetF*>PursuerList;
 
         PR_Task(long , long dimU, long dimV, long dimM, LDouble ts, double prec,
-	double eps, LDouble delta, LDouble tmax, long st, short perf, long stat,
-	int tr_count);
+			double eps, LDouble delta, LDouble tmax, long st, short perf,
+			long stat,	int tr_count);
 		~PR_Task();
-	 //	PR_Task* loadTask(string szFileName);
 
+		virtual LDouble calcPursuerSets(int);
+		virtual LDouble TimeCalc_PR(int trNum);
+		virtual void Control_PR(int trNum);
 
 };
 //---------------------------------------------------------------------------

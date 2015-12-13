@@ -145,7 +145,7 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 		//PiEtAkC = PiEtAk * C;
 		PiEtAx0 = PiEtA * tr_s[trNum].x0;
 		tmpPNet = *cP;
-		// cP->update();
+		//cP->update();
 		//tmpQNet = *cQ;
 		// cQ->update();
 		tmpPNet.oporn(t, 1);
@@ -157,7 +157,7 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 
 		c = c + tmpPNet;
 		//c -= tmpQNet; // геометрическая разность
-		//c.update();
+		c.update();
 
 		// опорная функция PiEtA*x0 - строим пользуясь тем что это просто скалярное произведение
 		for (i = 0; i < x0Net.Count; i++)
@@ -183,10 +183,10 @@ void PR_Task::Control_PR(int trNum) {
 	long i, j, k, m, l, Ind = 0;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
-	LDouble t, min, absmin,  extr;
+	LDouble t, min, absmin, min_x,  extr;
 	Vector PiEtAx(PP.m()), psi(PP.v->m), extrVec(PP.v->m);
 	Vector u_i(cP->Dim), v_i(cQ->Dim), x_i(dim_x);
-	//bool extr_exist;
+   //	bool currmin_exist=false;
 
 	VecOfVec vx_i, vu_i, vv_i;
 	Vector *r_i;
@@ -201,6 +201,8 @@ void PR_Task::Control_PR(int trNum) {
 	vx_i.push_back(r_i);//... и сохраняем его для траектории.
 	t = tr_s[trNum].T; // значение t = конечному времени;
 
+	c.perfomance = 0;
+
 	while (t >= precision) {
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
@@ -212,25 +214,23 @@ void PR_Task::Control_PR(int trNum) {
 		}
 
 		//выбираем psi
-		c.perfomance = 0;
-		Ind = c.GetExtrGlobal(opMin,  0, min);
-	   //	for (m = 0; m < c.Dim; m++)
-	   //		psi.v->v[m] = c.getIJ(Ind, m);
+		Ind = c.GetExtrGlobal(opMin, 0, min_x);
 
-		while (min>=0){  //если оказались внутри очередного множества управляемости - корректируем время
+	   //смотрим, а не проскочили ли  чутка
+	   //и оказались внутри очередного множества управляемости - корректируем время
+		while ((min_x>=0)){
 			k--;
 			t -= tau;
 			EtA = Exponential(A, t, precision);
 			PiEtA = PP * EtA;
 			PiEtAx = PiEtA * x_i;
-			for (i = 0; i < x_Net.Count; i++){ //смотрим, а не проскочили ли ещё чутка
+			for (i = 0; i < x_Net.Count; i++){
 				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
 				c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
-            }
-			Ind = c.GetExtrGlobal(opMin,  0, min);
-		}
-
-		//фиксируем psi
+			}
+			Ind = c.GetExtrGlobal(opMin, 0, min_x);
+		} /**/
+		//фиксируем psi  для множества управляемости, ближайшего к таектории
 		for (m = 0; m < c.Dim; m++)
 				psi.v->v[m] = c.getIJ(Ind, m);
 
@@ -245,8 +245,9 @@ void PR_Task::Control_PR(int trNum) {
 		for (m = 0; m < dim_u; m++)
 			u_i.v->v[m] = cP->getIJ(Ind, m);
 		u_i = cP->getBorderPoint(Ind, u_i);
-		for (m = 0; m < dim_v; m++) //и зануляем v если не приблизились к множетву откуда возможно преследование
-				v_i.v->v[m] =   0.0;
+		for (m = 0; m < dim_v; m++) //и зануляем v если не приблизились к множеcтву откуда возможно преследование
+				v_i.v->v[m] =   0.0;  //набо будет подумать v1 - стандартная помеха + v2 - из соотв.
+				//множеств  преследователей
 
 		//ввиду того, что кадо каждый раз перепроверять есть или нет пересечение с множествами откуда
 		//возможно завершение преследования  то v выбираем по принципу: если траектория приблизилась
@@ -258,10 +259,10 @@ void PR_Task::Control_PR(int trNum) {
 		   px_Net = *PursuerList[l];
 		   p_Net = px_Net + tmpPNet + (-1)*x_Net;   //проверка принадлежности точки траетории сумме
 		   //множества достижимости из точки траекторрии и множества соотв. преследователя
-		   Ind = p_Net.GetExtrGlobal(opMin,   Ind, min);
-		   if((min>=0)&&(absmin<min)){  //если на следующем шаге есть пересечение с множествами откуда
+		   Ind = p_Net.GetExtrGlobal(opMin,   Ind, min_x);
+		   if((min_x>=0)&&(absmin<min_x)){  //если на следующем шаге есть пересечение с множествами откуда
 			//возможно завершение преследования то u выбираем так, чтобы оттолкнуться от множества
-			absmin=min; // отталкиваемся от ближайшего из которых возможно преследование
+			absmin=min_x; // отталкиваемся от ближайшего из которых возможно преследование
 			px_Net.perfomance = 0;
 			Ind = px_Net.GetExtrGlobal(opMin,  0, min);
 			for (m = 0; m < c.Dim; m++)
@@ -269,33 +270,29 @@ void PR_Task::Control_PR(int trNum) {
 			//выбираем u_i - надо доработать и сделать проверку на случай если u_i+1 = -u_i c тем, чтобы всегда было отклонение в сторону главной цели
 			extrVec = Transpose(PiEtAB) * psi;
 			cP->perfomance = 0;
-			Ind = cP->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *cP);
+			Ind = cP->GetExtrDirection(extrVec, scm, convCriteria, opMin, nZAware, Ind, NULL,  extr,  *cP);
 			for (m = 0; m < dim_u; m++)
 				u_i.v->v[m] = cP->getIJ(Ind, m);
 			u_i = cP->getBorderPoint(Ind, u_i);
 			//выбираем v_i
 			extrVec = Transpose(PiEtAC) * psi;
 			cQ->perfomance = 0;
-			Ind = cQ->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *cQ);
+			Ind = cQ->GetExtrDirection(extrVec, scm, convCriteria, opMin, nZAware, Ind, NULL,  extr,  *cQ);
 			for (m = 0; m < dim_v; m++)
 				v_i.v->v[m] =   cQ->getIJ(Ind, m);
 			v_i=cQ->getBorderPoint(Ind,v_i);
 		   }
 
-		}
+		}   /**/
 
-		cout << (j) * tau << " : "<< t << " : " << x_i;
+		cout << (j) * tau << " : "<< t << " : " << x_i<< " : " << u_i;
 		//находим следующий  x_i  методом  Рунге-Кутты
 		x_i = rungeCutt(x_i, u_i, v_i);
 
-		 if(absmin <0){  //исправлять  т.к. данное условие не надёжно т.е. если препятствия нет то норм.,
-		 //а вот если препятствие  есть нужны доп. проверки.
+		if(absmin <0){  //в противном случае надо проверить  не попали ли внуть множетва управляемости
 			t -= tau;
 			k--;
 		}
-
-		// в противном случаенадо проверять в каком "времени" находимся !!!
-		// для тестов пока не сделано - потом доделать
 
 		//сохраняем результаты расчётов
 		r_i =  new Vector(x_i);
@@ -308,12 +305,6 @@ void PR_Task::Control_PR(int trNum) {
 		r_i =  new Vector(v_i);
 		r_i->detach();
 		vv_i.push_back(r_i);
-		//for (m = 0; m < dim_u; m++)
-		//	tr_s[trNum].u_i->v->v[j][m] = u_i[m];
-		//for (m = 0; m < dim_v; m++)
-		//	tr_s[trNum].v_i->v->v[j][m] = v_i[m];
-		//for (m = 0; m < dim_x; m++)
-		//	tr_s[trNum].x_i->v->v[j + 1][m] = x_i[m];
 
 		j++;
 	}

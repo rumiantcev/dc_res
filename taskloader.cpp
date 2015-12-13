@@ -50,7 +50,7 @@ void TaskLoader::load_and_calc_tasks(){
 	SectionItor i = DFile.GetFirstSectionIter();
 	//i++;  //пропускаем пустую секцию
 	t_Section* section;
-	string fileName, method, opt,v_control;
+	string fileName, method, opt,v_control, type;
 	string sectionName;
 	i++;
 	while (i!=DFile.m_Sections.end()){
@@ -61,12 +61,13 @@ void TaskLoader::load_and_calc_tasks(){
 		cout << "Task "<< t->description<< "  loaded" << endl;
 		taskList.push_back(t);
 		fileName = localPath+"\\";
-		fileName += section->Keys[4].szValue;//DFile.GetValue(section->szName, "result");
+		fileName += section->Keys[5].szValue;//DFile.GetValue(section->szName, "result");
 		out_f.open(fileName.c_str());
 		//загрузка настроечных параметров задачи
-		method =  section->Keys[1].szValue;//DFile.GetValue(section->szName, "method");
-		opt =  section->Keys[2].szValue;//DFile.GetValue(section->szName, "search_optimisation");
-		v_control =  section->Keys[3].szValue;
+		type =  section->Keys[1].szValue;
+		method =  section->Keys[2].szValue;//DFile.GetValue(section->szName, "method");
+		opt =  section->Keys[3].szValue;//DFile.GetValue(section->szName, "search_optimisation");
+		v_control =  section->Keys[4].szValue;
 		//Настройка параметров поиска экстремума на сетке
 		if (opt == "none")
 			taskList[j]->perfomance = optNone;
@@ -78,15 +79,17 @@ void TaskLoader::load_and_calc_tasks(){
 		taskList[j]->cQ->perfomance  = taskList[j]->perfomance;
 		taskList[j]->cM->perfomance  = taskList[j]->perfomance;
 		before = clock(); //замер времени начала выполнения расчётов
-		if (method == "pontryagin")
-			taskList[j]->TimeCalc_Pontryagin(0);
-		if (method == "alt_int")
-			taskList[j]->TimeCalc_AltInt(0);
-		if (method == "gr1")
-			taskList[j]->TimeCalc_AltInt(0);
-		if (method == "gr2")
-			taskList[j]->TimeCalc_AltInt(0);
-		if (method == "pursue_run"){
+		if (type == "pursue"){
+			if (method == "pontryagin")
+				taskList[j]->TimeCalc_Pontryagin(0);
+			if (method == "alt_int")
+				taskList[j]->TimeCalc_AltInt(0);
+			if (method == "gr1")
+				taskList[j]->TimeCalc_AltInt(0);
+			if (method == "gr2")
+				taskList[j]->TimeCalc_AltInt(0);
+		}
+		if (type == "pursue_run"){
 			prTask = (PR_Task*)taskList[j];
 			prTask->calcPursuerSets(0);
 			prTask->TimeCalc_PR(0);
@@ -95,15 +98,18 @@ void TaskLoader::load_and_calc_tasks(){
 		out_f << "Time evaluated.." << endl;
 		cout << "time is: " << taskList[j]->tr_s[0].T << endl;
 		out_f << "time is: " << taskList[j]->tr_s[0].T << endl;
-		if (method == "pontryagin")
-			taskList[j]->Control_Pontryagin(0);
-		if (method == "alt_int")
-			taskList[j]->Control_AltInt(0);
-		if (method == "gr1")
-			taskList[j]->Control_R1(0);
-		if (method == "gr2")
-			taskList[j]->Control_R2(0);
-		if (method == "pursue_run"){
+		if (type == "pursue"){
+			if (method == "pontryagin")
+				taskList[j]->Control_Pontryagin(0);
+			if (method == "alt_int")
+				taskList[j]->Control_AltInt(0);
+			if (method == "gr1")
+				taskList[j]->Control_R1(0);
+			if (method == "gr2")
+				taskList[j]->Control_R2(0);
+		}
+
+		if (type == "pursue_run"){
 			prTask = (PR_Task*)taskList[j];
 			prTask->Control_PR(0);
 		}

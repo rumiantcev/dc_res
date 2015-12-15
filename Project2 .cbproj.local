@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>1899.12.30 00:00:00.000.105,C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp=C:\Users\alex\Documents\MSU\dc_res\taskloader.cpp</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.195,=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.158,C:\Users\alex\Documents\MSU\dc_res\pr_task.h=C:\Users\alex\Documents\MSU\dc_res\Unit1.h</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.105,C:\Users\alex\Documents\MSU\dc_res\Unit1.h=C:\Users\alex\Documents\MSU\dc_res\taskloader.h</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.158,C:\Users\alex\Documents\MSU\dc_res\pr_task.cpp=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.158,C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp=C:\Users\alex\Documents\MSU\dc_res\pr_task.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.430,=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.105,C:\Users\alex\Documents\MSU\dc_res\taskloader.cpp=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.158,C:\Users\alex\Documents\MSU\dc_res\Unit1.h=C:\Users\alex\Documents\MSU\dc_res\pr_task.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.105,C:\Users\alex\Documents\MSU\dc_res\taskloader.h=C:\Users\alex\Documents\MSU\dc_res\Unit1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.195,=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
   </Transactions>
 </BorlandProject>

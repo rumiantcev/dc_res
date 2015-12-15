@@ -311,7 +311,7 @@ void Task::Control_AltInt(int trNum) {
 	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
 	t = tr_s[trNum].T; // значение t = конечному времени;
 
-	while (t >= precision) {
+	while (k>=0/*t >= precision*/) {  //Проверить корректность условия выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -396,7 +396,7 @@ void Task::Control_R1(int trNum) {
 	tau_s = tau/(tmpPNet.Count*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
 
 
-	while (t >= precision) {
+	while (k>=0/*t >= precision*/) {   //Проверить корректность условия выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -573,7 +573,7 @@ void Task::Control_R2(int trNum) {
 	tau_s = tau/(tmpPNet.Count*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
 
 
-	while (t >= precision) {
+	while (k>=0/*t >= precision*/) {   //Проверить корректность условия выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -790,7 +790,7 @@ void Task::Control_Pontryagin(int trNum) {
 	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
 	t = tr_s[trNum].T; // значение t = конечному времени;
 
-	while (t >= precision) {
+	while (k>=0/*t >= precision*/) {   //Проверить корректность условия выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;

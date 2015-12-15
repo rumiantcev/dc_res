@@ -180,10 +180,10 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 void PR_Task::Control_PR(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c), p_Net(c), px_Net(c);
 	TNetF tmpPNet(*cP), tmpQNet(*cQ);
-	long i, j, k, m, l, Ind = 0;
+	long i, j, k, m, l, Ind = 0,prevInd;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
-	LDouble t, min, absmin, min_x,  extr;
+	LDouble t, min, absmin=-1, min_x,  extr, prevMin;
 	Vector PiEtAx(PP.m()), psi(PP.v->m), extrVec(PP.v->m);
 	Vector u_i(cP->Dim), v_i(cQ->Dim), x_i(dim_x);
    //	bool currmin_exist=false;
@@ -203,33 +203,44 @@ void PR_Task::Control_PR(int trNum) {
 
 	c.perfomance = 0;
 
-	while (t >= precision) {
-		EtA = Exponential(A, t, precision);
-		PiEtA = PP * EtA;
-		PiEtAx = PiEtA * x_i;
+	while (k >= 0) {
 
-		for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
-				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
-				c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
-		}
-
-		//выбираем psi
-		Ind = c.GetExtrGlobal(opMin, 0, min_x);
-
-	   //смотрим, а не проскочили ли  чутка
-	   //и оказались внутри очередного множества управляемости - корректируем время
-		while ((min_x>=0)){
-			k--;
-			t -= tau;
+		if (absmin<0) {
 			EtA = Exponential(A, t, precision);
 			PiEtA = PP * EtA;
 			PiEtAx = PiEtA * x_i;
-			for (i = 0; i < x_Net.Count; i++){
+
+			for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
 				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
 				c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
 			}
+			//выбираем psi
 			Ind = c.GetExtrGlobal(opMin, 0, min_x);
-		} /**/
+		} else{
+			//если обходили множества преследователей смотрим, а не проскочили ли  чутка
+			//и оказались внутри очередного множества управляемости - корректируем время
+			if (k<tr_s[trNum].NetList.size()-1) {
+				k++;   //отходим назад
+				t += tau;
+			}
+			do{
+				EtA = Exponential(A, t, precision);
+				PiEtA = PP * EtA;
+				PiEtAx = PiEtA * x_i;
+				for (i = 0; i < x_Net.Count; i++){
+					x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
+					c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+				}
+			   // prevInd = Ind;
+				//prevMin = min_x;
+				Ind = c.GetExtrGlobal(opMin, 0, min_x);
+				k--;
+				t -= tau;
+			} while (min_x>=0);/**/
+		   // k++;   //отходим назад
+		   //	t += tau;
+		   //	Ind = prevInd;
+		}
 		//фиксируем psi  для множества управляемости, ближайшего к таектории
 		for (m = 0; m < c.Dim; m++)
 				psi.v->v[m] = c.getIJ(Ind, m);
@@ -256,10 +267,10 @@ void PR_Task::Control_PR(int trNum) {
 		tmpPNet *= PiEtAB;
 		absmin = -1.0;
 		for (l=0; l < PursuerList.size(); l++) {
-		   px_Net = *PursuerList[l];
-		   p_Net = px_Net + tmpPNet + (-1)*x_Net;   //проверка принадлежности точки траетории сумме
+		   px_Net = *PursuerList[l]+ (-1)*x_Net;
+		   p_Net = px_Net + tmpPNet;   //проверка принадлежности точки траетории сумме
 		   //множества достижимости из точки траекторрии и множества соотв. преследователя
-		   Ind = p_Net.GetExtrGlobal(opMin,   Ind, min_x);
+		   Ind = p_Net.GetExtrGlobal(opMin, Ind, min_x);
 		   if((min_x>=0)&&(absmin<min_x)){  //если на следующем шаге есть пересечение с множествами откуда
 			//возможно завершение преследования то u выбираем так, чтобы оттолкнуться от множества
 			absmin=min_x; // отталкиваемся от ближайшего из которых возможно преследование

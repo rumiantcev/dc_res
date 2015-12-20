@@ -99,8 +99,52 @@ TNetF m2Net(*PursuerList[0]); // сеточная опорная функция терминального множеств
 	/* */
 	return t;
 }
+//--------------------расчёт шага альтернированного интеграла-----------------//
+void PR_Task::calcNextAltInt(int trNum, LDouble t){
+	TNetF c(PP.m(), perfomance, steps);
+	Matrix PiEtA(A.m(), A.n()), PiEtAk(A.m(), A.n()),  EtA(A.m()), intEtA(A.m()),
+	//PiEtAkC(C.m(), C.n()),
+	PiEtAkB(A.m(), A.n());
 
-  // ------------------------------- Time calc-----------------------------------//
+	c=*tr_s[trNum].NetList[tr_s[trNum].NetList.size()-1];
+
+	intEtA = (0.5 * tau) * (Exponential(A, 0, precision) + Exponential(A, -tau,
+		precision));
+	intEtA.update();
+	EtA = Exponential(A, t, precision);
+	PiEtA = PP * EtA;
+	PiEtAk = PiEtA * intEtA;
+
+	calcNextAltInt(trNum, t, PiEtA,PiEtAk, PiEtAkB/*,PiEtAkC*/,c);
+
+}
+
+void PR_Task::calcNextAltInt(int trNum, LDouble t,  Matrix& PiEtA, Matrix& PiEtAk, Matrix& PiEtAkB, /* Matrix& PiEtAkC,*/ TNetF& c){
+
+		TNetF  tmpPNet(*cP)/*, tmpQNet(*cQ),*/ ;
+
+		PiEtAkB = PiEtAk * B;
+		//PiEtAkC = PiEtAk * C;
+
+		tmpPNet = *cP;
+		//cP->update();
+		//tmpQNet = *cQ;
+		// cQ->update();
+		tmpPNet.oporn(t, 1);
+		//tmpQNet.oporn(t, 1);
+		tmpPNet *= PiEtAkB;
+		//tmpQNet *= PiEtAkC;
+		tmpPNet.update();
+		//tmpQNet.update();
+
+		c = c + tmpPNet;
+		//c -= tmpQNet; // геометрическая разность
+		c.update();
+		tr_s[trNum].NetList.push_back(new TNetF(c));
+		// Сохраняем для последующего поиска Psi
+}
+
+  // ------------------------------- Time calc--------------------------------//
 LDouble PR_Task::TimeCalc_PR(int trNum) {
 	TNetF m2Net(*cM); // сеточная опорная функция терминального множества
 	Matrix PiEtA(A.m(), A.n()), PiEtAk(A.m(), A.n()), //PiEtAkC(C.m(), C.n()),
@@ -112,7 +156,7 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 		x0Net(c), tmpNet(c);
 	long i, Ind = 0;
 
-    // интегрирование методом трапеций по двум точкам
+	// интегрирование методом трапеций по двум точкам
 	intEtA = (0.5 * tau) * (Exponential(A, 0, precision) + Exponential(A, -tau,
 		precision));
 	intEtA.update();
@@ -141,9 +185,11 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAk = PiEtA * intEtA;
+		calcNextAltInt( trNum, t, PiEtA, PiEtAk,PiEtAkB,/*PiEtAkC,*/ c);
+		//-----------------
+		/*
 		PiEtAkB = PiEtAk * B;
 		//PiEtAkC = PiEtAk * C;
-		PiEtAx0 = PiEtA * tr_s[trNum].x0;
 		tmpPNet = *cP;
 		//cP->update();
 		//tmpQNet = *cQ;
@@ -158,12 +204,13 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 		c = c + tmpPNet;
 		//c -= tmpQNet; // геометрическая разность
 		c.update();
-
+		/**/
+		PiEtAx0 = PiEtA * tr_s[trNum].x0;
 		// опорная функция PiEtA*x0 - строим пользуясь тем что это просто скалярное произведение
 		for (i = 0; i < x0Net.Count; i++)
 			x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
 
-		tr_s[trNum].NetList.push_back(new TNetF(c));
+	   //	tr_s[trNum].NetList.push_back(new TNetF(c));
 		// Сохраняем для последующего поиска Psi
 		Net = c + (-1) * x0Net;
 		//Net.update();
@@ -180,19 +227,20 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 void PR_Task::Control_PR(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c), p_Net(c), px_Net(c);
 	TNetF tmpPNet(*cP), tmpQNet(*cQ);
-	long i, j, k, m, l, Ind = 0,prevInd;
+	long i, j, k, m, l, Ind = 0,prevInd, timeSign=-1, k_up, prevSign;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
-	LDouble t, min, absmin=-1, min_x,  extr, prevMin;
+	LDouble t, min, absmin=-1, min_x, extr;
 	Vector PiEtAx(PP.m()), psi(PP.v->m), extrVec(PP.v->m);
 	Vector u_i(cP->Dim), v_i(cQ->Dim), x_i(dim_x);
-   //	bool currmin_exist=false;
+	bool isCollisionPossible=false, isInit;
 
 	VecOfVec vx_i, vu_i, vv_i;
 	Vector *r_i;
 
 	j = 0;
 	k = tr_s[trNum].NetList.size()-1;
+	k_up=k;
 
 
 	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
@@ -203,10 +251,12 @@ void PR_Task::Control_PR(int trNum) {
 
 	c.perfomance = 0;
 
-	while (k >= 0) {
+	while (k >= 1) {
 
-		if (absmin<0) {
-			EtA = Exponential(A, t, precision);
+		if (!isCollisionPossible) {     //если шёл ёжижик, шёл и никого не встретил
+			k--;
+			t -= tau;
+			EtA = Exponential(A, t, precision);  //то идём себе дальше
 			PiEtA = PP * EtA;
 			PiEtAx = PiEtA * x_i;
 
@@ -214,15 +264,14 @@ void PR_Task::Control_PR(int trNum) {
 				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
 				c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
 			}
+
 			//выбираем psi
 			Ind = c.GetExtrGlobal(opMin, 0, min_x);
 		} else{
 			//если обходили множества преследователей смотрим, а не проскочили ли  чутка
 			//и оказались внутри очередного множества управляемости - корректируем время
-			if (k<tr_s[trNum].NetList.size()-1) {
-				k++;   //отходим назад
-				t += tau;
-			}
+//
+			isInit = true;
 			do{
 				EtA = Exponential(A, t, precision);
 				PiEtA = PP * EtA;
@@ -231,15 +280,31 @@ void PR_Task::Control_PR(int trNum) {
 					x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
 					c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
 				}
-			   // prevInd = Ind;
-				//prevMin = min_x;
+
 				Ind = c.GetExtrGlobal(opMin, 0, min_x);
-				k--;
-				t -= tau;
-			} while (min_x>=0);/**/
-		   // k++;   //отходим назад
-		   //	t += tau;
-		   //	Ind = prevInd;
+
+				if (min_x>0) //если попали внуть множетсва - выбираем поменьше
+					timeSign=-1;
+				else       //если оказались снаружи - побольше
+					timeSign=1;
+				if(isInit){
+					prevInd = Ind;
+					prevSign = timeSign;
+					isInit = false;
+				} /**/
+				if (prevSign!=timeSign) {
+                    Ind = prevInd;
+					break;
+				}
+				if(k+timeSign==k_up){
+					//пересчитать Альтернированный интеграл и подвинуть вверх k_up
+					calcNextAltInt(trNum, t+timeSign*tau);
+					k_up = tr_s[trNum].NetList.size()-1;
+				}
+				k += timeSign;
+				t += timeSign*tau;
+
+			} while (true);/**/
 		}
 		//фиксируем psi  для множества управляемости, ближайшего к таектории
 		for (m = 0; m < c.Dim; m++)
@@ -265,33 +330,41 @@ void PR_Task::Control_PR(int trNum) {
 		//к множеству преследователей, то выбираем v  соотвествующую ближайшему множеству преследователя
 		tmpPNet = *cP;
 		tmpPNet *= PiEtAB;
-		absmin = -1.0;
-		for (l=0; l < PursuerList.size(); l++) {
+		absmin = 0.0;
+		isCollisionPossible = false;
+	   for (l=0; l < PursuerList.size(); l++) {
 		   px_Net = *PursuerList[l]+ (-1)*x_Net;
 		   p_Net = px_Net + tmpPNet;   //проверка принадлежности точки траетории сумме
 		   //множества достижимости из точки траекторрии и множества соотв. преследователя
+		   p_Net.perfomance = 0;
 		   Ind = p_Net.GetExtrGlobal(opMin, Ind, min_x);
-		   if((min_x>=0)&&(absmin<min_x)){  //если на следующем шаге есть пересечение с множествами откуда
+		   if(min_x>=0){  //если на следующем шаге есть пересечение с множествами откуда
 			//возможно завершение преследования то u выбираем так, чтобы оттолкнуться от множества
-			absmin=min_x; // отталкиваемся от ближайшего из которых возможно преследование
-			px_Net.perfomance = 0;
-			Ind = px_Net.GetExtrGlobal(opMin,  0, min);
-			for (m = 0; m < c.Dim; m++)
+			if(!isCollisionPossible){
+				isCollisionPossible = true;
+				absmin=min_x;
+			}
+			if(min_x<=absmin){  // отталкиваемся от ближайшего из которых возможно преследование
+				absmin = min_x;
+				px_Net.perfomance = 0;
+				Ind = px_Net.GetExtrGlobal(opMin,  0, min);
+				for (m = 0; m < c.Dim; m++)
 				psi.v->v[m] = px_Net.getIJ(Ind, m);
-			//выбираем u_i - надо доработать и сделать проверку на случай если u_i+1 = -u_i c тем, чтобы всегда было отклонение в сторону главной цели
-			extrVec = Transpose(PiEtAB) * psi;
-			cP->perfomance = 0;
-			Ind = cP->GetExtrDirection(extrVec, scm, convCriteria, opMin, nZAware, Ind, NULL,  extr,  *cP);
-			for (m = 0; m < dim_u; m++)
-				u_i.v->v[m] = cP->getIJ(Ind, m);
-			u_i = cP->getBorderPoint(Ind, u_i);
-			//выбираем v_i
-			extrVec = Transpose(PiEtAC) * psi;
-			cQ->perfomance = 0;
-			Ind = cQ->GetExtrDirection(extrVec, scm, convCriteria, opMin, nZAware, Ind, NULL,  extr,  *cQ);
-			for (m = 0; m < dim_v; m++)
-				v_i.v->v[m] =   cQ->getIJ(Ind, m);
-			v_i=cQ->getBorderPoint(Ind,v_i);
+				//выбираем u_i - надо доработать и сделать проверку на случай если u_i+1 = -u_i c тем, чтобы всегда было отклонение в сторону главной цели
+				extrVec = Transpose(PiEtAB) * psi;
+				cP->perfomance = 0;
+				Ind = cP->GetExtrDirection(extrVec, scm, convCriteria, opMin, nZAware, Ind, NULL,  extr,  *cP);
+				for (m = 0; m < dim_u; m++)
+					u_i.v->v[m] = cP->getIJ(Ind, m);
+				u_i = cP->getBorderPoint(Ind, u_i);
+				//выбираем v_i
+//				extrVec = Transpose(PiEtAC) * psi;
+//				cQ->perfomance = 0;
+//				Ind = cQ->GetExtrDirection(extrVec, scm, convCriteria, opMin, nZAware, Ind, NULL,  extr,  *cQ);
+//				for (m = 0; m < dim_v; m++)
+//					v_i.v->v[m] =   cQ->getIJ(Ind, m);
+//				v_i=cQ->getBorderPoint(Ind,v_i);
+			}
 		   }
 
 		}   /**/
@@ -300,10 +373,10 @@ void PR_Task::Control_PR(int trNum) {
 		//находим следующий  x_i  методом  Рунге-Кутты
 		x_i = rungeCutt(x_i, u_i, v_i);
 
-		if(absmin <0){  //в противном случае надо проверить  не попали ли внуть множетва управляемости
-			t -= tau;
-			k--;
-		}
+//		if(!isCollisionPossible){  //в противном случае надо проверить  не попали ли внуть множетва управляемости
+//			t -= tau;
+//			k--;
+//		}
 
 		//сохраняем результаты расчётов
 		r_i =  new Vector(x_i);
@@ -320,6 +393,7 @@ void PR_Task::Control_PR(int trNum) {
 		j++;
 	}
 
+	 /* TODO -orum : Сделать отдеьный конструктор из вектора векторов в матрицу */
 	k= vx_i.size()-1;
 	tr_s[trNum].x_i = new Matrix(k+1, dim_x);
 	// массив векторов со значениями  x_i

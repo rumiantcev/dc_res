@@ -271,14 +271,14 @@ Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn) {
 }
 // ------------------------------------- rungeCutt ----------------------------//
 // »нтегрирование дл€ Ќ≈стандартного шага по времени
-Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn, LDouble tau) {
+Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn, LDouble tau_z) {
 	Vector K1(A.m()), K2(A.m()), K3(A.m()), K4(A.m()), result(A.m());
 
 	K1 = (A * xn + (-1)* B * un + C * vn);
 	K2 = (A * (xn + 0.5 * tau * K1) + (-1)* B * un + C * vn);
 	K3 = (A * (xn + 0.5 * tau * K2) + (-1)* B * un + C * vn);
 	K4 = (A * (xn + tau * K3) + (-1)* B * un + C * vn);
-	result = xn + tau / 6 * (K1 + 2 * (K2 + K3) + K4);
+	result = xn + tau_z / 6 * (K1 + 2 * (K2 + K3) + K4);
 	result.update();
 	return result;
 	/* */
@@ -311,7 +311,7 @@ void Task::Control_AltInt(int trNum) {
 	x_i = tr_s[trNum].x0; // заполн€ем x_i  начальным значением
 	t = tr_s[trNum].T; // значение t = конечному времени;
 
-	while (t >= precision) {
+	while (k>=0/*t >= precision*/) {  //ѕроверить корректность услови€ выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -396,7 +396,7 @@ void Task::Control_R1(int trNum) {
 	tau_s = tau/(tmpPNet.Count*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
 
 
-	while (t >= precision) {
+	while (k>=0/*t >= precision*/) {   //ѕроверить корректность услови€ выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -573,7 +573,7 @@ void Task::Control_R2(int trNum) {
 	tau_s = tau/(tmpPNet.Count*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
 
 
-	while (t >= precision) {
+	while (k>=0/*t >= precision*/) {   //ѕроверить корректность услови€ выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -790,7 +790,7 @@ void Task::Control_Pontryagin(int trNum) {
 	x_i = tr_s[trNum].x0; // заполн€ем x_i  начальным значением
 	t = tr_s[trNum].T; // значение t = конечному времени;
 
-	while (t >= precision) {
+	while (k>=0/*t >= precision*/) {   //ѕроверить корректность услови€ выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;

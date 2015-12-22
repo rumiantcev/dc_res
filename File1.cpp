@@ -35,15 +35,32 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
-
-	string localPath = getenv("DC_PATH");  //переменная определяет где находятся данные и конф. файлы ... а также результаты расчётов
+	string localPath = "C://Users/Julia/Documents/Embarcadero/Studio/Projects/Test1/";  //переменная определяет где находятся данные и конф. файлы ... а также результаты расчётов
 	TaskLoader tl(localPath);
 	cout<<localPath<<endl;
 
 	cout << "Begin.." << endl;
 	tl.loadGlobalParameters();
 	cout << "Parameters are loaded" << endl;
-	tl.load_and_calc_tasks();
+	cout << endl;
+
+	string fileName = std::string(localPath + "Task_pr_2kr2.inp");
+	PR_Task *t = NULL;
+	t =  (PR_Task *) tl.loadTask(fileName);
+	vector<TNetF*> tmp;
+	tmp = ((PR_Task *)t)->PursuerList;
+
+	/*while (!tmp.empty()) {
+		cout << "!" << endl << *(tmp.back()) << endl;
+		tmp.pop_back();
+	} /**/
+	//cout << "!!" << endl << *(t->cM) << endl;
+
+	/**/
+
+	int trNum;
+	trNum = 0;
+  ((PR_Task *)t)->Find_Ns(trNum);
 
 	return 0;
 }

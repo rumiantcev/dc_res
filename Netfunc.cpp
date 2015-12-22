@@ -89,6 +89,7 @@ __fastcall TNetF::TNetF(const TNetF& NetF) : TNet(NetF) {
 	initNetFDefault();
 	copyNetFFrom(NetF, false);
 	SetFunc(NetF.fStr);
+	is_empty = NetF.is_empty;
 }
 
 /* */// ------------------------copy constructor-----------------------------------//
@@ -96,6 +97,7 @@ __fastcall TNetF::TNetF(TNetF& Net, const string& fstr) : TNet(Net) {
 	initNetFDefault();
 	copyNetFFrom(Net, false);
 	SetFunc(fstr);
+	is_empty = Net.is_empty;
 }
 
 // ------------------------------- destructor ---------------------------------//
@@ -1007,6 +1009,9 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 				j = abs(jj + j) % net.Count;
 			}
 		}
+		if (alpha[i] < 0) {
+			net.is_empty = true;
+		}
 	}
 }
 
@@ -1122,6 +1127,7 @@ void /* !inline */ __fastcall TNetF::initNetFDefault() {
 	vars = NULL;
 	f = NULL;
 	alphaMode = false;
+	is_empty = false;
 	t = 0;
 #ifdef _WIN64
 	lib_name = "SICx64.dll";

@@ -14,8 +14,8 @@ class PR_Task: public Task {
 	int tr_count);
 		~PR_Task();
 	 //	PR_Task* loadTask(string szFileName);
-
-
+	 virtual void PR_Task::Find_Ns(int trNum);
+	 //TNetF& __fastcall PR_Task::Find_Ns(int trNum);
 };
 //---------------------------------------------------------------------------
 #endif

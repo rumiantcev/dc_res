@@ -31,7 +31,7 @@ class TNetF : public TNet {
 public:
 
 	OpType operType;
-	bool /* toPoint, */ alphaMode; // ,updated;
+	bool /* toPoint, */ alphaMode, is_empty; // ,updated;
 	// double upd;  //кешированный коэффициент умножения
 	// Matrix *u_mx;   	//кешированная матрица
 	// ,isPoint; //учитывать или не учитывать длины векторов по определённому направлению

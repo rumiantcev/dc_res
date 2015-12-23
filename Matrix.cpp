@@ -91,13 +91,14 @@ __fastcall Matrix::Matrix(const string& str, long m, long n) {
 
 // ----------------------------- += --------------------------------------------//
 Matrix& __fastcall Matrix:: operator += (const Matrix& A) {
-	long i, j;
+	
 	// Matrix *pA = (Matrix*)(&A);
 	double coeff = A.upd / upd;
 	if (A.v == v) {
 		upd += A.upd;
 	}
 	else {
+		long i, j;
 		if (v->linkCount > 1)
 			detach();
 		for (i = 0; i < A.v->m; i++)

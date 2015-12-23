@@ -91,7 +91,8 @@ void TaskLoader::load_and_calc_tasks(){
 		}
 		if (type == "pursue_run"){
 			prTask = (PR_Task*)taskList[j];
-			prTask->calcPursuerSets(0);
+		   	prTask->calcPursuerSets(0);
+		   // prTask->Find_Ns(0);
 			prTask->TimeCalc_PR(0);
 		}
 		cout << "Time evaluated.." << endl;

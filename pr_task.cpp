@@ -9,6 +9,7 @@
 
 PR_Task::~PR_Task() {
 	for_each(PursuerList.begin(), PursuerList.end(), DeleteObj());
+	for_each(NList.begin(), NList.end(), DeleteObj());
 }
 
 // ------------------------------ constructor --------------------------------//
@@ -17,10 +18,83 @@ PR_Task::PR_Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, double 
 	int tr_count):Task(dimX,  dimU,  dimV,  dimM,  ts,  prec,
 	 eps,  delta,  tmax,  st,  perf,  stat,  tr_count) {
 	}
+//------------------------------расчёт множеств альтернированных интегралов преследователей
+void PR_Task::Find_Ns(int trNum) {
+	vector<TNetF*> tmplist;     //'input'
+	tmplist = PursuerList;
 
-// ------ расчёт множеств альтернированных интегралов преследователей --------//
+   //	vector<TNetF*> NList;       //'output'// перенесено отсюда в класс, чтобы результат не разрушался при выходе из функции
+	bool *L;
+	LDouble t = t0;
+	Matrix EtA(A.m()), PiEtA(A.m(), A.n()), PiEtAkB(B.m(), B.n()), PiEtAkC(C.m(), C.n()), intEtA(A.m());
+	Matrix PiEtAk(A.m(), A.n());//было забыто
+	//Vector PiEtAx0(A.m()), psi(A.v->m), Fs(A.v->m), vmin(A.v->m);
+
+	TNetF *c, tmpPNet(*cP), tmpQNet(*cQ), tmpNet(PP.m(), perfomance, steps);
+
+	//long i, j;
+
+	intEtA = (0.5 * tau) * (Exponential(A, 0, precision) + Exponential(A, -tau, precision));
+
+	while (!tmplist.empty()) {
+
+		TNetF NiNet(*(tmplist.back()));
+		NiNet.oporn(t0, 1);
+
+	   //	cout<<NiNet<<endl;
+
+		t = t0;   // время  инициализируется для каждого мн-ва
+	   //	EtA = Exponential(A, t, precision);  // экспоненциал соотв. образом пересчитывается  поэтому это перенесено в цикл *1
+	   //	PiEtA = PP * EtA * intEtA;
+
+		while (1) {
+			t += tau;
+
+			EtA = Exponential(A, t, precision);  // *1 вот сюда
+			PiEtA = PP * EtA * intEtA;
+			PiEtAk = PiEtA * intEtA;
+
+			PiEtAkB = PiEtAk * B;
+			tmpPNet = *cP;
+			tmpPNet.oporn(t, -1);
+			tmpPNet *= PiEtAkB;
+
+			PiEtAkC = PiEtAk * C;
+			//c = tmplist.back();
+			tmpQNet = *cQ;//*(tmplist.back());
+			tmpQNet.oporn(t, -1);
+			tmpQNet *= PiEtAkC;
+
+		   //	tmpNet = tmpQNet - tmpPNet;
+			NiNet = NiNet + tmpQNet;
+			NiNet -= tmpPNet; // геометрическая разность
+			cout<<NiNet<<endl;
+		  /* */
+			cout << NiNet.is_empty << endl;
+			if (tmpNet.is_empty) {
+				break;
+			}
+
+		   //	NiNet += (tau) * tmpNet;
+		  //	NiNet.update();
+		}
+		// L = new bool[NiNet.Count];    //в рамках расчёта геом. разности уже встроено овыпукление
+	   //	NiNet.Conv(L);
+	   //	delete[]L;
+	  	NList.push_back(&NiNet);
+		if (c!=NULL) delete c;// c тем, чтобы корректно разрушить то, что иы удаляешь из tmpList
+		tmplist.pop_back();
+
+		cout << t << endl;
+	}
+	//return *this;        //?
+		/**/
+		//
+}
+
+// ------ расчёт множеств альтернированных интегралов преследователей - Костыль --------//
 LDouble PR_Task::calcPursuerSets(int trNum){
-TNetF m2Net(*PursuerList[0]); // сеточная опорная функция терминального множества
+	TNetF m2Net(*PursuerList[0]); // сеточная опорная функция терминального множества
 // для первого преследователя
 	Matrix PiEtA(A.m(), A.n()), PiEtAk(A.m(), A.n()), PiEtAkC(C.m(), C.n()),
 		PiEtAkB(A.m(), A.n()), EtA(A.m()), intEtA(A.m());
@@ -39,64 +113,7 @@ TNetF m2Net(*PursuerList[0]); // сеточная опорная функция терминального множеств
 	}
 
 
-	/*
-    // интегрирование методом трапеций по двум точкам
-	intEtA = (0.5 * tau) * (Exponential(A, 0, precision) + Exponential(A, -tau,
-		precision));
-	intEtA.update();
 
-	m2Net.oporn(t0, 1); // опорное значение сетки по M2
-	c = m2Net;
-	tr_s[trNum].NetList.push_back(new TNetF(c));
-
-
-	EtA = Exponential(A, t, precision);
-	PiEtA = PP * EtA;
-	PiEtAx0 = PiEtA * tr_s[trNum].x0;
-
-
-	Net = c;
-
-	Ind = Net.GetExtrGlobal(opMax,  Ind, min);
-	cout << min << endl;
-	while (min < 0) {
-		t += tau;
-		min = -1;
-		EtA = Exponential(A, t, precision);
-		PiEtA = PP * EtA;
-		PiEtAk = PiEtA * intEtA;
-		PiEtAkB = PiEtAk * B;
-		PiEtAkC = PiEtAk * C;
-		PiEtAx0 = PiEtA * tr_s[trNum].x0;
-		tmpPNet = *cP;
-		// cP->update();
-		tmpQNet = *cQ;
-		// cQ->update();
-		tmpPNet.oporn(t, 1);
-		tmpQNet.oporn(t, 1);
-		tmpPNet *= PiEtAkB;
-		tmpQNet *= PiEtAkC;
-		tmpPNet.update();
-		tmpQNet.update();
-
-		c = c + tmpPNet;
-		c -= tmpQNet; // геометрическая разность
-		c.update();
-
-		// опорная функция PiEtA*x0 - строим пользуясь тем что это просто скалярное произведение
-		for (i = 0; i < x0Net.Count; i++)
-			x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
-
-		tr_s[trNum].NetList.push_back(new TNetF(c));
-		// Сохраняем для последующего поиска Psi
-		Net = c + (-1) * x0Net;
-		//Net.update();
-		Ind = Net.GetExtrGlobal(opMin,   Ind, min);
-		tr_s[trNum].psiExtr.push_back(Ind);
-		cout << min << " : " << Ind << " : " << t << endl;
-	}
-	tr_s[trNum].T = t;
-	/* */
 	return t;
 }
 //--------------------расчёт шага альтернированного интеграла-----------------//
@@ -332,8 +349,8 @@ void PR_Task::Control_PR(int trNum) {
 		tmpPNet *= PiEtAB;
 		absmin = 0.0;
 		isCollisionPossible = false;
-	   for (l=0; l < PursuerList.size(); l++) {
-		   px_Net = *PursuerList[l]+ (-1)*x_Net;
+	   for (l=0; l < PursuerList/**//*NList*/.size(); l++) {
+		   px_Net = *PursuerList/**//* *NList*/[l]+ (-1)*x_Net;
 		   p_Net = px_Net + tmpPNet;   //проверка принадлежности точки траетории сумме
 		   //множества достижимости из точки траекторрии и множества соотв. преследователя
 		   p_Net.perfomance = 0;

@@ -8,6 +8,7 @@
 class PR_Task: public Task {
 	public:
 		vector<TNetF*>PursuerList;
+		vector<TNetF*> NList;
 
 		PR_Task(long , long dimU, long dimV, long dimM, LDouble ts, double prec,
 			double eps, LDouble delta, LDouble tmax, long st, short perf,
@@ -15,6 +16,7 @@ class PR_Task: public Task {
 		~PR_Task();
 
 		virtual LDouble calcPursuerSets(int);
+		virtual void Find_Ns(int);
 		virtual LDouble TimeCalc_PR(int trNum);
 		virtual void Control_PR(int trNum);
 	private:

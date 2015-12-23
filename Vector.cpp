@@ -61,7 +61,7 @@ __fastcall Vector::Vector(const string& str, long size) {
 	string _val;
 	for (k = 0; k < size; k++) {
 		while (*j != ',')
-			j++;
+			++j;
 		_val.assign(i, j);
 		v->v[k] = atof(_val.c_str());
 		i = ++j;
@@ -90,11 +90,11 @@ Vector& __fastcall Vector:: operator = (const double & c) {
 
 // ---------------------------- += --------------------------------------------//
 Vector& __fastcall Vector:: operator += (const Vector& A) {
-	long i;
 	double coeff = A.upd / upd;
 	if (A.v == v)
 		upd += A.upd;
 	else {
+		long i;
 		if (v->linkCount > 1)
 			detach();
 		for (i = 0; i < A.v->size; i++)
@@ -106,11 +106,11 @@ Vector& __fastcall Vector:: operator += (const Vector& A) {
 
 Vector& __fastcall Vector::vSum(const Vector& A) // added for profiling
 {
-	long i;
 	if (A.v == v) {
 		upd += A.upd;
 	}
 	else {
+		long i;
 		if (v->linkCount > 1)
 			detach();
 		for (i = 0; i < A.v->size; i++)
@@ -252,9 +252,10 @@ Vector __fastcall Vector::GetSubVector(long start, long end) {
 
 // ------------------------------- detach -------------------------------------//
 Vector& __fastcall Vector::detachT() {
-	long i;
-
+	
 	if (v->linkCount > 1) {
+		long i;
+		
 		Vector *vv = new Vector(v->size);
 		for (i = 0; i < v->size; i++)
 			vv->v->v[i] = v->v[i];
@@ -265,10 +266,11 @@ Vector& __fastcall Vector::detachT() {
 }
 
 // ------------------------------- detach -------------------------------------//
-void __fastcall Vector::detach() const {
-	long i;
+void __fastcall Vector::detach() const {	
 
 	if (v->linkCount > 1) {
+		long i;
+		
 		sVec *vv = v;
 		delete v;
 		v = new sVec(vv->size);
@@ -279,11 +281,13 @@ void __fastcall Vector::detach() const {
 
 // ------------------------------- Update -------------------------------------//
 void __fastcall Vector::update() const {
-	long i;
 	detach();
-	if (upd != 1.0)
+	if (upd != 1.0){
+		long i;
+		
 		for (i = 0; i < v->size; i++)
 			v->v[i] *= upd;
+	}
 	upd = 1;
 	updated = true;
 }

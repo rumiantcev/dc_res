@@ -3,11 +3,11 @@
 #define vectorH
 #pragma once
 // ----------------------------------- Vector ---------------------------------//
-#include <iostream>
-#include <fstream>
+//#include <iostream>
+//#include <fstream>
 #include "svec.h"
 #include "smx.h"
-// #include "general.h"
+ #include "general.h"
 using namespace std;
 
 /**
@@ -30,7 +30,7 @@ public:
 	// void operator delete(void* p);
 
 	void __fastcall update() const ;
-	long __fastcall size() const ;
+	inline long __fastcall size() const {return v->size;};
 	/* !inline */ void __fastcall create(long size) const ;
 	void __fastcall detach() const ;
 	Vector& __fastcall detachT();
@@ -78,6 +78,7 @@ public:
 	static Vector* __fastcall copy(Vector* src, Vector* dst);
 	void __fastcall norm(const int& halfRes);
 	LDouble __fastcall norm();
+	friend const LDouble eu_dist(const Vector&, const Vector&);
 };
 // ---------------------------------------------------------------------------
 #endif

@@ -1,11 +1,12 @@
 //---------------------------------------------------------------------------
-#include <stdio.h>
-#include <iostream>
-#include <fstream>
-#include <string>
+//#include <stdio.h>
+//#include <iostream>
+//#include <fstream>
+//#include <string>
 
 #include "task.h"
 #include "pr_task.h"
+#include "pursuerType.h"
 
 #include "CDataFile.h"
 #include "general.h"

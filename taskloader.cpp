@@ -112,7 +112,8 @@ void TaskLoader::load_and_calc_tasks(){
 
 		if (type == "pursue_run"){
 			prTask = (PR_Task*)taskList[j];
-			prTask->Control_PR(0);
+			//prTask->Control_PR(0);
+			prTask->Control_PR_fullSets(0);
 		}
 		elapsed = clock()-before;  //замер времени начала выполнения расчётов
 		cout << "Control evaluated.." << endl;
@@ -139,7 +140,7 @@ Task* TaskLoader::loadTask(string szFileName) {
 	// TNet *tmpNet;
 	// Vector *tmpVec;
 	string *tmpStr, descr;
-	TNetF* tmpPRNet;
+	//TNetF* tmpPRNet;
 	vector<Traectory>trs;
 
 	fstream in_f(szFileName.c_str(), ios::in|ios::nocreate);
@@ -398,6 +399,7 @@ Task* TaskLoader::loadTask(string szFileName) {
 		// Значение опорных функций  множеств преследователей
 		if (meth==1) {
 			in_f.get(c);
+			/*
 			while (c != '[')
 					in_f.get(c);
 			while (!in_f.eof()){
@@ -410,8 +412,19 @@ Task* TaskLoader::loadTask(string szFileName) {
 				res->setFuncToNetF(*(tmpPRNet), *tmpStr);
 				((PR_Task *)res)->PursuerList.push_back(tmpPRNet);
 				delete tmpStr;
-			  	in_f.get(c);
-			}
+				in_f.get(c);
+			} */
+		  pursuerType *tmpPType;
+		  while (!in_f.eof()){
+			while ((c != '[')&&(!in_f.eof()))
+				in_f.get(c);
+			if (in_f.eof())
+				break;
+			in_f.putback(c);
+			tmpPType =  new pursuerType(res->dim_m, res->perfomance, res->steps);
+			in_f >> *tmpPType;
+			((PR_Task *)res)->pTypes.push_back(tmpPType);
+		  }
 		}
 
 

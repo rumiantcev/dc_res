@@ -3,9 +3,18 @@
 	<Transactions>
     <Transaction>1899.12.30 00:00:00.000.105,C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp=C:\Users\alex\Documents\MSU\dc_res\taskloader.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.195,=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.158,C:\Users\alex\Documents\MSU\dc_res\pr_task.h=C:\Users\alex\Documents\MSU\dc_res\Unit1.h</Transaction>
     <Transaction>1899.12.30 00:00:00.000.105,C:\Users\alex\Documents\MSU\dc_res\Unit1.h=C:\Users\alex\Documents\MSU\dc_res\taskloader.h</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.158,C:\Users\alex\Documents\MSU\dc_res\pr_task.cpp=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.430,=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.158,C:\Users\alex\Documents\MSU\dc_res\pr_task.h=C:\Users\alex\Documents\MSU\dc_res\Unit1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.540,=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.465,=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.173,=C:\Users\alex\Documents\MSU\dc_res\pursuer.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.603,C:\Users\alex\Documents\MSU\dc_res\pursuerType.h=C:\Users\alex\Documents\MSU\dc_res\Unit1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.158,C:\Users\alex\Documents\MSU\dc_res\pr_task.cpp=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.603,C:\Users\alex\Documents\MSU\dc_res\pursuerType.cpp=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.479,C:\Users\alex\Documents\MSU\dc_res\pursuerPoint.cpp=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.568,C:\Users\alex\Documents\MSU\dc_res\pursuerPoint.h=C:\Users\alex\Documents\MSU\dc_res\Unit1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.568,C:\Users\alex\Documents\MSU\dc_res\pursuerPoint.cpp=C:\Users\alex\Documents\MSU\dc_res\Unit1.cpp</Transaction>
+    <Transaction>2016.01.09 14:55:37.182,=C:\Users\alex\Documents\MSU\dc_res\readme.txt</Transaction>
   </Transactions>
 </BorlandProject>

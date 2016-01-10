@@ -1,16 +1,18 @@
 // ---------------------------------------------------------------------------
 #ifndef NetfuncH
 #define NetfuncH
-#include <string>
-#include <map>
-#include <list>
-#include <iostream>
-#include <sstream>
-#include <assert.h>
+//#include <string>
+//#include <map>
+//#include <list>
+//#include <iostream>
+//#include <sstream>
+//#include <assert.h>
 //#include <system.hpp>
-#include <time.h>
+//#include <time.h>
+#include "general.h"
+
 using namespace std;
-#include<math.h>
+//#include<math.h>
 // #include <omp.h>
 
 #include "dll.h"
@@ -20,7 +22,7 @@ using namespace Dll;
 // #include "matrix.h"
 #include "net.h"
 // #include "rapideval\RapidEvaluator.hpp"
-#include "general.h"
+
 
 class TNetF;
 
@@ -36,6 +38,7 @@ public:
 	// Matrix *u_mx;   	//кешированная матрица
 	// ,isPoint; //учитывать или не учитывать длины векторов по определённому направлению
 	LDouble zeroPrecision; // Точность округления до 0;
+	LDouble maxRad;
 	alphType alpha; // длины вектора множества по определённому направлению
 	Vector *f;
 	TNet *net;

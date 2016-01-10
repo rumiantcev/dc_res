@@ -3,11 +3,26 @@
 #define generalH
 
 #include <string>
+#include <sstream>
 #include <map>
 #include <list>
 #include <vector>
 #include <math.h>
-#include <assert.h>
+//#include <assert.h>
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <locale.h>
+#include <windows.h>
+#include<time.h>
+#include <io.h>
+#include<iterator>
+#include <stdlib>
+#include <sstream>
+#include <algorithm>
+//#include <system.hpp>
+
+
 
 
 typedef double LDouble;
@@ -47,6 +62,8 @@ static LDouble _extr_t0_param  = 1.0;
 static LDouble _extr_tmin_param  = 0.0001;
 static LDouble _extr_e_val = exp(_extr_e_param);
 
+const LDouble ldZeroDf = 0.000000001f; //допустимая погрешность при сравнении с нулём для чисел с плавающей точкой
+
 //очистка ссылок в векторах объектов
 struct DeleteObj {
 	template<typename T>
@@ -55,5 +72,23 @@ struct DeleteObj {
 			delete ptr;
 	}
 };
+
+//---- преобразования в std::string
+inline std::string intToStr(int i){
+	std::string str;
+	std::stringstream oss;
+	oss << i;
+	oss >> str;
+	return str;
+}
+
+inline std::string ldToStr(LDouble ld){
+	std::string str;
+	std::stringstream oss;
+	oss << ld;
+	oss >> str;
+	return str;
+}
+
 
 #endif

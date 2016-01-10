@@ -1,8 +1,8 @@
 // ---------------------------------------------------------------------------
 
-#include <assert.h>
-#include <math.h>
-#include <algorithm>
+//#include <assert.h>
+//#include <math.h>
+//#include <algorithm>
 // #include <dstring.h>
 #pragma hdrstop
 #include "Vector.h"
@@ -10,9 +10,9 @@
 using namespace std;
 
 // ------------------------------- size () ------------------------------------//
-long __fastcall Vector::size() const {
-	return v->size;
-}
+//long __fastcall Vector::size() const {
+//	return v->size;
+//}
 
 // ------------------------------- destructor ---------------------------------//
 /* void Vector::operator delete(void *p)
@@ -218,9 +218,9 @@ istream& __fastcall operator >> (istream& in_data, Vector& C) {
 	}
 	// C=vec;
 	in_data.get(c);
-	while (c != ';' && c != EOF)
+	while ((c != ';') /*&& c != ','*/ && (!in_data.eof()))
 		in_data.get(c);
-	in_data.get(c);
+	//in_data.get(c);
 	return in_data;
 }
 
@@ -331,4 +331,14 @@ LDouble __fastcall Vector::norm() {
 	for (i = 0; i < v->size; ++i)
 		acc += (v->v[i]*v->v[i]);
 	return sqrt(acc);
+}
+
+//-------------евклидово расстояние между векторами---------------------------//
+const LDouble eu_dist(const Vector& a, const Vector& b){
+ unsigned long i;
+ LDouble dist=0;
+
+ for (i = 0; i < a.size(); i++)
+	dist += (a[i]-b[i]) * (a[i]-b[i]);
+ return sqrt(dist);
 }

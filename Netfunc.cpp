@@ -90,6 +90,7 @@ __fastcall TNetF::TNetF(const TNetF& NetF) : TNet(NetF) {
 	copyNetFFrom(NetF, false);
 	SetFunc(NetF.fStr);
 	is_empty = NetF.is_empty;
+	maxRad = NetF.maxRad;
 }
 
 /* */// ------------------------copy constructor-----------------------------------//
@@ -98,6 +99,7 @@ __fastcall TNetF::TNetF(TNetF& Net, const string& fstr) : TNet(Net) {
 	copyNetFFrom(Net, false);
 	SetFunc(fstr);
 	is_empty = Net.is_empty;
+	maxRad = Net.maxRad;
 }
 
 // ------------------------------- destructor ---------------------------------//
@@ -945,6 +947,8 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, t = tmax, p, a =
 		LDouble(_lrand() % net.Count) / net.Count, c = _extr_e_val;
 	alpha.reserve(Count);
+	net.is_empty = true;
+	net.maxRad = 0;
 	for (i = 0; i < Count; i++) {
 		if (L != NULL)
 			L[i] = false;
@@ -1011,9 +1015,10 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 				j = abs(jj + j) % net.Count;
 			}
 		}
-		if (alpha[i] < 0) {
-			net.is_empty = true;
-		}
+		if (alpha[i]> ldZeroDf)
+			net.is_empty = false;
+		if (alpha[i]>net.maxRad)
+			net.maxRad = alpha[i];
 	}
 }
 
@@ -1131,6 +1136,7 @@ void /* !inline */ __fastcall TNetF::initNetFDefault() {
 	f = NULL;
 	alphaMode = false;
 	is_empty = false;
+	maxRad = 0.0;
 	t = 0;
 #ifdef _WIN64
 	lib_name = "SICx64.dll";

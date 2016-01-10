@@ -2,17 +2,18 @@
 #ifndef taskH
 #define taskH
 // ---------------------------------------------------------------------------
-#include<classes.hpp>
+//#include<classes.hpp>
+#include"general.h"
 #include"vector.h"
 #include"matrix.h"
 #include"net.h"
 #include"netfunc.h"
 // #include "RapidEvaluator.hpp"
 #include"traectory.h"
-#include<vector>
-#include<iterator>
-#include<fstream>
-#include<math.h>
+//#include<vector>
+//#include<iterator>
+//#include<fstream>
+//#include<math.h>
 
 using namespace std;
 

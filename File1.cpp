@@ -9,15 +9,7 @@
 #endif
 
 
-#include <stdio.h>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <locale.h>
-#include <windows.h>
-#include<time.h>
-#include <io.h>
-
+#include "general.h"
 #include "task.h"
 #include "taskloader.h"
 #include "CDataFile.h"
@@ -40,7 +32,9 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	TaskLoader tl(localPath);
 	cout<<localPath<<endl;
 
+
 	cout << "Begin.." << endl;
+	cout << "Версия: 31.12.2015" << endl;
 	tl.loadGlobalParameters();
 	cout << "Parameters are loaded" << endl;
 	tl.load_and_calc_tasks();

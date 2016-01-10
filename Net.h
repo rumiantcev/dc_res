@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include<ostream>
-#include<istream>
-#include<math.h>
+//#include<ostream>
+//#include<istream>
+//#include<math.h>
 
 #include "vector.h"
 #include "matrix.h"

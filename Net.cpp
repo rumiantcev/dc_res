@@ -3,7 +3,7 @@
 #include <stdlib>
 #include <system.hpp>
 // #include <sysutils.hpp>
-#include <assert.h>
+//#include <assert.h>
 
 #pragma hdrstop
 #include "Net.h"

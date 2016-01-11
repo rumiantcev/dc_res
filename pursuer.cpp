@@ -12,6 +12,5 @@
 		delete center;
  }
 
- Pursuer::Pursuer(){
-
+ Pursuer::Pursuer():currInd(0){
  }

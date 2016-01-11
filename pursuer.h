@@ -13,6 +13,7 @@ class Pursuer{
 		LDouble funnelDepth;
 		LDouble radarVisibility;
 		pursuerType* pType;
+		long currInd;
 		VecOfNetF funnel;
 
 		Pursuer();

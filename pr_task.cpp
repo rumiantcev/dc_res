@@ -653,7 +653,12 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 		   cout << eu_dist(*ps->center, x_i)<<endl;
 		   if(eu_dist(*ps->center, x_i) <  ps->radarVisibility){
 			fi = ps->funnel.size() - 1;
-			for (n = 0; n < ps->funnel.size(); n++) {
+			if(ps->currInd >0 ){   //т.е. если при t-tau уже натыкались на множество откуда возможно преследование и уклонялись, то
+				n= ps->currInd;    //при  надо проверить, накнёмся ли при t
+				ps->currInd = 0;
+			}else                 //иначе считаем, что все проверки с начала "воронки"
+				n=0;
+			for (/*n = 0*/; n < ps->funnel.size(); n++) {
 				px_Net = *ps->funnel[fi-n] + (-1)*x_Net;
 				p_Net = px_Net + tmpPNet;   //проверка принадлежности точки траетории сумме
 				//множества достижимости из точки траекторрии и множества соотв. преследователя
@@ -685,6 +690,8 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 						//for (m = 0; m < dim_v; m++)
 						//v_i.v->v[m] =   cQ->getIJ(Ind, m);
 						//v_i=cQ->getBorderPoint(Ind,v_i);
+						ps->currInd = n;  //запоминаем время в которое оттолкнулись от множества из котороно возможно преследование
+						break;
 					}
 				}
 			}

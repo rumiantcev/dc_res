@@ -10,7 +10,7 @@
 #include"general.h"
 using namespace std;
 
-typedef vector<long>VecOfLong;
+
 typedef vector<Vector*>VecOfVec;
 
 

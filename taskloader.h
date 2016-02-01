@@ -21,7 +21,7 @@ class TaskLoader{
 		string localPath;
 		VecOfTask taskList;
 
-		TaskLoader(string);
+		explicit TaskLoader(string);
         virtual ~TaskLoader();
 
 		void loadGlobalParameters();

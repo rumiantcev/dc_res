@@ -56,7 +56,7 @@ public:
 	__fastcall TNetF(int, long, long); // Ok
 	__fastcall TNetF(int, long, long, string); // Ok
 	__fastcall TNetF(long, int, long, long); // Ok
-	__fastcall TNetF(TNet&); // Ok
+	explicit __fastcall TNetF(TNet&); // Ok
 	// __fastcall TNetF(TNet&,TSIC_Data&);
 	__fastcall TNetF(TNet&, const string&);
 	__fastcall TNetF(const TNetF&); // Ok
@@ -115,6 +115,7 @@ public:
 
 	void /* !inline */ __fastcall SetFunc(const string& fstr); // Ok
 	void __fastcall Conv(bool *); // выпуклая оболочка
+    void __fastcall ConvTimS(bool *); // выпуклая оболочка
 	void __fastcall ConvSerial(bool *, const Vector & a);
 	TNet __fastcall Points(bool compactPoints);
 	// Конвертация из опорной функции в сетку из точек по границе множества

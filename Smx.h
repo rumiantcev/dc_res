@@ -17,9 +17,9 @@ public:
 	long linkCount;
 
 	__fastcall sMx(long, long);
-	__fastcall sMx(long);
+	explicit __fastcall sMx(long);
 	__fastcall sMx(sMx&);
-	__fastcall sMx(double **vv, long mm, long nn);
+   //	__fastcall sMx(double **vv, long mm, long nn);
 	virtual __fastcall ~sMx();
 	void operator delete(void *p);
 	/* !inline */ void __fastcall create();

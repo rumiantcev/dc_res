@@ -22,7 +22,7 @@ public:
 
 	// cached; Reserved
 	__fastcall Vector();
-	__fastcall Vector(long);
+	explicit __fastcall Vector(long);
 	__fastcall Vector(const Vector&);
 	__fastcall Vector(const double*, long);
 	__fastcall Vector(const string&, long);

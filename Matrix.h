@@ -22,9 +22,9 @@ public:
 	// ,cached; Reserved
 
 	__fastcall Matrix(long, long);
-	__fastcall Matrix(long);
+	explicit __fastcall Matrix(long);
 	__fastcall Matrix(const Matrix&);
-	__fastcall Matrix(double **, long, long);
+   //	__fastcall Matrix(double **, long, long);
 	__fastcall Matrix(const string&, long, long);
 	// void operator delete(void *p);
 

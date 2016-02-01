@@ -90,11 +90,11 @@ typedef struct st_key
 	t_Str		szValue;
 	t_Str		szComment;
 
-	st_key()
+	st_key() : szKey(""), szValue(""), szComment("")
 	{
-		szKey = t_Str("");
-		szValue = t_Str("");
-		szComment = t_Str("");
+	   //	 = t_Str("");
+	   //	szValue = t_Str("");
+	   //	szComment = t_Str("");
 	}
 
 } t_Key;
@@ -112,10 +112,10 @@ typedef struct st_section
 	t_Str		szComment;
 	KeyList		Keys;
 
-	st_section()
+	st_section()  : szName(""), szComment("")
 	{
-		szName = t_Str("");
-		szComment = t_Str("");
+	   //	szName = t_Str("");
+	 //	szComment = t_Str("");
 		Keys.clear();
 	}
 
@@ -147,7 +147,7 @@ public:
 				// Constructors & Destructors
 				/////////////////////////////////////////////////////////////////
 				CDataFile();
-				CDataFile(t_Str szFileName);
+			  explicit 	CDataFile(t_Str szFileName);
 	virtual		~CDataFile();
 
 				// File handling methods

@@ -51,7 +51,7 @@ public:
 	int priority, method; // , traectoryCount;
 	string description;
 
-	Task();
+   //	Task();
 	Task(long, long, long, long, LDouble, double, double, LDouble, LDouble,
 		long, short, long, int);
 	Task(const Task&);

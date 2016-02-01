@@ -67,10 +67,9 @@
 // CDataFile
 // Our default contstructor.  If it can load the file, it will do so and populate
 // the section list with the values from the file.
-CDataFile::CDataFile(t_Str szFileName)
+CDataFile::CDataFile(t_Str szFileName) : m_szFileName(szFileName)
 {
 	m_bDirty = false;
-	m_szFileName = szFileName;
 	m_Flags = (AUTOCREATE_SECTIONS | AUTOCREATE_KEYS);
 	t_Section *pSection = new t_Section;
 	m_Sections.push_back( *pSection );
@@ -233,7 +232,7 @@ bool CDataFile::Save()
 		t_Section Section;
 		t_Key Key;
 
-		for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); s_pos++)
+		for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); ++s_pos)
 		{
 			Section = (*s_pos);
 			bool bWroteComment = false;
@@ -251,7 +250,7 @@ bool CDataFile::Save()
 						Section.szName.c_str());
 			}
 
-			for (k_pos = Section.Keys.begin(); k_pos != Section.Keys.end(); k_pos++)
+			for (k_pos = Section.Keys.begin(); k_pos != Section.Keys.end(); ++k_pos)
 			{
 				Key = (*k_pos);
 
@@ -293,7 +292,7 @@ bool CDataFile::SetKeyComment(t_Str szKey, t_Str szComment, t_Str szSection)
 	if ( (pSection = GetSection(szSection)) == NULL )
 		return false;
 
-	for (k_pos = pSection->Keys.begin(); k_pos != pSection->Keys.end(); k_pos++)
+	for (k_pos = pSection->Keys.begin(); k_pos != pSection->Keys.end(); ++k_pos)
 	{
 		if ( CompareNoCase( (*k_pos).szKey, szKey ) == 0 )
 		{
@@ -314,7 +313,7 @@ bool CDataFile::SetSectionComment(t_Str szSection, t_Str szComment)
 {
 	SectionItor s_pos;
 
-	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); s_pos++)
+	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); ++s_pos)
 	{
 		if ( CompareNoCase( (*s_pos).szName, szSection ) == 0 )
 		{
@@ -482,7 +481,7 @@ bool CDataFile::DeleteSection(t_Str szSection)
 {
 	SectionItor s_pos;
 
-	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); s_pos++)
+	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); ++s_pos)
 	{
 		if ( CompareNoCase( (*s_pos).szName, szSection ) == 0 )
 		{
@@ -505,7 +504,7 @@ bool CDataFile::DeleteKey(t_Str szKey, t_Str szFromSection)
 	if ( (pSection = GetSection(szFromSection)) == NULL )
 		return false;
 
-	for (k_pos = pSection->Keys.begin(); k_pos != pSection->Keys.end(); k_pos++)
+	for (k_pos = pSection->Keys.begin(); k_pos != pSection->Keys.end(); ++k_pos)
 	{
 		if ( CompareNoCase( (*k_pos).szKey, szKey ) == 0 )
 		{
@@ -525,7 +524,7 @@ bool CDataFile::DeleteKey(t_Str szKey, t_Str szFromSection)
 bool CDataFile::CreateKey(t_Str szKey, t_Str szValue, t_Str szComment, t_Str szSection)
 {
 	bool bAutoKey = (m_Flags & AUTOCREATE_KEYS) == AUTOCREATE_KEYS;
-	bool bReturn  = false;
+	bool bReturn;//  = false;
 
 	m_Flags |= AUTOCREATE_KEYS;
 
@@ -583,7 +582,7 @@ bool CDataFile::CreateSection(t_Str szSection, t_Str szComment, KeyList Keys)
 	KeyItor k_pos;
 
 	pSection->szName = szSection;
-	for (k_pos = Keys.begin(); k_pos != Keys.end(); k_pos++)
+	for (k_pos = Keys.begin(); k_pos != Keys.end(); ++k_pos)
 	{
 		t_Key* pKey = new t_Key;
 		pKey->szComment = (*k_pos).szComment;
@@ -613,7 +612,7 @@ int CDataFile::KeyCount()
 	int nCounter = 0;
 	SectionItor s_pos;
 
-	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); s_pos++)
+	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); ++s_pos)
 		nCounter += (*s_pos).Keys.size();
 
 	return nCounter;
@@ -637,7 +636,7 @@ t_Key*	CDataFile::GetKey(t_Str szKey, t_Str szSection)
 	if ( (pSection = GetSection(szSection)) == NULL )
 		return NULL;
 
-	for (k_pos = pSection->Keys.begin(); k_pos != pSection->Keys.end(); k_pos++)
+	for (k_pos = pSection->Keys.begin(); k_pos != pSection->Keys.end(); ++k_pos)
 	{
 		if ( CompareNoCase( (*k_pos).szKey, szKey ) == 0 )
 			return (t_Key*)&(*k_pos);
@@ -653,7 +652,7 @@ t_Section* CDataFile::GetSection(t_Str szSection)
 {
 	SectionItor s_pos;
 
-	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); s_pos++)
+	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); ++s_pos)
 	{
 		if ( CompareNoCase( (*s_pos).szName, szSection ) == 0 )
 			return (t_Section*)&(*s_pos);
@@ -666,11 +665,11 @@ t_Section* CDataFile::GetNextSection(t_Str szSection)
 {
 	SectionItor s_pos;
 
-	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); s_pos++)
+	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); ++s_pos)
 	{
 		if ( CompareNoCase( (*s_pos).szName, szSection ) == 0 )
 		{
-			s_pos++;
+			++s_pos;
 			return (t_Section*)&(*s_pos);
 		}
 
@@ -691,7 +690,7 @@ SectionItor	CDataFile::GetNextSectionIter(SectionItor i){
   if (i==m_Sections.end())
 	return i/*NULL*/;
   else {
-	i++;
+	++i;
 	if (i==m_Sections.end()) {
 		return i/*NULL*/;
 	}
@@ -793,7 +792,7 @@ int WriteLn(fstream& stream, char* fmt, ...)
 {
 	char buf[MAX_BUFFER_LEN];
 	int nLength;
-	t_Str szMsg;
+	//t_Str szMsg;
 
 	memset(buf, 0, MAX_BUFFER_LEN);
 	va_list args;

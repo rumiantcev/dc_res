@@ -7,21 +7,21 @@
 #pragma package(smart_init)
 
 // ---------------------------- constructor -----------------------------------//
-Task::Task() : A(1, 1), B(1, 1), C(1, 1), PP(1, 1), /* x0(1), */ Level(0) {
-	Vector x_0(1);
-	Traectory tr;
-	tr.x0 = x_0;
-	tr_s.push_back(tr);
-	tau = 0.1;
-	perfomance = 0;
-	precision = 0.001;
-	epsilon = 0.01;
-	t0 = 0;
-	maxTime = 10;
-	steps = 10;
-	v_control = 0;
-	// traectoryCount=1;
-}
+//Task::Task() : A(1, 1), B(1, 1), C(1, 1), PP(1, 1), /* x0(1), */ Level(0) {
+//	Vector x_0(1);
+//	Traectory tr;
+//	tr.x0 = x_0;
+//	tr_s.push_back(tr);
+//	tau = 0.1;
+//	perfomance = 0;
+//	precision = 0.001;
+//	epsilon = 0.01;
+//	t0 = 0;
+//	maxTime = 10;
+//	steps = 10;
+//	v_control = 0;
+//	// traectoryCount=1;
+//}
 // ---------------------------- constructor -----------------------------------//
 
 Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, double prec,
@@ -55,7 +55,12 @@ Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, double prec,
 	Level = 2;
 	IndI = 1;
 	v_control = 0;
-	
+
+	T=0;
+	tmpT = 0;
+	priority = 0;
+	method = 0;
+	psi0Index = 0;
 }
 
 // -----------------------------destructor----------------------------------//
@@ -71,7 +76,7 @@ Task::~Task() {
 // ---------------------------- copy constructor ------------------------------//
 Task::Task(const Task& ts) : A(ts.A.m(), ts.A.n()), B(ts.B.m(), ts.B.n()),
 	C(ts.C.m(), ts.C.n()), PP(ts.PP.m(), ts.PP.n()) {
-	long i, size = tr_s.size();
+	long i;//, size = tr_s.size();
 
 	tr_s.clear();
 	for (i = 0; i < (long)ts.tr_s.size(); i++)
@@ -98,6 +103,16 @@ Task::Task(const Task& ts) : A(ts.A.m(), ts.A.n()), B(ts.B.m(), ts.B.n()),
 	steps = ts.steps;
 	Level = ts.Level;
 	v_control = ts.v_control;
+
+	IndI = ts.IndI;
+	*cP= *ts.cP;
+	*cQ= *ts.cQ;
+	*cM= *ts.cM;
+	T=ts.T;
+	tmpT = ts.tmpT;
+	priority = ts.priority;
+	method = ts.method;
+	psi0Index = ts.psi0Index;
 }
 
 // ---------------------------- destructor ------------------------------------//
@@ -382,7 +397,7 @@ void Task::Control_R1(int trNum) {
 	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, tcurr = tmax, p, a =
 		LDouble(_lrand() % cP->Count) / cP->Count, ccurr = _extr_e_val;
 
-	long jk=-1,jj, prevInd,indExtr;
+	long jk=-1,jj, /* prevInd,*/indExtr;
 
 	j = 0;
 	k = tr_s[trNum].NetList.size()-1;
@@ -423,7 +438,7 @@ void Task::Control_R1(int trNum) {
 		for (m = 0; m < dim_u; m++)
 			u_i.v->v[m] = cP->getIJ(Ind, m);
 		u_i = cP->getBorderPoint(Ind, u_i);
-		prevInd = Ind;
+		//prevInd = Ind;
 
 		cout << Ind << " : " << u_i;
 
@@ -551,7 +566,7 @@ void Task::Control_R2(int trNum) {
 	LDouble t, min,  extr;
 	Vector PiEtAx(PP.m()), psi(PP.v->m), extrVec(PP.v->m);
 	Vector u_i(cP->Dim), v_i(cQ->Dim), x_i(dim_x);
-	bool extr_exist;
+	//bool extr_exist;
 
 	bool  isNotExtrFound, borderChanged;
 	LDouble  tau_s, tau_delta, xNorm, xExtNorm;
@@ -626,7 +641,7 @@ void Task::Control_R2(int trNum) {
 		borderChanged = false;
 
 		 //--------ищем u_i при условии отсутствия информации о системе и наличия данных только о расстоянии до терм. множества
-		extr_exist = false;
+		//extr_exist = false;
 		tau_delta=tau;
 
 		isNotExtrFound = true;

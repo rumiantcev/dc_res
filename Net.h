@@ -62,7 +62,7 @@ public:
 	__fastcall TNet(int, long, long, bool);
 	__fastcall TNet(long, long, long, long);
 	__fastcall TNet(const TNet&);
-	__fastcall TNet();
+	//__fastcall TNet();
 	virtual __fastcall ~TNet();
 	// void operator delete(void *p);
 
@@ -95,7 +95,7 @@ public:
 	/* !inline */ TNet& __fastcall operator += (const Vector&);
 
 	friend const TNet __fastcall operator *(const Matrix&, const TNet&);
-	friend const TNet __fastcall operator *(const double &, const TNet&);
+	//friend const TNet __fastcall operator *(const double &, const TNet&);
 	friend const TNet __fastcall operator +(const TNet&, const TNet&);
 	friend const TNet __fastcall operator +(const Vector&, const TNet&);
 

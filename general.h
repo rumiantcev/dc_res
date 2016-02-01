@@ -54,6 +54,9 @@ typedef alphType::value_type aplhVal;
 typedef std::map<long, bool>seekType;
 typedef std::list<long>pathType;
 
+typedef std::vector<long>VecOfLong;
+
+//возващает знак значения a
 inline int signof(LDouble a) { return (a == 0.0) ? 0 : (a<0 ? -1 : 1); }
 
 //глобальные переменные используемые в методе отжига

@@ -20,14 +20,15 @@ pursuerType::~pursuerType() {
 
 // ----------------------------------- >> -------------------------------------//
 istream& __fastcall operator >> (istream& in_data, pursuerType& C) {
-	char c = 0;
+	char c;
 	char long_buf[2048];
-	double tempVal;
-	long i, j; // ,k=0,l=0;
+	//double tempVal;
+	//long i, j; // ,k=0,l=0;
    //	string *tmpStr;
-	TNetF* tmpPRNet;
+   //	TNetF* tmpPRNet;
 	Vector *xs;
 
+		in_data.get(c);
 		while ((c != '['))  //ищем начало строчки с догон€ющим
 			in_data.get(c);
 		while ((c != '='))  //ищем начало функции терм. мн-ва помехи

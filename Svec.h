@@ -22,7 +22,7 @@ public:
 	double *v;
 	long linkCount;
 
-	__fastcall sVec(long);
+	explicit __fastcall sVec(long);
 	__fastcall sVec(const double *vv, long sz);
 	virtual __fastcall ~sVec();
 	void operator delete(void* p);

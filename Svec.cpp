@@ -11,7 +11,9 @@ using namespace std;
 
 // ------------------------------- destructor ---------------------------------//
 void sVec:: operator delete(void *p) {
-	sVec *ptr = (sVec*)p;
+	if(p==0) return;
+
+	sVec *ptr = static_cast<sVec*>(p);
 
 	if (ptr->v == NULL)
 		delete(void*) p;

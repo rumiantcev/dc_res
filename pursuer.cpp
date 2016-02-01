@@ -13,4 +13,8 @@
  }
 
  Pursuer::Pursuer():currInd(0){
+	center = NULL;
+	funnelDepth = -1;
+	radarVisibility =-1;
+	pType = NULL;
  }

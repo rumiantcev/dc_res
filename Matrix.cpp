@@ -55,10 +55,10 @@ __fastcall Matrix::Matrix(const Matrix &C) : v(C.v), upd(C.upd),
 }
 
 // ----------------------------- constructor ----------------------------------//
-__fastcall Matrix::Matrix(double **vv, long mm, long nn) : upd(1), updated(true)
-{
-	v = new sMx(vv, mm, nn);
-}
+//__fastcall Matrix::Matrix(double **vv, long mm, long nn) : upd(1), updated(true)
+//{
+//	v = new sMx(vv, mm, nn);
+//}
 
 // -------------------------- E constructor -----------------------------------//
 __fastcall Matrix::Matrix(long mm) {
@@ -78,13 +78,13 @@ __fastcall Matrix::Matrix(const string& str, long m, long n) {
 	for (l = 0; l < m; l++) {
 		for (k = 0; k < n; k++) {
 			while ((*j != ',') && (*j != ']'))
-				j++;
+				++j;
 			_val.assign(i, j);
 			v->v[l][k] = atof(_val.c_str());
 			i = ++j;
 		}
 		while ((*i != '[') && (i != str.end()))
-			i++;
+			++i;
 		j = ++i;
 	}
 }
@@ -162,10 +162,9 @@ const Matrix __fastcall operator *(const double &scalar, const Matrix &A)
 const Vector __fastcall operator *(const Matrix &A, const Vector& B) {
 	long i, j;
 	Vector result(A.v->m);
-	double sum;
 
 	for (i = 0; i < A.v->m; i++) {
-		sum = 0;
+		double sum = 0;
 		for (j = 0; j < A.v->n; j++)
 			sum += B.v->v[j] * A.v->v[i][j];
 		result.v->v[i] = sum;
@@ -178,13 +177,12 @@ const Vector __fastcall operator *(const Matrix &A, const Vector& B) {
 // ----------------------------- * -------------------------------------------//
 const Vector __fastcall operator *(Vector& B, Matrix &A) {
 	long i, j;
-	Vector result = (A.v->m);
-	double sum;
+	Vector result = Vector(A.v->m);
 
 	assert(B.v->size != A.v->m);
 
 	for (j = 0; j < A.v->n; j++) {
-		sum = 0;
+		double sum = 0;
 		for (i = 0; i < A.v->m; i++)
 			sum += B.v->v[i] * A.v->v[i][j];
 		result.v->v[j] = sum;
@@ -353,20 +351,18 @@ Vector __fastcall Matrix::GetCol(long j) {
 
 // -------------------------- Set row -----------------------------------------//
 void __fastcall Matrix::SetRow(const Vector& vec, long i) {
-	long j;
 
 	if (upd != 0)
-		for (j = 0; j < v->n; j++)
+		for (long j = 0; j < v->n; j++)
 			v->v[i][j] = vec.v->v[j] / upd;
 	updated = false;
 }
 
 // -------------------------- Set col -----------------------------------------//
 void __fastcall Matrix::SetCol(const Vector& vec, long j) {
-	long i;
 
 	if (upd != 0)
-		for (i = 0; i < v->m; i++)
+		for (long i = 0; i < v->m; i++)
 			v->v[i][j] = vec.v->v[i] / upd;
 	updated = false;
 }
@@ -375,8 +371,8 @@ void __fastcall Matrix::SetCol(const Vector& vec, long j) {
 Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 	Vector y(b), result(A.m());
 	Matrix a(A);
-	LDouble max, temp;
-	long i,j, k, n, index;
+	LDouble temp;
+	long i,j, k, n;
 
 	if (!a.updated) a.update();
 	if (!y.updated) y.update();
@@ -384,6 +380,8 @@ Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 	k = 0;
 
 	while (k < n) {
+		LDouble max;
+        long index;
 		// Поиск строки с максимальным A[i][k]
 		max = abs(a.v->v[k][k]);
 		index = k;
@@ -398,7 +396,7 @@ Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 			// нет ненулевых диагональных элементов
 			cout << "Решение получить невозможно из-за нулевого столбца ";
 			cout << index << " матрицы A" << endl;
-			return 0;
+			return y;
 		}
 		for (j = 0; j < n; j++) {
 			temp = a.v->v[k][j];
@@ -462,12 +460,13 @@ Matrix __fastcall Matrix::GetSubMatrix(long a, long b, long c, long d) {
 
 // ------------------------------- Update -------------------------------------//
 void __fastcall Matrix::update() {
-	long i, j;
 	detach();
-	if (upd != 1)
+	if (upd != 1){
+	   long  i, j;
 		for (i = 0; i < v->m; i++)
 			for (j = 0; j < v->n; j++)
 				v->v[i][j] = upd * v->v[i][j];
+	}
 	upd = 1;
 	updated = true;
 }
@@ -493,8 +492,9 @@ void __fastcall Matrix::update() {
 
 // ------------------------------- detach -------------------------------------//
 void __fastcall Matrix::detach() {
-	long i, j;
+
 	if (v->linkCount > 1) {
+		long  i, j;
 		sMx *vv;
 		v->linkCount--;
 		vv = v;

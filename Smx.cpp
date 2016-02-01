@@ -11,7 +11,9 @@ using namespace std;
 
 // ------------------------------- destructor ---------------------------------//
 void sMx:: operator delete(void *p) {
-	sMx *ptr = (sMx*)p;
+    if(p==0) return;
+
+	sMx *ptr = static_cast<sMx*>(p);
 
 	if (ptr->v == NULL)
 		delete(void*) p;
@@ -34,15 +36,14 @@ __fastcall sMx::~sMx() {
 void __fastcall sMx::create()
 	// ручное создание двумерного массива со страничками по 16384
 {
-	long i, j, k, mm;
-
-	long quant, count, last /* , ind */ ;
+	long quant /* , ind */ ;
 	if (m > 16384)
 		quant = 16384;
 	else
 		quant = m;
 
 	try {
+		long i, j, k, mm, count, last;
 		v = new double*[m]; // массив указателей (на строки)
 		vv = new double[m * n]; // массив значений
 		count = long(m / quant); // число страниц по 16384
@@ -59,7 +60,6 @@ void __fastcall sMx::create()
 			k = i * quant;
 			mm = k * n;
 			for (j = 0; j < last; j++) {
-
 				v[k + j] = &vv[mm + j * n];
 				////заполняем массив указателями на строки в хвосте
 			}
@@ -84,13 +84,13 @@ __fastcall sMx::sMx(sMx &C) : m(C.m), n(C.n), linkCount(1) {
 }
 
 // ------------------------------- copy constr --------------------------------//
-__fastcall sMx::sMx(double **vv, long mm, long nn) : m(mm), n(nn), linkCount(1)
-{
-	long i, j;
-	for (i = 0; i < m; i++)
-		for (j = 0; j < n; j++)
-			v[i][j] = vv[i][j];
-}
+//__fastcall sMx::sMx(double **vv, long mm, long nn) : m(mm), n(nn), linkCount(1)
+//{
+//	long i, j;
+//	for (i = 0; i < m; i++)
+//		for (j = 0; j < n; j++)
+//			v[i][j] = vv[i][j];
+//}
 
 // -------------------------- E constructor -----------------------------------//
 __fastcall sMx::sMx(long mm) : m(mm), n(mm), linkCount(1) {

@@ -26,13 +26,13 @@ void PR_Task::Find_Ns(int trNum) {
 	tmplist = PursuerList;
 
    //	vector<TNetF*> NList;       //'output'// перенесено отсюда в класс, чтобы результат не разрушался при выходе из функции
-	bool *L;
+	//bool *L;
 	LDouble t = t0;
 	Matrix EtA(A.m()), PiEtA(A.m(), A.n()), PiEtAkB(B.m(), B.n()), PiEtAkC(C.m(), C.n()), intEtA(A.m());
 	Matrix PiEtAk(A.m(), A.n());//было забыто
 	//Vector PiEtAx0(A.m()), psi(A.v->m), Fs(A.v->m), vmin(A.v->m);
 
-	TNetF *c, tmpPNet(*cP), tmpQNet(*cQ), tmpNet(PP.m(), perfomance, steps);
+	TNetF /* *c,/**/ tmpPNet(*cP), tmpQNet(*cQ), tmpNet(PP.m(), perfomance, steps);
 
 	//long i, j;
 
@@ -84,7 +84,7 @@ void PR_Task::Find_Ns(int trNum) {
 	   //	NiNet.Conv(L);
 	   //	delete[]L;
 	  	NList.push_back(&NiNet);
-		if (c!=NULL) delete c;// c тем, чтобы корректно разрушить то, что иы удаляешь из tmpList
+	  //	if (c!=NULL) delete c;// c тем, чтобы корректно разрушить то, что иы удаляешь из tmpList
 		tmplist.pop_back();
 
 		cout << t << endl;
@@ -98,14 +98,14 @@ void PR_Task::Find_Ns(int trNum) {
 void PR_Task::calcPursuerSets(int trNum){
 //	TNetF m2Net(*PursuerList[0]); // сеточная опорная функция терминального множества
 // для первого преследователя
-	Matrix PiEtA(A.m(), A.n()), PiEtAk(A.m(), A.n()), PiEtAkC(C.m(), C.n()),
-		PiEtAkB(A.m(), A.n()), EtA(A.m()), intEtA(A.m());
+  //	Matrix PiEtA(A.m(), A.n()), PiEtAk(A.m(), A.n()), PiEtAkC(C.m(), C.n()),
+  //		PiEtAkB(A.m(), A.n()), EtA(A.m()), intEtA(A.m());
 	// EtA(A.m()) - единичная при t=0
-	Vector PiEtAx0(A.m()), psi(A.v->m), extrVec(PP.v->m);
-	LDouble t = t0, min;
-	TNetF c(PP.m(), perfomance, steps), tmpPNet(*cP), tmpQNet(*cQ), Net(c),
-		x0Net(c), tmpNet(c);
-	long i,j, Ind = 0;
+  //	Vector PiEtAx0(A.m()), psi(A.v->m), extrVec(PP.v->m);
+   //	LDouble t = t0, min;
+ //	TNetF c(PP.m(), perfomance, steps), tmpPNet(*cP), tmpQNet(*cQ), Net(c),
+ //		x0Net(c), tmpNet(c);
+	long /*i,*/j/*, Ind = 0*/;
 	pursuerType *pt;
 
    /*

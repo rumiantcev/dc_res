@@ -39,9 +39,9 @@ Vector* __fastcall TNet::getVecAt(long i) {
 }
 
 /* */// ------------------------------default constructor -------------------------//
-__fastcall TNet::TNet() {
-	initNetDefault();
-}
+//__fastcall TNet::TNet() {
+//	initNetDefault();
+//}
 
 /* */// ------------------------------Parameters Initializatin----------------------//
 
@@ -82,7 +82,10 @@ __fastcall TNet::TNet(int dim, long perf, long res, bool virt)
 
 /* */// ------------------------------constructor ----------------------------------//
 __fastcall TNet::TNet(long mm, long nn, long perf, long res) {
+	long _res = res;
 	initNetDefault(); // инициаизируем по умолчанию
+	initNetParams(res, _res);
+	buildPowerVectors(_res);
 	create(mm, nn, perf, res);
 }
 
@@ -140,10 +143,10 @@ void __fastcall TNet::destroy() {
 /* */// ------------------------------ MVMul ---------------------------------------//
 
 void __fastcall TNet::MVMul(double* vsrc, double* vdst) {
-	long i, j;
-	double sum;
+
 	if (vdst != NULL) {
-		double* vs;
+		long i, j;
+		double *vs, sum;
 		vs = new double[u_mx->v->m];
 		for (i = 0; i < u_mx->v->m; i++) {
 			sum = 0;
@@ -160,10 +163,10 @@ void __fastcall TNet::MVMul(double* vsrc, double* vdst) {
 /* */// ------------------------------ MVMul ---------------------------------------//
 
 void __fastcall TNet::MVMul(Vector* vsrc, Vector* vdst) {
-	long i, j;
-	double sum, *temp;
+
 	if (vdst->v->v != NULL) {
-		double* vs;
+		long i, j;
+		double *vs, sum, *temp;
 		vs = new double[u_mx->v->m];
 		for (i = 0; i < u_mx->v->m; i++) {
 			sum = 0;
@@ -207,7 +210,6 @@ void __fastcall TNet::update() {
 	Vector vec(u_mx->v->m);
 	Matrix *vv;
 	long i, j;
-	long k;
 
 	detach();
 	if (upd != 1.0) {
@@ -217,6 +219,7 @@ void __fastcall TNet::update() {
 		upd = 1;
 	}
 	if (!umx) {
+		long k;
 		if (u_mx->v->n == Dim) {
 			for (k = 0; k < Count; k++)
 				MVMul(v->v->v[k], v->v->v[k]);
@@ -262,16 +265,13 @@ int __fastcall TNet::getCurrentPlate(long ID) {
  }
 /* */// ------------------------------------Create----------------------------------//
 void __fastcall TNet::create(long Dim /* long perf, long Res */) {
-
-	long i, j, k, ind, curr, mm, md; // , ff;
 	// long coordNum; // номер текущей координаты по которой идёт приращение
-	long normalDir;
+	long i, j, k, ind, curr, mm, md, normalDir;
 	double val;
 	double step = 2.0 / double(Res /* -1/* */); // шаг приращения сетки
-	virtDim = Dim;
-
 	Vector exclude(Dim), baseV(Dim);
 
+	virtDim = Dim;
 	// Count = NumOfPoints * NumOfSur;  //Общее количество точек
 	v = new Matrix(Count, Dim); // Создаём матрицу координат
 
@@ -373,7 +373,6 @@ Vector* __fastcall TNet::parseCoordinate(long current) {
 // protected:
 Vector* __fastcall TNet::parseCoordinateForShift(long current) {
 	// Кешируем, при необходимости, целый вектор
-	int i;
 	checkCacheVector();
 	if (current != cacheCurrent) {
 		cacheCurrent = current;
@@ -384,6 +383,7 @@ Vector* __fastcall TNet::parseCoordinateForShift(long current) {
 		coordNumber = _mod * 0.5; // Определяем  номер координаты
 
 		current -= _mod * NumOfPoints; // Вычитаем сдвиг от начала  стороны
+		int i;
 		for (i = 0; i < coordNumber; i++) {
 			cache->v->v[i] = current % Res;
 			current *= dRes;
@@ -410,7 +410,6 @@ long __fastcall TNet::shift(long current, int coordNumber, int step,
 	int currPlateNorm = current / (NumOfPoints * 2);
 	int _dim = Dim == virtDim ? Dim : virtDim;
 	long ind = current;
-	long tOldCoordShift;
 	// зациклить при попытке перехода за нижнюю или верхнюю границу массива
 	if ((ind < 0)||(ind >= Count))
 		return labs(ind) % Count;
@@ -427,6 +426,7 @@ long __fastcall TNet::shift(long current, int coordNumber, int step,
 	Vector* c = parseCoordinateForShift(current);
 	long posWithShift = step + c->v->v[coordNumber];
 	if ((posWithShift < Res) && (posWithShift >= 0)) {
+		long tOldCoordShift;
 		if (coordNumber > currPlateNorm)
 			tOldCoordShift = step * powVec->v->v[coordNumber - 1];
 		else
@@ -481,11 +481,11 @@ long __fastcall TNet::shift(long current, int coordNumber, int step,
 
 /* */// ------------------------------------Detach----------------------------------//
 void __fastcall TNet::detach() {
-	long i, j;
 	if (v != NULL)
 		if (v->v->linkCount > 1) {
 			v->v->linkCount--;
 			Matrix *vv;
+        	long i, j;
 			vv = v;
 			v = NULL;
 			create(vv->v->m, vv->v->n, perfomance, Res);
@@ -590,13 +590,12 @@ const TNet __fastcall operator*(const Matrix &A, const TNet& B) {
  }
 
 /* */// ----------------------------------- * --------------------------------------//
-const TNet __fastcall operator *(const double& a, const TNet& B) {
+/*const TNet __fastcall operator *(const double& a, const TNet& B) {
 	return TNet(B) *= a;
-}
+} /**/
 
 /* */// ----------------------------------- + --------------------------------------//
 TNet& __fastcall TNet:: operator += (const TNet& B) {
-	long i, j;
 	TNet *pB = (TNet*)&B;
 	double coeff = 1 / upd;
 	if (isVirtual) // если сеть была виртуальная, то создаем физическую
@@ -607,6 +606,7 @@ TNet& __fastcall TNet:: operator += (const TNet& B) {
 	else {
 		if (!B.updated)
 			pB->update();
+		long i, j;
 		for (i = 0; i < Count; i++)
 			for (j = 0; j < Dim; j++)
 				v->v->v[i][j] += coeff * pB->v->v->v[i][j];
@@ -641,11 +641,12 @@ const TNet __fastcall operator +(const Vector& A, const TNet& B) {
 /* */// ------------------------------ Clear ---------------------------------------//
 
 void __fastcall TNet::Clear() {
-	long i, j;
-	if (!isVirtual)
+	if (!isVirtual){
+    	long i, j;
 		for (i = 0; i < Count; i++)
 			for (j = 0; j < Dim; j++)
 				v->v->v[i][j] = 0;
+	}
 }
 
 /* */// ------------------------------inintialize pointers -------------------------//
@@ -680,7 +681,7 @@ void __fastcall TNet::copyNetFrom(const TNet& Net) {
 	updated = Net.updated;
 	upd = Net.upd;
 	cached = Net.cached;
-	halfRes = Net.halfRes;
+	//halfRes = Net.halfRes;
 	cacheCurrent = Net.cacheCurrent;
 	cache = Vector::copy(Net.cache, cache);
 

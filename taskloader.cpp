@@ -50,9 +50,9 @@ void TaskLoader::load_and_calc_tasks(){
 	SectionItor i = DFile.GetFirstSectionIter();
 	//i++;  //пропускаем пустую секцию
 	t_Section* section;
-	string fileName, method, opt,v_control, type;
-	string sectionName;
-	i++;
+	string fileName, method, opt/*,v_control*/, type;
+   //	string sectionName;
+	++i;
 	while (i!=DFile.m_Sections.end()){
 		section = (t_Section*)&(*i);
 		fileName = localPath+"\\";
@@ -67,7 +67,7 @@ void TaskLoader::load_and_calc_tasks(){
 		type =  section->Keys[1].szValue;
 		method =  section->Keys[2].szValue;//DFile.GetValue(section->szName, "method");
 		opt =  section->Keys[3].szValue;//DFile.GetValue(section->szName, "search_optimisation");
-		v_control =  section->Keys[4].szValue;
+	   //	v_control =  section->Keys[4].szValue;
 		//Настройка параметров поиска экстремума на сетке
 		if (opt == "none")
 			taskList[j]->perfomance = optNone;
@@ -90,7 +90,7 @@ void TaskLoader::load_and_calc_tasks(){
 				taskList[j]->TimeCalc_AltInt(0);
 		}
 		if (type == "pursue_run"){
-			prTask = (PR_Task*)taskList[j];
+			prTask = static_cast<PR_Task*>(taskList[j]);
 		   	prTask->calcPursuerSets(0);
 		   // prTask->Find_Ns(0);
 			prTask->TimeCalc_PR(0);
@@ -111,7 +111,7 @@ void TaskLoader::load_and_calc_tasks(){
 		}
 
 		if (type == "pursue_run"){
-			prTask = (PR_Task*)taskList[j];
+			prTask = static_cast<PR_Task*>(taskList[j]);
 			//prTask->Control_PR(0);
 			prTask->Control_PR_fullSets(0);
 		}
@@ -126,8 +126,8 @@ void TaskLoader::load_and_calc_tasks(){
 		out_f << "Evaluation time: "<<elapsed<<endl; //вывод времени в файл
 		out_f.flush();
 		out_f.close();
-		j++;
-		i++;
+		++j;
+		++i;
 		//i = DFile.GetNextSectionIter(i);
 	}
 }
@@ -137,10 +137,7 @@ Task* TaskLoader::loadTask(string szFileName) {
 	char c, buf[20], long_buf[2048];
 	int Lev, len, vecs, m, n, dx, du, dv, dm, stp, i, perf, meth, prior;
 	LDouble ts, prec, tt, maxT, eps;
-	// TNet *tmpNet;
-	// Vector *tmpVec;
-	string *tmpStr, descr;
-	//TNetF* tmpPRNet;
+	string *tmpStr/*, descr*/;
 	vector<Traectory>trs;
 
 	fstream in_f(szFileName.c_str(), ios::in|ios::nocreate);
@@ -356,7 +353,7 @@ Task* TaskLoader::loadTask(string szFileName) {
 		default:
 			res = new Task(dx, du, dv, dm, ts, prec, eps, tt, maxT, stp, perf,
 									Lev, 1);
-		}
+		};
 
 		res->A = AA;
 		res->B = BB;
@@ -423,7 +420,7 @@ Task* TaskLoader::loadTask(string szFileName) {
 			in_f.putback(c);
 			tmpPType =  new pursuerType(res->dim_m, res->perfomance, res->steps);
 			in_f >> *tmpPType;
-			((PR_Task *)res)->pTypes.push_back(tmpPType);
+			(static_cast<PR_Task *>(res))->pTypes.push_back(tmpPType);
 		  }
 		}
 

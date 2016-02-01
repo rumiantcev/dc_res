@@ -13,6 +13,8 @@ Traectory::Traectory() {
 	x_i = NULL;
 	u_i = NULL;
 	v_i = NULL;
+	mu =0.0;
+	ind =0;
 }
 
 Traectory::~Traectory() {

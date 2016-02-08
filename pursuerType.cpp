@@ -8,7 +8,7 @@
 
 
 //----------------------------------------------------------------------------
-pursuerType::pursuerType(int d, short p, long s):
+pursuerType::pursuerType( unsigned long d, short p,unsigned long s):
 	dim(d), perfomance(p), steps(s){
 
 }
@@ -22,10 +22,6 @@ pursuerType::~pursuerType() {
 istream& __fastcall operator >> (istream& in_data, pursuerType& C) {
 	char c;
 	char long_buf[2048];
-	//double tempVal;
-	//long i, j; // ,k=0,l=0;
-   //	string *tmpStr;
-   //	TNetF* tmpPRNet;
 	Vector *xs;
 
 		in_data.get(c);
@@ -58,12 +54,9 @@ istream& __fastcall operator >> (istream& in_data, pursuerType& C) {
 			in_data.get(c);
 			cout << *xs;
 		}while ((c != ';'));
-	  //	in_data.get(c);
- //	}
 	do{
 		in_data.get(c);
 	}while ((c != '\n')&&(!in_data.eof()));
-   //	in_data.get(c);
 
 	return in_data;
 }

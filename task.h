@@ -10,6 +10,7 @@
 #include"netfunc.h"
 // #include "RapidEvaluator.hpp"
 #include"traectory.h"
+#include "environment.h"
 //#include<vector>
 //#include<iterator>
 //#include<fstream>
@@ -39,7 +40,7 @@ public:
 	// Опорные функции на сетках для множеств упраления предледовантеля, убегающего и терминального множества
 
 
-	long dim_x, dim_u, dim_v, dim_m1, dim_m, steps;
+	unsigned long dim_x, dim_u, dim_v, dim_m1, dim_m, steps;
 	// long maxWayLength;      //длина максимального пути по времени в шагах по tau.
 	double epsilon,
 		// Параметр, определяюдий степень допустимой близости траектории

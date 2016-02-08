@@ -25,7 +25,7 @@
 // ---------------------------- constructor -----------------------------------//
 
 Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, double prec,
-	double eps, LDouble delta, LDouble tmax, long st, short perf, long stat,
+	double eps, LDouble delta, LDouble tmax,long st, short perf, long stat,
 	int tr_count) : A(dimX, dimX), B(dimX, dimU), C(dimX, dimV),
 	PP(dimM, dimX) {
 	Traectory tr;
@@ -129,7 +129,7 @@ LDouble Task::TimeCalc_Pontryagin(int trNum) {
 	LDouble t = t0, min;
 	TNetF c(PP.m(), perfomance, steps), tmpPNet(*cP), tmpQNet(*cQ), Net(c),
 		x0Net(c), tmpNet(c);
-	long i, Ind = 0;
+	unsigned long i, Ind = 0;
    //	pathType path;
 
 	m2Net.oporn(t0, 1); // опорное значение сетки по M2
@@ -203,7 +203,7 @@ LDouble Task::TimeCalc_AltInt(int trNum) {
 	LDouble t = t0, min;
 	TNetF c(PP.m(), perfomance, steps), tmpPNet(*cP), tmpQNet(*cQ), Net(c),
 		x0Net(c), tmpNet(c);
-	long i, Ind = 0;
+	unsigned long i, Ind = 0;
 
     // интегрирование методом трапеций по двум точкам
 	intEtA = (0.5 * tau) * (Exponential(A, 0, precision) + Exponential(A, -tau,
@@ -304,7 +304,9 @@ Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn, LDo
 void Task::Control_AltInt(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(*cP), tmpQNet(*cQ);
-	long i, j, k, m, Ind = 0;
+	unsigned long i, j, k, m;
+	long Ind = 0;
+
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
 	LDouble t, min,  extr;
@@ -326,7 +328,7 @@ void Task::Control_AltInt(int trNum) {
 	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
 	t = tr_s[trNum].T; // значение t = конечному времени;
 
-	while (k>=0/*t >= precision*/) {  //Проверить корректность условия выхода из цикла
+	while (k>0/*t >= precision*/) {  //Проверить корректность условия выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -384,7 +386,8 @@ void Task::Control_AltInt(int trNum) {
 void Task::Control_R1(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(PP.m(), perfomance, steps), tmpQNet(PP.m(), perfomance, steps);
-	long i,j,  k, m, Ind = 0;
+	unsigned long i, j, k, m;
+	long Ind = 0;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
 	LDouble t, min,  extr;
@@ -394,9 +397,9 @@ void Task::Control_R1(int trNum) {
 	VecOfVec vx_i, vu_i, vv_i;
 	Vector *r_i;
 
-	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, tcurr = tmax, p, a =
-		LDouble(_lrand() % cP->Count) / cP->Count, ccurr = _extr_e_val;
-
+	LDouble tmin = Environment::instance()._extr_tmin_param, tmax = Environment::instance()._extr_t0_param, tcurr = tmax, p, a =
+		LDouble(_lrand() % cP->Count) / cP->Count, ccurr = Environment::instance()._extr_e_val;
+	LDouble _tmin = tmin;
 	long jk=-1,jj, /* prevInd,*/indExtr;
 
 	j = 0;
@@ -411,7 +414,7 @@ void Task::Control_R1(int trNum) {
 	tau_s = tau/(tmpPNet.Count*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
 
 
-	while (k>=0/*t >= precision*/) {   //Проверить корректность условия выхода из цикла
+	while (k>0/*t >= precision*/) {   //Проверить корректность условия выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -459,7 +462,7 @@ void Task::Control_R1(int trNum) {
 
 		 //--------ищем u_i при условии отсутствия информации о системе и наличия данных только о расстоянии до терм. множества
 		tau_delta=tau;
-		tmin = _extr_tmin_param; tcurr = tmax;
+		tmin = _tmin; tcurr = tmax;
 		while (tcurr>tmin) {
 
 			xNorm = c.f->v->v[jk];
@@ -560,7 +563,8 @@ void Task::Control_R1(int trNum) {
 void Task::Control_R2(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(PP.m(), perfomance, steps), tmpQNet(PP.m(), perfomance, steps);
-	long i,j,  k, m, Ind = 0;
+	unsigned long i, j, k, m;
+	long Ind = 0;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
 	LDouble t, min,  extr;
@@ -588,7 +592,7 @@ void Task::Control_R2(int trNum) {
 	tau_s = tau/(tmpPNet.Count*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
 
 
-	while (k>=0/*t >= precision*/) {   //Проверить корректность условия выхода из цикла
+	while (k>0/*t >= precision*/) {   //Проверить корректность условия выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -783,7 +787,8 @@ void Task::Control_R2(int trNum) {
 void Task::Control_Pontryagin(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(*cP), tmpQNet(*cQ);
-	long i, j, k, m, Ind = 0;
+	unsigned long i, j, k, m;
+	long Ind = 0;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
 	LDouble t, min, val, extr;
@@ -805,7 +810,7 @@ void Task::Control_Pontryagin(int trNum) {
 	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
 	t = tr_s[trNum].T; // значение t = конечному времени;
 
-	while (k>=0/*t >= precision*/) {   //Проверить корректность условия выхода из цикла
+	while (k>0/*t >= precision*/) {   //Проверить корректность условия выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;

@@ -36,14 +36,14 @@ __fastcall sMx::~sMx() {
 void __fastcall sMx::create()
 	// ручное создание двумерного массива со страничками по 16384
 {
-	long quant /* , ind */ ;
+	unsigned long quant /* , ind */ ;
 	if (m > 16384)
 		quant = 16384;
 	else
 		quant = m;
 
 	try {
-		long i, j, k, mm, count, last;
+		unsigned long i, j, k, mm, count, last;
 		v = new double*[m]; // массив указателей (на строки)
 		vv = new double[m * n]; // массив значений
 		count = long(m / quant); // число страниц по 16384
@@ -73,7 +73,7 @@ void __fastcall sMx::create()
 }
 
 // ----------------------------- constructor ----------------------------------//
-__fastcall sMx::sMx(long mm, long nn) : m(mm), n(nn), linkCount(1) {
+__fastcall sMx::sMx(unsigned long mm, unsigned long nn) : m(mm), n(nn), linkCount(1) {
 	create();
 }
 
@@ -93,8 +93,8 @@ __fastcall sMx::sMx(sMx &C) : m(C.m), n(C.n), linkCount(1) {
 //}
 
 // -------------------------- E constructor -----------------------------------//
-__fastcall sMx::sMx(long mm) : m(mm), n(mm), linkCount(1) {
-	long i, j;
+__fastcall sMx::sMx(unsigned long mm) : m(mm), n(mm), linkCount(1) {
+	unsigned long i, j;
 	create();
 	for (i = 0; i < m; i++)
 		for (j = 0; j < n; j++)

@@ -21,8 +21,16 @@ using namespace Dll;
 // #include "Vector.h"
 // #include "matrix.h"
 #include "net.h"
+#include "environment.h"
 // #include "rapideval\RapidEvaluator.hpp"
 
+//глобальные переменные используемые в методе отжига
+//static LDouble _extr_e_param  = -0.8;
+//static LDouble _extr_t0_param  = 1.0;
+//static LDouble _extr_tmin_param  = 0.0001;
+//static LDouble _extr_e_val = exp(_extr_e_param);
+
+//static LDouble ldZeroDf = 0.0000000001f; //допустимая погрешность при сравнении с нулём для чисел с плавающей точкой
 
 class TNetF;
 
@@ -53,9 +61,9 @@ public:
 	double *vars;
 	double t;
 
-	__fastcall TNetF(int, long, long); // Ok
-	__fastcall TNetF(int, long, long, string); // Ok
-	__fastcall TNetF(long, int, long, long); // Ok
+	__fastcall TNetF(unsigned long, long, unsigned long); // Ok
+	__fastcall TNetF(unsigned long, long, unsigned long, string); // Ok
+	__fastcall TNetF(unsigned long, unsigned long,  long, unsigned long); // Ok
 	explicit __fastcall TNetF(TNet&); // Ok
 	// __fastcall TNetF(TNet&,TSIC_Data&);
 	__fastcall TNetF(TNet&, const string&);
@@ -67,13 +75,13 @@ public:
 
 	virtual void __fastcall update();
 	virtual void __fastcall dynUpdate();
-	virtual void __fastcall create(long /* , long, long */);
+	virtual void __fastcall create( unsigned long /* , long, long */);
 	virtual void __fastcall detach();
 
 	friend ostream& __fastcall operator << (ostream&, TNetF&); // Ok
 	friend istream& __fastcall operator >> (istream&, TNetF&); // Ok
 
-	inline  double __fastcall getIJ(long current, int coordNumber);
+	inline  double __fastcall getIJ(unsigned long current, unsigned long coordNumber);
 
 	TNetF& __fastcall operator = (const TNetF&); // Ok
 
@@ -117,22 +125,22 @@ public:
 	void __fastcall Conv(bool *); // выпуклая оболочка
     void __fastcall ConvTimS(bool *); // выпуклая оболочка
 	void __fastcall ConvSerial(bool *, const Vector & a);
-	TNet __fastcall Points(bool compactPoints);
+	TNet __fastcall Points(/*bool compactPoints*/);
 	// Конвертация из опорной функции в сетку из точек по границе множества
 	void __fastcall saveAsVrml(string);
 	void __fastcall smoothFunction(double epsilon);
-	virtual /* !inline */ Vector* __fastcall getVecAt(long i);
-	long /* !inline */ selectExtrX(const Vector& vec, scM scmul, cCrit crit,
-		long current, long& result, LDouble &extr, OpType extrOper,
+	virtual /* !inline */ Vector* __fastcall getVecAt(unsigned long i);
+	unsigned long /* !inline */ selectExtrX(const Vector& vec, scM scmul, cCrit crit,
+		unsigned long current, unsigned long& result, LDouble &extr, OpType extrOper,
 		ZeroAware isZeroAware, bool &isExtrExist, TNetF& net);
 
 protected:
 	// Поиск экстермума в направлении заданном вектором vec перебором
-	long __fastcall findExtrSlowDirection(const Vector& vec, scM scmul,
-	cCrit crit,  ZeroAware isZeroAware,OpType extrOper, long index, alphType* coeff, LDouble& extr, TNetF& net);
+	unsigned long __fastcall findExtrSlowDirection(const Vector& vec, scM scmul,
+	cCrit crit,  ZeroAware isZeroAware,OpType extrOper, unsigned long index, alphType* coeff, LDouble& extr, TNetF& net);
 	// Поиск экстермума в направлении заданном вектором vec методом отжига
-	long __fastcall findExtrAnnealingDirection(const Vector& vec, scM scmul,
-	cCrit crit,  ZeroAware isZeroAware,OpType extrOper, long index, alphType* coeff, LDouble& extr, TNetF& net);
+	unsigned long __fastcall findExtrAnnealingDirection(const Vector& vec, scM scmul,
+	cCrit crit,  ZeroAware isZeroAware,OpType extrOper, unsigned long index, alphType* coeff, LDouble& extr, TNetF& net);
 
 
 	long __fastcall findExtrSlowGlobal(OpType extrOper,LDouble &extr);
@@ -147,18 +155,18 @@ protected:
 		 TNetF& net);
 
 
-	long __fastcall findExtrFastXDirection(const Vector& vec, scM scmul,
-	cCrit crit, OpType extrOper, ZeroAware isZeroAware, long index, alphType* coeff,
+	unsigned long __fastcall findExtrFastXDirection(const Vector& vec, scM scmul,
+	cCrit crit, OpType extrOper, ZeroAware isZeroAware, unsigned long index, alphType* coeff,
 	LDouble& extr, 	TNetF& net);
 	// Поиск экстермума в направлении заданном вектором vec
-	long __fastcall findExtrFastXGlobal(OpType extrOper,
-		 long index, LDouble& extr);
+	unsigned long __fastcall findExtrFastXGlobal(OpType extrOper,
+		 unsigned long index, LDouble& extr);
 	// Поиск экстермума на оп. функции в целом пользуясь выпуклостью
 
 public:
 	void /* !inline */ __fastcall initNetFDefault();
 	void /* !inline */ __fastcall copyNetFFrom(const TNetF&, bool);
-	Vector __fastcall getBorderPoint(long index, const Vector& psi);
+	Vector __fastcall getBorderPoint(unsigned long index, const Vector& psi);
 
 };
 

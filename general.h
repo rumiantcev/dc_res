@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
-#ifndef generalH
-#define generalH
+#ifndef general_H
+#define general_H
 
 #include <string>
 #include <sstream>
@@ -59,13 +59,7 @@ typedef std::vector<long>VecOfLong;
 //возващает знак значени€ a
 inline int signof(LDouble a) { return (a == 0.0) ? 0 : (a<0 ? -1 : 1); }
 
-//глобальные переменные используемые в методе отжига
-static LDouble _extr_e_param  = -0.8;
-static LDouble _extr_t0_param  = 1.0;
-static LDouble _extr_tmin_param  = 0.0001;
-static LDouble _extr_e_val = exp(_extr_e_param);
 
-const LDouble ldZeroDf = 0.000000001f; //допустима€ погрешность при сравнении с нулЄм дл€ чисел с плавающей точкой
 
 //очистка ссылок в векторах объектов
 struct DeleteObj {
@@ -77,7 +71,7 @@ struct DeleteObj {
 };
 
 //---- преобразовани€ в std::string
-inline std::string intToStr(int i){
+ std::string intToStr(int i){
 	std::string str;
 	std::stringstream oss;
 	oss << i;
@@ -85,7 +79,7 @@ inline std::string intToStr(int i){
 	return str;
 }
 
-inline std::string ldToStr(LDouble ld){
+ std::string ldToStr(LDouble ld){
 	std::string str;
 	std::stringstream oss;
 	oss << ld;

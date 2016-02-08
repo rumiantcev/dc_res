@@ -15,8 +15,8 @@ PR_Task::~PR_Task() {
 }
 
 // ------------------------------ constructor --------------------------------//
-PR_Task::PR_Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, double prec,
-	double eps, LDouble delta, LDouble tmax, long st, short perf, long stat,
+PR_Task::PR_Task(long dimX,  long dimU,  long dimV,  long dimM, LDouble ts, double prec,
+	double eps, LDouble delta, LDouble tmax,  long st, short perf, long stat,
 	int tr_count):Task(dimX,  dimU,  dimV,  dimM,  ts,  prec,
 	 eps,  delta,  tmax,  st,  perf,  stat,  tr_count) {
 	}
@@ -105,7 +105,7 @@ void PR_Task::calcPursuerSets(int trNum){
    //	LDouble t = t0, min;
  //	TNetF c(PP.m(), perfomance, steps), tmpPNet(*cP), tmpQNet(*cQ), Net(c),
  //		x0Net(c), tmpNet(c);
-	long /*i,*/j/*, Ind = 0*/;
+    unsigned long /*i,*/j/*, Ind = 0*/;
 	pursuerType *pt;
 
    /*
@@ -140,11 +140,11 @@ void PR_Task::calcNextAltInt(int trNum, LDouble t){
 	PiEtA = PP * EtA;
 	PiEtAk = PiEtA * intEtA;
 
-	calcNextAltInt(trNum, t, PiEtA,PiEtAk, PiEtAkB/*,PiEtAkC*/,c);
+	calcNextAltInt(trNum, t, /*PiEtA,*/ PiEtAk, PiEtAkB/*,PiEtAkC*/,c);
 
 }
 
-void PR_Task::calcNextAltInt(int trNum, LDouble t,  Matrix& PiEtA, Matrix& PiEtAk, Matrix& PiEtAkB, /* Matrix& PiEtAkC,*/ TNetF& c){
+void PR_Task::calcNextAltInt(int trNum, LDouble t, /* Matrix& PiEtA,*/ Matrix& PiEtAk, Matrix& PiEtAkB, /* Matrix& PiEtAkC,*/ TNetF& c){
 
 		TNetF  tmpPNet(*cP)/*, tmpQNet(*cQ),*/ ;
 
@@ -179,7 +179,8 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 	LDouble t = t0, min;
 	TNetF c(PP.m(), perfomance, steps), tmpPNet(*cP), /*tmpQNet(*cQ),*/ Net(c),
 		x0Net(c), tmpNet(c);
-	long i, Ind = 0;
+	unsigned  long i;
+	long Ind = 0;
 
 	// интегрирование методом трапеций по двум точкам
 	intEtA = (0.5 * tau) * (Exponential(A, 0, precision) + Exponential(A, -tau,
@@ -210,7 +211,7 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAk = PiEtA * intEtA;
-		calcNextAltInt( trNum, t, PiEtA, PiEtAk,PiEtAkB,/*PiEtAkC,*/ c);
+		calcNextAltInt( trNum, t, /*PiEtA,*/ PiEtAk,PiEtAkB,/*PiEtAkC,*/ c);
 		//-----------------
 		/*
 		PiEtAkB = PiEtAk * B;
@@ -252,7 +253,9 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 void PR_Task::Control_PR(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c), p_Net(c), px_Net(c);
 	TNetF tmpPNet(*cP), tmpQNet(*cQ);
-	long i, j, k, m, l, Ind = 0,prevInd, timeSign=-1, k_up, prevSign;
+	long  timeSign=-1,  prevSign;
+	unsigned long i, j, k, m, l;
+	 long Ind = 0,prevInd, k_up;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
 	LDouble t, min, absmin=-1, min_x, extr;
@@ -321,7 +324,7 @@ void PR_Task::Control_PR(int trNum) {
                     Ind = prevInd;
 					break;
 				}
-				if(k+timeSign==k_up){
+				if((static_cast<long>(k)+timeSign)==k_up){
 					//пересчитать Альтернированный интеграл и подвинуть вверх k_up
 					calcNextAltInt(trNum, t+timeSign*tau);
 					k_up = tr_s[trNum].NetList.size()-1;
@@ -540,7 +543,9 @@ void PR_Task::buildFunnels(pursuerType* pT){
 void PR_Task::Control_PR_fullSets(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c), p_Net(c), px_Net(c);
 	TNetF tmpPNet(*cP), tmpQNet(*cQ);
-	long i, j, k, m, l, n, fi, Ind = 0,prevInd, timeSign=-1, k_up, prevSign;
+	long  timeSign=-1, prevSign;
+	unsigned long i, j, m, n, l, k;
+	long    fi, Ind = 0,prevInd, k_up;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
 	LDouble t, min, absmin=-1, min_x, extr;
@@ -610,7 +615,7 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 					Ind = prevInd;
 					break;
 				}
-				if(k+timeSign==k_up){
+				if((static_cast<long>(k)+timeSign)==k_up){
 					//пересчитать Альтернированный интеграл и подвинуть вверх k_up
 					calcNextAltInt(trNum, t+timeSign*tau);
 					k_up = tr_s[trNum].NetList.size()-1;
@@ -726,6 +731,7 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 		j++;
 	}
 
+    tr_s[trNum].T= (j) * tau;
 	 /* TODO -orum : Сделать отдеьный конструктор из вектора векторов в матрицу */
 	k= vx_i.size()-1;
 	tr_s[trNum].x_i = new Matrix(k+1, dim_x);

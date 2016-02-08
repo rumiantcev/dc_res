@@ -16,6 +16,12 @@
 //---------------------------------------------------------------------------
 typedef vector<Task*>VecOfTask;
 
+//extern LDouble _extr_e_param;
+//extern LDouble _extr_t0_param;
+//extern LDouble _extr_tmin_param;
+//extern LDouble _extr_e_val;
+//extern LDouble ldZeroDf;
+
 class TaskLoader{
 	public:
 		string localPath;

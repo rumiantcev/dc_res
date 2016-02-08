@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include "taskloader.h"
+#include "environment.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 // ------------------------------ constructor --------------------------------//
@@ -21,15 +22,15 @@ TaskLoader::~TaskLoader() {
 	string fileName = localPath+"\\dconsole.ini";
 	cout<<fileName<<endl;
 	CDataFile DFile(fileName);
-	Report(E_INFO, "[doSomething] The file <control.ini> contains %d sections, & %d keys.",
+	Report(E_INFO, "[doSomething] The file <dconsole.ini> contains %d sections, & %d keys.",
 				   DFile.SectionCount(), DFile.KeyCount());
 
-	_extr_e_param = DFile.GetFloat("extr_e_param","Параметры метода отжига");
-	_extr_t0_param  = DFile.GetFloat("extr_t0_param", "Параметры метода отжига");
+	Environment::instance()._extr_e_param = DFile.GetFloat("extr_e_param","Параметры метода отжига");
+	Environment::instance()._extr_t0_param  = DFile.GetFloat("extr_t0_param", "Параметры метода отжига");
 
-	_extr_tmin_param  = DFile.GetFloat("extr_tmin_param", "Параметры метода отжига");
+	Environment::instance()._extr_tmin_param  = DFile.GetFloat("extr_tmin_param", "Параметры метода отжига");
 
-	_extr_e_val = exp(_extr_e_param);
+	Environment::instance()._extr_e_val = exp(Environment::instance()._extr_e_param);
 	/**/
   //  DFile.Clear();
 }
@@ -52,7 +53,7 @@ void TaskLoader::load_and_calc_tasks(){
 	t_Section* section;
 	string fileName, method, opt/*,v_control*/, type;
    //	string sectionName;
-	++i;
+	i++;
 	while (i!=DFile.m_Sections.end()){
 		section = (t_Section*)&(*i);
 		fileName = localPath+"\\";
@@ -96,9 +97,7 @@ void TaskLoader::load_and_calc_tasks(){
 			prTask->TimeCalc_PR(0);
 		}
 		cout << "Time evaluated.." << endl;
-		out_f << "Time evaluated.." << endl;
-		cout << "time is: " << taskList[j]->tr_s[0].T << endl;
-		out_f << "time is: " << taskList[j]->tr_s[0].T << endl;
+		cout << "time is: " << taskList[j]->tr_s[0].T << endl;
 		if (type == "pursue"){
 			if (method == "pontryagin")
 				taskList[j]->Control_Pontryagin(0);
@@ -116,9 +115,11 @@ void TaskLoader::load_and_calc_tasks(){
 			prTask->Control_PR_fullSets(0);
 		}
 		elapsed = clock()-before;  //замер времени начала выполнения расчётов
+		out_f << "Time evaluated.." << endl;
+		out_f << "time is: " << taskList[j]->tr_s[0].T << endl;
 		cout << "Control evaluated.." << endl;
-		cout << "Traectory: " << endl;
-		cout<< *taskList[j]->tr_s[0].x_i;
+		//cout << "Traectory: " << endl;
+		//cout<< *taskList[j]->tr_s[0].x_i;
 		cout<< "Evaluation time: "<<elapsed<<endl;   //вывод времени на экран
 		out_f << "Control evaluated.." << endl;
 		out_f << "Traectory: " <<  endl;

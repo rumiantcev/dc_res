@@ -8,17 +8,17 @@
 #include "vector.h"
 
 // -------------------------------------- m () --------------------------------//
-long Matrix::m() const {
+unsigned long Matrix::m() const {
 	return v->m;
 }
 
 // -------------------------------------- n () --------------------------------//
-long Matrix::n() const {
+unsigned long Matrix::n() const {
 	return v->n;
 }
 
 // ------------------------------- operator () --------------------------------//
-double& Matrix:: operator()(long i, long j) {
+double& Matrix:: operator()(unsigned long i, unsigned long j) {
 	if ((v->linkCount > 1) && (!updated))
 		update();
 	return v->v[i][j];
@@ -44,7 +44,7 @@ __fastcall Matrix::~Matrix() {
 }
 
 // ----------------------------- constructor ----------------------------------//
-__fastcall Matrix::Matrix(long mm, long nn) {
+__fastcall Matrix::Matrix(unsigned long mm, unsigned long nn) {
 	create(false, mm, nn);
 }
 
@@ -61,13 +61,13 @@ __fastcall Matrix::Matrix(const Matrix &C) : v(C.v), upd(C.upd),
 //}
 
 // -------------------------- E constructor -----------------------------------//
-__fastcall Matrix::Matrix(long mm) {
+__fastcall Matrix::Matrix(unsigned long mm) {
 	create(true, mm, mm);
 }
 
 // ------------------------------- string reader --------------------------------//
-__fastcall Matrix::Matrix(const string& str, long m, long n) {
-	long k, l;
+__fastcall Matrix::Matrix(const string& str, unsigned long m, unsigned long n) {
+	unsigned long k, l;
 	string::const_iterator i, j;
 	create(false, m, n);
 	// i = &str[str.find('[', 0)];
@@ -98,7 +98,7 @@ Matrix& __fastcall Matrix:: operator += (const Matrix& A) {
 		upd += A.upd;
 	}
 	else {
-		long i, j;
+		unsigned long i, j;
 		if (v->linkCount > 1)
 			detach();
 		for (i = 0; i < A.v->m; i++)
@@ -116,7 +116,7 @@ const Matrix __fastcall operator +(const Matrix& A, const Matrix& B) {
 
 // ------------------------- * -----------------------------------------------//
 Matrix& __fastcall Matrix:: operator *= (const Matrix& B) {
-	long i, j, k;
+	unsigned long i, j, k;
 
 	sMx *result = new(sMx)(v->m, B.v->n);
 	double sum;
@@ -160,7 +160,7 @@ const Matrix __fastcall operator *(const double &scalar, const Matrix &A)
 
 // ----------------------------- * -------------------------------------------//
 const Vector __fastcall operator *(const Matrix &A, const Vector& B) {
-	long i, j;
+	unsigned long i, j;
 	Vector result(A.v->m);
 
 	for (i = 0; i < A.v->m; i++) {
@@ -176,7 +176,7 @@ const Vector __fastcall operator *(const Matrix &A, const Vector& B) {
 
 // ----------------------------- * -------------------------------------------//
 const Vector __fastcall operator *(Vector& B, Matrix &A) {
-	long i, j;
+	unsigned long i, j;
 	Vector result = Vector(A.v->m);
 
 	assert(B.v->size != A.v->m);
@@ -194,7 +194,7 @@ const Vector __fastcall operator *(Vector& B, Matrix &A) {
 
 // ----------------------------------- << -------------------------------------//
 ostream& __fastcall operator << (ostream& out_data, Matrix& C) {
-	long i, j;
+	unsigned long i, j;
 	// Если просят вывести пустую матрицу - возвращаем NULL
 	if ((&C == NULL) || (C.v == NULL)) {
 		out_data << "NULL;";
@@ -222,7 +222,7 @@ istream& __fastcall operator >> (istream& in_data, Matrix& C) {
 	// Matrix mx(C.v->m,C.v->n);
 	char c = 0;
 	double tempVal;
-	long i, j; // ,k=0,l=0;
+	unsigned long i, j; // ,k=0,l=0;
 
 	// Инициализируем несчитываемые значения
 	C.upd = 1;
@@ -273,7 +273,7 @@ Matrix& __fastcall Matrix:: operator = (const Matrix & C) {
 
 // ----------------------------- Transpose -----------------------------------//
 Matrix __fastcall Transpose(const Matrix &A) {
-	long i, j;
+	unsigned long i, j;
 
 	Matrix result(A.v->m, A.v->n);
 	for (i = 0; i < A.v->m; i++)
@@ -286,7 +286,7 @@ Matrix __fastcall Transpose(const Matrix &A) {
 
 // ---------------------------- Норма Фробениуса матрицы----------------------//
 double __fastcall Matrix::Norm() {
-	long i, j;
+	unsigned long i, j;
 	double res = 0;
 	if (!updated)
 		update();
@@ -305,7 +305,8 @@ Matrix __fastcall Exponential(Matrix& A, double t, double delta) {
 		A.update();
 	Vector x0(A.v->m);
 	Matrix E(A.v->m), B(A.v->m, A.v->n), Bn(A.v->m, A.v->n); // ,
-	long i, k, md;
+	unsigned long i, k;
+	unsigned long md;
 	double tp;
 	double norm = abs(t) * A.Norm();
 	if (norm >= 1)
@@ -328,9 +329,9 @@ Matrix __fastcall Exponential(Matrix& A, double t, double delta) {
 }
 
 // -------------------------- Get row -----------------------------------------//
-Vector __fastcall Matrix::GetRow(long i) {
+Vector __fastcall Matrix::GetRow(unsigned long i) {
 	Vector result(v->n);
-	long j;
+	unsigned long j;
 
 	for (j = 0; j < v->n; j++)
 		result.v->v[j] = v->v[i][j] * upd;
@@ -339,9 +340,9 @@ Vector __fastcall Matrix::GetRow(long i) {
 }
 
 // -------------------------- Get col -----------------------------------------//
-Vector __fastcall Matrix::GetCol(long j) {
+Vector __fastcall Matrix::GetCol(unsigned long j) {
 	Vector result(v->m);
-	long i;
+	unsigned long i;
 
 	for (i = 0; i < v->m; i++)
 		result.v->v[i] = v->v[i][j] * upd;
@@ -350,19 +351,19 @@ Vector __fastcall Matrix::GetCol(long j) {
 }
 
 // -------------------------- Set row -----------------------------------------//
-void __fastcall Matrix::SetRow(const Vector& vec, long i) {
+void __fastcall Matrix::SetRow(const Vector& vec, unsigned long i) {
 
 	if (upd != 0)
-		for (long j = 0; j < v->n; j++)
+		for (unsigned long j = 0; j < v->n; j++)
 			v->v[i][j] = vec.v->v[j] / upd;
 	updated = false;
 }
 
 // -------------------------- Set col -----------------------------------------//
-void __fastcall Matrix::SetCol(const Vector& vec, long j) {
+void __fastcall Matrix::SetCol(const Vector& vec, unsigned long j) {
 
 	if (upd != 0)
-		for (long i = 0; i < v->m; i++)
+		for (unsigned long i = 0; i < v->m; i++)
 			v->v[i][j] = vec.v->v[i] / upd;
 	updated = false;
 }
@@ -372,7 +373,9 @@ Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 	Vector y(b), result(A.m());
 	Matrix a(A);
 	LDouble temp;
-	long i,j, k, n;
+	unsigned long i,j, k, n;
+	unsigned long index;
+	LDouble max;
 
 	if (!a.updated) a.update();
 	if (!y.updated) y.update();
@@ -380,8 +383,6 @@ Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 	k = 0;
 
 	while (k < n) {
-		LDouble max;
-        long index;
 		// Поиск строки с максимальным A[i][k]
 		max = abs(a.v->v[k][k]);
 		index = k;
@@ -433,7 +434,7 @@ Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 Matrix __fastcall Mirror(Matrix& A) {
 	if (!A.updated)
 		A.update();
-	long j;
+	unsigned long j;
 	Matrix result(A.v->m), temp = A;
 	Vector tmp(A.v->m);
 
@@ -446,8 +447,8 @@ Matrix __fastcall Mirror(Matrix& A) {
 }
 
 // ------------------------------ GetSubMatrix --------------------------------//
-Matrix __fastcall Matrix::GetSubMatrix(long a, long b, long c, long d) {
-	long i, j;
+Matrix __fastcall Matrix::GetSubMatrix(unsigned long a, unsigned long b, unsigned long c, unsigned long d) {
+	unsigned long i, j;
 
 	Matrix result(b - a + 1, d - c + 1);
 	for (i = a - 1; i < b; i++)
@@ -462,17 +463,17 @@ Matrix __fastcall Matrix::GetSubMatrix(long a, long b, long c, long d) {
 void __fastcall Matrix::update() {
 	detach();
 	if (upd != 1){
-	   long  i, j;
+	   unsigned long  i, j;
 		for (i = 0; i < v->m; i++)
 			for (j = 0; j < v->n; j++)
 				v->v[i][j] = upd * v->v[i][j];
 	}
-	upd = 1;
+	upd = 1.0;
 	updated = true;
 }
 
 // ------------------------------- create ------------------------------------//
-/* !inline */ void __fastcall Matrix::create(bool isE, long mm, long nn) {
+/* !inline */ void __fastcall Matrix::create(bool isE, unsigned long mm, unsigned long nn) {
 	try {
 		upd = 1.0;
 		updated = true;
@@ -494,7 +495,7 @@ void __fastcall Matrix::update() {
 void __fastcall Matrix::detach() {
 
 	if (v->linkCount > 1) {
-		long  i, j;
+		unsigned long  i, j;
 		sMx *vv;
 		v->linkCount--;
 		vv = v;

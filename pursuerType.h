@@ -20,11 +20,11 @@ class pursuerType{
 
 		//даннык для создания сеток
 		string func_m, func_v;
-		int dim;
+		unsigned long dim;
 		short perfomance;
-		long steps;
+		unsigned long steps;
 
-		pursuerType(int d, short p, long s);
+		pursuerType(unsigned long d, short p, unsigned long s);
 		virtual ~pursuerType();
 
 

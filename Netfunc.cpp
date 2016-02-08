@@ -6,7 +6,7 @@
 #pragma package(smart_init)
 
 // -----------------------------------------------------------------------------//
-LDouble convCriteria(long num, LDouble sk, const TNetF *v) {
+LDouble convCriteria( long num, LDouble sk, const TNetF *v) {
 	return sk;
 }
 
@@ -22,8 +22,8 @@ LDouble convCriteria2(long num, LDouble sk, const TNetF *v) {
 
 // ------------------------------------Create----------------------------------//
 /* !inline */
-void __fastcall TNetF::create(long Dim /* , long perf, long res */) {
-	long i, j;
+void __fastcall TNetF::create( unsigned long Dim /* , long perf, long res */) {
+	unsigned long i, j;
 	LDouble acc;
 	NumOfSur = Dim * 2;
 	Vector norm(Dim);
@@ -44,7 +44,7 @@ void __fastcall TNetF::create(long Dim /* , long perf, long res */) {
 }
 
 // ------------------------------constructor ----------------------------------//
-__fastcall TNetF::TNetF(int dim, long perf, long res)
+__fastcall TNetF::TNetF(unsigned long dim, long perf, unsigned long res)
 	: TNet(dim, perf, res, true) {
 	initNetFDefault();
 	create(dim );
@@ -52,7 +52,7 @@ __fastcall TNetF::TNetF(int dim, long perf, long res)
 }
 
 // ------------------------------constructor ----------------------------------//
-__fastcall TNetF::TNetF(int Dim, long perf, long res, string fstr)
+__fastcall TNetF::TNetF(unsigned  long Dim, long perf, unsigned  long res, string fstr)
 	: TNet(Dim, perf, res, true) {
 	/* TODO -orum -caddon : Сделать конструктор с возможностью переключения Virt/Non Virt net */
 	initNetFDefault();
@@ -61,7 +61,7 @@ __fastcall TNetF::TNetF(int Dim, long perf, long res, string fstr)
 }
 
 // ------------------------------constructor ----------------------------------//
-__fastcall TNetF::TNetF(long mm, int nn, long perf, long res)
+__fastcall TNetF::TNetF(unsigned long mm, unsigned long nn, long perf, unsigned long res)
 	: TNet(nn, perf, res, true) {
 	initNetFDefault();
 	f = new Vector(mm);
@@ -141,10 +141,10 @@ __fastcall TNetF::~TNetF() {
 
 // -------------------------------- << ----------------------------------------//
 ostream& __fastcall operator << (ostream& out_data, TNetF& C) {
-	long SurfaceDim = C.Dim - 1;
-	long NumOfSur = C.Dim * 2;
-	long NumOfPoints = C.Res;
-	long i, j;
+	unsigned long SurfaceDim = C.Dim - 1;
+	unsigned long NumOfSur = C.Dim * 2;
+	unsigned long NumOfPoints = C.Res;
+	unsigned long i, j;
 
 	if (!C.updated)
 		C.update();
@@ -169,7 +169,7 @@ ostream& __fastcall operator << (ostream& out_data, TNetF& C) {
 istream& __fastcall operator >> (istream& in_data, TNetF& C) {
 	char c = 0;
 	double tempVal;
-	long i, j;
+	unsigned long i, j;
 
 	if ((!C.isVirtual) && (C.v == NULL))
 		C.v = new Matrix(C.Count, C.Res);
@@ -222,7 +222,7 @@ TNetF& __fastcall TNetF:: operator = (const TNetF & NetF) {
 
 // ----------------------------------- + --------------------------------------//
 TNetF& __fastcall TNetF:: operator += (const TNetF& B) {
-	long i;
+	unsigned long i;
 	TNetF* pB = (TNetF*)&B;
 
 	if (!updated)
@@ -248,7 +248,7 @@ const TNetF __fastcall operator +(const TNetF& A, const TNetF& B) {
 
 // ----------------------------------- Геометрическая - ----------------------//
 TNetF& __fastcall TNetF:: operator -= (const TNetF& B) {
-	long i, /*j, */ m;
+	unsigned long i, /*j, */ m;
 	Vector vec(Dim), st(Dim);
 	TNetF st0Net(Dim, perfomance, Res);
 	LDouble coeff = (LDouble)Dim / Count;
@@ -321,7 +321,7 @@ void __fastcall TNetF::update() {
 	detach();
 	if (!isVirtual) {
 		if (!updated) { // обновляем за счет матрицы или множителя
-			long i, j;
+			unsigned long i, j;
 			TNetF *f1 = NULL;
 			Vector *res = NULL;
 			updated = true;
@@ -369,7 +369,7 @@ void __fastcall TNetF::update() {
 void __fastcall TNetF::detach() {
 	TNet::detach();
 	if (f->v->linkCount > 1) {
-		long i;
+		unsigned long i;
 		Vector *vv = NULL;
 		vv = Vector::copy(f, vv);
 		delete f;
@@ -430,7 +430,7 @@ const TNetF __fastcall operator *(const double a, const TNetF& B) {
 /* */
 // ------------------------------------AddVariables---------------------------//
 void __fastcall TNetF::AddVariables() {
-	int i;
+	unsigned long i;
 	string var;
 	ostringstream ss;
 
@@ -469,7 +469,7 @@ LDouble __fastcall TNetF::oporn(const Vector &x, LDouble t, int sign) {
 	LDouble result;
 	DWORD err;
 
-	long i;
+	unsigned long i;
 	for (i = 0; i < Dim; i++)
 		vars[i] = sign * x.v->v[i];
 
@@ -493,7 +493,7 @@ LDouble __fastcall TNetF::oporn(const Vector &x, LDouble t,
 
 // ---------------------------------------------------------------------------//
 void __fastcall TNetF::oporn(LDouble t, int sign) {
-	long i, j;
+	unsigned long i, j;
 	Vector vv(Dim);
 
 	if ((f != NULL) && (f->v->size != Count)) {
@@ -527,7 +527,7 @@ LDouble __fastcall TNetF::oporn(const Vector &x, LDouble t, int sign,
 
 // ---------------------------------------------------------------------------//
 void __fastcall TNetF::oporn(LDouble t, int sign, const Matrix &A) {
-	long i, j;
+	unsigned long i, j;
 	Vector vv(Dim);
 
 	for (i = 0; i < Count; i++) {
@@ -580,11 +580,11 @@ void /* !inline */ __fastcall TNetF::SetFunc(const string& fstr) {
 
 
 // -------------------------- findExtrDirectionSlow ----------------------------------//
-long __fastcall TNetF::findExtrSlowDirection(const Vector& vec, scM scmul,
-	cCrit crit, ZeroAware isZeroAware, OpType extrOper, long index, alphType* coeff, LDouble &extr,  TNetF& net) {
+unsigned long __fastcall TNetF::findExtrSlowDirection(const Vector& vec, scM scmul,
+	cCrit crit, ZeroAware isZeroAware, OpType extrOper, unsigned long index, alphType* coeff, LDouble &extr,  TNetF& net) {
 	// Поиск максимума скалярного произведения scmul на сетке простым перебором в направлении заданного вектора
 
-	long i, j = 0;
+	unsigned long i, j = 0;
 	LDouble val, sc;
 	bool isExtrExist = false, isGrZero, isExtr;
 
@@ -616,13 +616,14 @@ long __fastcall TNetF::findExtrSlowDirection(const Vector& vec, scM scmul,
 
 
 // -------------------------- findMaxDirectionAnnealing ----------------------------------//
-long  __fastcall TNetF::findExtrAnnealingDirection(const Vector& vec, scM scmul,
-	cCrit crit, ZeroAware isZeroAware,OpType extrOper, long index, alphType* coeff, LDouble &extr, TNetF& net) {
+unsigned long  __fastcall TNetF::findExtrAnnealingDirection(const Vector& vec, scM scmul,
+	cCrit crit, ZeroAware isZeroAware,OpType extrOper, unsigned long index, alphType* coeff, LDouble &extr, TNetF& net) {
 
-	long  j, jj;
+	long  j;
+	long jj;
 	LDouble val,sc;
-	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, t = tmax, p, a, c =
-		_extr_e_val;
+	LDouble tmin = Environment::instance()._extr_tmin_param, tmax = Environment::instance()._extr_t0_param, t = tmax, p, a, c =
+		Environment::instance()._extr_e_val;
 
 	bool isGrZero, isExtrExist = false, isExtr;
 
@@ -657,7 +658,7 @@ long  __fastcall TNetF::findExtrAnnealingDirection(const Vector& vec, scM scmul,
 		a = double(_lrand() % net.Count) / net.Count;
 		jj = signof(a - 0.5) * t * (pow((1 + 1 / t), fabs(2 * a - 1)) - 1)
 				* net.Count;
-		j = abs(jj + j) % net.Count;
+		j = abs(jj + static_cast<long>(j)) % net.Count;
 	}
 	return j;
 }
@@ -665,7 +666,7 @@ long  __fastcall TNetF::findExtrAnnealingDirection(const Vector& vec, scM scmul,
 // -------------------------- findExtrSlowGlobal ----------------------------------//
 long __fastcall TNetF::findExtrSlowGlobal(OpType extrOper, LDouble &extr) {
 	// Поиск минимума опорной функции на сетке простым перебором
-	long i, j = 0;
+	unsigned long i, j = 0;
 	LDouble val;
 	bool isExtr;
 
@@ -687,8 +688,8 @@ long  __fastcall TNetF::findExtrAnnealingGlobal(OpType extrOper, LDouble &extr) 
 	// Поиск максимума опорной функции на сетке методом отжига
 	long  j=_lrand() % (Count), jj;
 	LDouble val;
-	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, t = tmax, p, a, c =
-		_extr_e_val;
+	LDouble tmin = Environment::instance()._extr_tmin_param, tmax = Environment::instance()._extr_t0_param, t = tmax, p, a, c =
+		Environment::instance()._extr_e_val;
 	bool isExtr;
 
 	extr = f->v->v[j];
@@ -720,8 +721,8 @@ long  __fastcall TNetF::findExtrAnnealingGlobal(OpType extrOper, LDouble &extr) 
 }
 
 // -------------------------- selectExtrX ------------------------------------//
-long /* !inline */ TNetF::selectExtrX(const Vector& vec, scM scmul, cCrit crit,
-	long current, long& result, LDouble &extr, OpType isMax,
+unsigned long /* !inline */ TNetF::selectExtrX(const Vector& vec, scM scmul, cCrit crit,
+	unsigned long current, unsigned long& result, LDouble &extr, OpType isMax,
 	ZeroAware isZeroAware, bool &isExtrExist, TNetF& net) {
 	LDouble sc, val = extr;
 	bool  isGrZero;
@@ -754,12 +755,12 @@ long /* !inline */ TNetF::selectExtrX(const Vector& vec, scM scmul, cCrit crit,
 }
 
 // -------------------------- findExtrFastX ----------------------------------//
-long __fastcall TNetF::findExtrFastXDirection(const Vector& vec, scM scmul,
-	cCrit crit, OpType isMax, ZeroAware isZeroAware, long index, alphType* coeff, LDouble &extr,
+unsigned long __fastcall TNetF::findExtrFastXDirection(const Vector& vec, scM scmul,
+	cCrit crit, OpType isMax, ZeroAware isZeroAware, unsigned long index, alphType* coeff, LDouble &extr,
 	TNetF& net){
 	// Поиск экстремума скалярного произведения scmul на сетке в направлении заданного вектора пользуясь тем, что функция выпуклого коспакта также выпуклая
 
-	long i, j = index, je, k1, k2;
+	unsigned	long i, j = index, je, k1, k2;
 	bool isExtrExist = false, isNotExtrFound = true, borderChanged;
 	seekType seekPath;
 
@@ -802,11 +803,11 @@ long __fastcall TNetF::findExtrFastXDirection(const Vector& vec, scM scmul,
 }
 
 // -------------------------- findExtrFastXGlobal ----------------------------------//
-long __fastcall TNetF::findExtrFastXGlobal(OpType isMax, long index,
+unsigned long __fastcall TNetF::findExtrFastXGlobal(OpType isMax, unsigned long index,
 	LDouble &extr)
 	// Поиск экстремума опорной функции пользуясь тем, что функция выпуклого коспакта также выпуклая
 {
-	long i, j = index, je, k1, k2;
+	unsigned long i, j = index, je, k1, k2;
 	LDouble val;
 	bool isExtrExist = false, isNotExtrFound = true, borderChanged, isProxy;
 	seekType seekPath;
@@ -915,7 +916,7 @@ long __fastcall TNetF::GetExtrGlobal(OpType extrOper, long index, LDouble& extr)
 // -----------------------------------------------------------------------------//
 LDouble  __fastcall scm(long num, const Vector &vec, TNetF *v, alphType* coeff) {
 	LDouble sc = 0;
-	int m;
+	unsigned long m;
 	for (m = 0; m < vec.v->size; m++)
 		sc += v->getIJ(num, m) * vec[m];
 	return sc;
@@ -924,7 +925,7 @@ LDouble  __fastcall scm(long num, const Vector &vec, TNetF *v, alphType* coeff) 
 // -----------------------------------------------------------------------------//
 LDouble __fastcall scm1(long num, const Vector &vec, TNetF *v, alphType* coeff) {
 	LDouble sc = 0;
-	int m;
+	unsigned long m;
 	for (m = 0; m < vec.v->size; m++)
 		sc += v->getIJ(num, m) * vec[m];
 	return  (*coeff)[num]*sc;
@@ -932,7 +933,7 @@ LDouble __fastcall scm1(long num, const Vector &vec, TNetF *v, alphType* coeff) 
 // -----------------------------------------------------------------------------//
 LDouble __fastcall scm2(long num, const Vector &vec, TNetF *v, alphType* coeff) {
 	LDouble sc = 0;
-	int m;
+	unsigned long m;
 	for (m = 0; m < vec.v->size; m++)
 		sc += (-v-> /* TNet:: */ getIJ(num, m)) * vec[m];
 	return v->f->v->v[num] + sc;
@@ -942,14 +943,15 @@ LDouble __fastcall scm2(long num, const Vector &vec, TNetF *v, alphType* coeff) 
 /* !inline */
 /* DONE : Восстановить Функционирование поиска */
 void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
-	long i, j, m, ind=0;
+	unsigned long i, m, ind=0;
 	LDouble extr, sk;
 	bool extr_exist;
 	Vector vec(Dim);
 
-	long /*k = 1,*/ jj;
-	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, t = tmax, p, a =
-		LDouble(_lrand() % net.Count) / net.Count, c = _extr_e_val;
+	long /*k = 1,*/j, jj;
+	LDouble tmin = Environment::instance()._extr_tmin_param, tmax = Environment::instance()._extr_t0_param, t = tmax, p, a =
+		LDouble(_lrand() % net.Count) / net.Count, c = Environment::instance()._extr_e_val;
+	LDouble ldZeroDf = Environment::instance().ldZeroDf;
 	alpha.reserve(Count);
 	net.is_empty = true;
 	net.maxRad = 0;
@@ -1024,7 +1026,7 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 				jj = signof(a - 0.5) * t * (pow((1 + 1 / t), abs(2 * a - 1)) -
 					1) * net.Count;
 				// jj = t * tan(M_PI*(a-0.5))*net.Count;  // раскомменировать Если отжиг по Коши
-				j = abs(jj + j) % net.Count;
+				j = abs(jj + static_cast<long>(j)) % net.Count;
 			}
 			if (L != NULL)
 				L[ind] = true;
@@ -1039,7 +1041,7 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 // -----------------------------------------------------------------------------//
 
 void __fastcall TNetF::Conv(bool *L) {
-	long i, /*j,*/ m/*, k*/;
+	unsigned long i, /*j,*/ m/*, k*/;
 	LDouble coeff = (LDouble)Dim / Count;
 	TNetF st0Net(Dim, perfomance, NumOfPoints);
 	Vector vec(Dim), st(Dim);
@@ -1080,7 +1082,7 @@ void __fastcall TNetF::Conv(bool *L) {
 // -----------------------------------------------------------------------------//
 
 void __fastcall TNetF::ConvTimS(bool *L) {
-	long i, m;
+	unsigned long i, m;
 	LDouble coeff = (LDouble)Dim / Count;
 	TNetF st0Net(Dim, perfomance, NumOfPoints);
 	Vector vec(Dim), st(Dim);
@@ -1183,8 +1185,8 @@ void __fastcall TNetF::ConvTimS(bool *L) {
 		f->v->v[i] += st0Net.f->v->v[i];  	// сдвиг множества выпуклой оболочки на исходное место
 }
 // -----------------------------------------------------------------------------//
-TNet __fastcall TNetF::Points(bool compactPoints) {
-	long i, j;
+TNet __fastcall TNetF::Points(/*bool compactPoints*/) {
+	unsigned long i, j;
   //	pathType path;
 	makeAlpha(alpha, 0, *this);
 
@@ -1201,7 +1203,7 @@ TNet __fastcall TNetF::Points(bool compactPoints) {
 }
 
 // -----------------------------------------------------------------------------//
-Vector __fastcall TNetF::getBorderPoint(long index, const Vector& psi) {
+Vector __fastcall TNetF::getBorderPoint(unsigned long index, const Vector& psi) {
 	LDouble extr;
 	//bool extr_exist = false;
 	Vector result = *getVecAt(index);
@@ -1223,7 +1225,7 @@ void __fastcall TNetF::saveAsVrml(string) {
 void __fastcall TNetF::Clear() {
 	TNet::Clear();
 	if (f != NULL){
-		long i; // ,j;
+		unsigned long i; // ,j;
 		for (i = 0; i < Count; i++)
 			f->v->v[i] = 0;
     }
@@ -1249,6 +1251,7 @@ void /* !inline */ __fastcall TNetF::initNetFDefault() {
 	is_empty = false;
 	maxRad = 0.0;
 	t = 0;
+
 #ifdef _WIN64
 	lib_name = "SICx64.dll";
 #else
@@ -1275,7 +1278,7 @@ void __fastcall TNetF::dynUpdate() {
 		cacheCurrent = -1;
 	}
 	if (!updated) {
-		int i, j;
+		unsigned long i, j;
 		TNetF *f1 = NULL;
 		Vector *res = NULL;
 		updated = true;
@@ -1310,7 +1313,7 @@ void __fastcall TNetF::dynUpdate() {
 }
 
 // ------------------------------------Get IJ----------------------------------//
-inline double __fastcall TNetF::getIJ(long current, int coordNumber) {
+inline double __fastcall TNetF::getIJ(unsigned long current, unsigned long coordNumber) {
 	double res;
 	if (isVirtual) {
 		checkCacheVector();
@@ -1328,13 +1331,13 @@ inline double __fastcall TNetF::getIJ(long current, int coordNumber) {
 			update();
 		res = v->v->v[current][coordNumber];
 	}
-	return ((alphaMode) && ((long)alpha.size() == Count)) ?
+	return ((alphaMode) && ((unsigned long)alpha.size() == Count)) ?
 		res * alpha[current] : res;
 }
 
 // ------------------------------------Smoothing-------------------------------//
 void __fastcall TNetF::smoothFunction(double epsilon) {
-	int i;
+	unsigned long i;
 	update();
 	for (i = 0; i < Count; i++) {
 		f->v->v[i] = (f->v->v[i] + epsilon) / 2 +
@@ -1344,8 +1347,8 @@ void __fastcall TNetF::smoothFunction(double epsilon) {
 
 // ------------------------------- getVecAt -----------------------------------//
 
-Vector* __fastcall TNetF::getVecAt(long i) {
-	int j;
+Vector* __fastcall TNetF::getVecAt(unsigned long i) {
+	unsigned long j;
 	for (j = 0; j < Dim; j++)
 		cache->v->v[j] = getIJ(i, j);
 	return cache;

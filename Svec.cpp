@@ -44,7 +44,7 @@ void __fastcall sVec::create() {
 }
 
 // ------------------------------- constructor --------------------------------//
-__fastcall sVec::sVec(long sz) : size(sz) {
+__fastcall sVec::sVec(unsigned long sz) : size(sz) {
 	create();
 }
 
@@ -55,7 +55,7 @@ sVec::sVec(const sVec &C): size(C.size){
 }
 
 // ------------------------------- copy constr --------------------------------//
-__fastcall sVec::sVec(const double *vv, long sz) : size(sz) {
+__fastcall sVec::sVec(const double *vv, unsigned long sz) : size(sz) {
 	create();
 	memcpy(v, vv, size*sizeof(LDouble));
 }

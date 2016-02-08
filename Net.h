@@ -21,17 +21,17 @@ class exInvalidMoveDirection {
 
 class TNet {
 public:
-	long Res;
+	unsigned long Res;
 	// Число точек на грани в физическом массиве с учётом оптимизации памяти
 
 	short perfomance;
 	Matrix *v; // массив координат
-	long Count; // общее число точек
-	long NumOfPoints; // число точек на грани!!!
-	int Dim; // размерность сети
-	long minBorder, maxBorder;
-	long SurfaceDim; // размерность повернности гиперкуба
-	long NumOfSur; // число поверхностей гиперкуба
+	unsigned long Count; // общее число точек
+	unsigned long NumOfPoints; // число точек на грани!!!
+	unsigned long Dim; // размерность сети
+	unsigned long minBorder, maxBorder;
+	unsigned int SurfaceDim; // размерность повернности гиперкуба
+	unsigned int NumOfSur; // число поверхностей гиперкуба
 
 	bool updated, // признак актуальности
 		umx, cached, isVirtual;
@@ -50,17 +50,17 @@ protected:
 		*powVec_1,
 		// вектор степеней размерности- необходим для расчётов в виртуализированном виде  (Для поверхностей?)
 		*cache; // , *parsedCache;
-	long cacheCurrent; // ,
+	unsigned long cacheCurrent; // ,
 	// parsedCacheCurrent;
-	int virtDim;
+	unsigned long virtDim;
 	double halfRes, dRes;
-	long coordNumber; // , i;
-	int _mod, __mod;
+	unsigned long coordNumber; // , i;
+	unsigned int _mod, __mod;
 
 	// protected:
 public:
-	__fastcall TNet(int, long, long, bool);
-	__fastcall TNet(long, long, long, long);
+	__fastcall TNet(unsigned long, long, unsigned long, bool);
+	__fastcall TNet(unsigned long, unsigned long, long, unsigned long);
 	__fastcall TNet(const TNet&);
 	//__fastcall TNet();
 	virtual __fastcall ~TNet();
@@ -70,21 +70,21 @@ public:
 	virtual /* */ void __fastcall dynUpdate();
 	virtual /* */ void __fastcall detach();
 	virtual /* */ void __fastcall destroy();
-	Vector* __fastcall parseCoordinate(long current);
-	Vector* __fastcall parseCoordinateForShift(long current);
-	long __fastcall shift(long current, int coordNumber, int step,
+	Vector* __fastcall parseCoordinate(unsigned long current);
+	Vector* __fastcall parseCoordinateForShift(unsigned long current);
+	unsigned long __fastcall shift(unsigned long current, unsigned long coordNumber, int step,
 		bool& borderChanged) throw(exInvalidMoveDirection);
 	virtual void wasteCache();
 
 private:
-	virtual /* */ void __fastcall create(long dim /* , long perf, long res */);
-	void __fastcall create(long mm, long nn, short perf, long res);
+	virtual /* */ void __fastcall create( unsigned long /* , long perf, long res */);
+	void __fastcall create(unsigned long mm, unsigned long nn, short perf, unsigned long res);
 
-	int __fastcall getCurrentPlate(long ID);
+	unsigned long __fastcall getCurrentPlate(unsigned long ID);
 
 	// Vector __fastcall getCoordVectorByID(long ID);
 public:
-	double __fastcall getIJ(long ID, int coordNumber);
+	double __fastcall getIJ(unsigned long ID, unsigned long coordNumber);
 
 	friend ostream& __fastcall operator << (ostream&,  TNet&);
 	friend istream& __fastcall operator >> (istream&, TNet&);
@@ -102,11 +102,11 @@ public:
 	TNet& __fastcall operator = (const TNet&);
 
 	virtual void __fastcall Clear();
-	double __fastcall operator()(long i, int j);
+	double __fastcall operator()(unsigned long i, unsigned long j);
 	// возвращаем значение по коорд i,j
 	void /* !inline */ __fastcall copyNetFrom(const TNet&);
-	void /* !inline */ __fastcall buildPowerVectors(int);
-	virtual /* !inline */ Vector* __fastcall getVecAt(long i);
+	void /* !inline */ __fastcall buildPowerVectors(unsigned long);
+	virtual /* !inline */ Vector* __fastcall getVecAt(unsigned long i);
 
 private:
 	void /* !inline */ __fastcall MVMul(Vector* vsrc, Vector* vdst);
@@ -115,8 +115,8 @@ private:
 	// перемножение кешированной матрицы на заданный вектор
 
 	void inline __fastcall initNetDefault();
-	void /* !inline */ __fastcall initNetParams(const int& res,
-		const int& _res);
+	void /* !inline */ __fastcall initNetParams(const unsigned long& res,
+		const unsigned long& _res);
 
 public:
 	void /* !inline */ __fastcall checkCacheVector();

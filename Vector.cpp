@@ -31,7 +31,7 @@ __fastcall Vector::~Vector() {
 }
 
 // ------------------------------- constructor --------------------------------//
-__fastcall Vector::Vector(long sz) {
+__fastcall Vector::Vector(unsigned long sz) {
 	create(sz);
 }
 
@@ -47,13 +47,13 @@ __fastcall Vector::Vector(const Vector &C) : v(C.v), upd(C.upd),
 }
 
 // ------------------------------- copy constr --------------------------------//
-__fastcall Vector::Vector(const double* vv, long sz) : upd(1.0), updated(true) {
+__fastcall Vector::Vector(const double* vv, unsigned long sz) : upd(1.0), updated(true) {
 	v = new sVec(vv, sz);
 }
 
 // ------------------------------- string reader --------------------------------//
-__fastcall Vector::Vector(const string& str, long size) {
-	long k;
+__fastcall Vector::Vector(const string& str, unsigned long size) {
+	unsigned long k;
 	string::const_iterator i, j;
 	create(size);
 	i = find(str.begin(), str.end(), '[');
@@ -81,7 +81,7 @@ Vector& __fastcall Vector:: operator = (const Vector & C) {
 
 // ------------------------------- = ------------------------------------------//
 Vector& __fastcall Vector:: operator = (const double & c) {
-	long i;
+   unsigned	long i;
 
 	for (i = 0; i < v->size; i++)
 		v->v[i] = c;
@@ -94,7 +94,7 @@ Vector& __fastcall Vector:: operator += (const Vector& A) {
 	if (A.v == v)
 		upd += A.upd;
 	else {
-		long i;
+		unsigned long i;
 		if (v->linkCount > 1)
 			detach();
 		for (i = 0; i < A.v->size; i++)
@@ -110,7 +110,7 @@ Vector& __fastcall Vector::vSum(const Vector& A) // added for profiling
 		upd += A.upd;
 	}
 	else {
-		long i;
+		unsigned long i;
 		if (v->linkCount > 1)
 			detach();
 		for (i = 0; i < A.v->size; i++)
@@ -127,7 +127,7 @@ const Vector __fastcall operator +(const Vector& A, const Vector &B) {
 
 // ----------------------------- * -------------------------------------------//
 const double __fastcall operator *(const Vector& A, const Vector &B) {
-	long i;
+	unsigned long i;
 	double res = 0;
 	// assert(A.v->size==B.v->size);
 	for (i = 0; i < A.v->size; i++)
@@ -139,7 +139,7 @@ const double __fastcall operator *(const Vector& A, const Vector &B) {
 
 const double __fastcall scMul(const Vector& A, const Vector &B)
 {
-	long i;
+	unsigned long i;
 	double res = 0;
 	for (i = 0; i < A.v->size; i++)
 		res += A.v->v[i] * B.v->v[i];
@@ -165,7 +165,7 @@ const Vector __fastcall operator*(const double &scalar, const Vector &A) {
 
 // -------------------------------- << ----------------------------------------//
 ostream& __fastcall operator << (ostream& out_data, Vector& C) {
-	long i;
+	unsigned long i;
 	// Если просят вывести пустой вектор - возвращаем NULL
 	if ((&C == NULL) || (C.v == NULL)) {
 		out_data << "NULL;";
@@ -187,7 +187,7 @@ ostream& __fastcall operator << (ostream& out_data, Vector& C) {
 istream& __fastcall operator >> (istream& in_data, Vector& C) {
 	char c = 0;
 	double tempVal;
-	long i;
+	unsigned long i;
 
 	// Инициализируем несчитываемые значения
 	C.upd = 1.0;
@@ -225,8 +225,8 @@ istream& __fastcall operator >> (istream& in_data, Vector& C) {
 }
 
 // ------------------------ GetSubVector --------------------------------------//
-Vector __fastcall Vector::GetSubVector(long start, long end) {
-	long i;
+Vector __fastcall Vector::GetSubVector(unsigned long start, unsigned long end) {
+	unsigned long i;
 	Vector result(end - start + 1);
 
 	update();
@@ -254,7 +254,7 @@ Vector __fastcall Vector::GetSubVector(long start, long end) {
 Vector& __fastcall Vector::detachT() {
 	
 	if (v->linkCount > 1) {
-		long i;
+		unsigned long i;
 		
 		Vector *vv = new Vector(v->size);
 		for (i = 0; i < v->size; i++)
@@ -269,7 +269,7 @@ Vector& __fastcall Vector::detachT() {
 void __fastcall Vector::detach() const {	
 
 	if (v->linkCount > 1) {
-		long i;
+		unsigned long i;
 		
 		sVec *vv = v;
 		delete v;
@@ -283,7 +283,7 @@ void __fastcall Vector::detach() const {
 void __fastcall Vector::update() const {
 	detach();
 	if (upd != 1.0){
-		long i;
+		unsigned long i;
 		
 		for (i = 0; i < v->size; i++)
 			v->v[i] *= upd;
@@ -310,8 +310,8 @@ Vector* __fastcall Vector::copy(Vector* src, Vector* dst) {
 // в принципе т.к. это расчёт нормали относяценся только к гиперкубическим сеткам,
 // то имеет смысл перенести это в соотв. модуль
 /* TODO -orum -crepair :  Перенести функцию в TNet */
-void __fastcall Vector::norm(const int& halfRes) {
-	int i;
+void __fastcall Vector::norm(const unsigned int& halfRes) {
+	unsigned long i;
 	double acc = 0;
 	for (i = 0; i < v->size; ++i) {
 		v->v[i] -= halfRes;
@@ -326,7 +326,7 @@ void __fastcall Vector::norm(const int& halfRes) {
 // ------------------------------------Get real Vector norm-------------------//
 // Вычисляет норму  вектора
 LDouble __fastcall Vector::norm() {
-	int i;
+	unsigned long i;
 	double acc = 0;
 	for (i = 0; i < v->size; ++i)
 		acc += (v->v[i]*v->v[i]);

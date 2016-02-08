@@ -2,17 +2,19 @@
 #ifndef taskH
 #define taskH
 // ---------------------------------------------------------------------------
-#include<classes.hpp>
+//#include<classes.hpp>
+#include"general.h"
 #include"vector.h"
 #include"matrix.h"
 #include"net.h"
 #include"netfunc.h"
 // #include "RapidEvaluator.hpp"
 #include"traectory.h"
-#include<vector>
-#include<iterator>
-#include<fstream>
-#include<math.h>
+#include "environment.h"
+//#include<vector>
+//#include<iterator>
+//#include<fstream>
+//#include<math.h>
 
 using namespace std;
 
@@ -38,7 +40,7 @@ public:
 	// Опорные функции на сетках для множеств упраления предледовантеля, убегающего и терминального множества
 
 
-	long dim_x, dim_u, dim_v, dim_m1, dim_m, steps;
+	unsigned long dim_x, dim_u, dim_v, dim_m1, dim_m, steps;
 	// long maxWayLength;      //длина максимального пути по времени в шагах по tau.
 	double epsilon,
 		// Параметр, определяюдий степень допустимой близости траектории
@@ -50,7 +52,7 @@ public:
 	int priority, method; // , traectoryCount;
 	string description;
 
-	Task();
+   //	Task();
 	Task(long, long, long, long, LDouble, double, double, LDouble, LDouble,
 		long, short, long, int);
 	Task(const Task&);

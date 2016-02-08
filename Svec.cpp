@@ -11,7 +11,9 @@ using namespace std;
 
 // ------------------------------- destructor ---------------------------------//
 void sVec:: operator delete(void *p) {
-	sVec *ptr = (sVec*)p;
+	if(p==0) return;
+
+	sVec *ptr = static_cast<sVec*>(p);
 
 	if (ptr->v == NULL)
 		delete(void*) p;
@@ -42,7 +44,7 @@ void __fastcall sVec::create() {
 }
 
 // ------------------------------- constructor --------------------------------//
-__fastcall sVec::sVec(long sz) : size(sz) {
+__fastcall sVec::sVec(unsigned long sz) : size(sz) {
 	create();
 }
 
@@ -53,7 +55,7 @@ sVec::sVec(const sVec &C): size(C.size){
 }
 
 // ------------------------------- copy constr --------------------------------//
-__fastcall sVec::sVec(const double *vv, long sz) : size(sz) {
+__fastcall sVec::sVec(const double *vv, unsigned long sz) : size(sz) {
 	create();
 	memcpy(v, vv, size*sizeof(LDouble));
 }

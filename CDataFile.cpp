@@ -67,10 +67,9 @@
 // CDataFile
 // Our default contstructor.  If it can load the file, it will do so and populate
 // the section list with the values from the file.
-CDataFile::CDataFile(t_Str szFileName)
+CDataFile::CDataFile(t_Str szFileName) : m_szFileName(szFileName)
 {
 	m_bDirty = false;
-	m_szFileName = szFileName;
 	m_Flags = (AUTOCREATE_SECTIONS | AUTOCREATE_KEYS);
 	t_Section *pSection = new t_Section;
 	m_Sections.push_back( *pSection );
@@ -251,7 +250,7 @@ bool CDataFile::Save()
 						Section.szName.c_str());
 			}
 
-			for (k_pos = Section.Keys.begin(); k_pos != Section.Keys.end(); k_pos++)
+			for (k_pos = Section.Keys.begin(); k_pos != Section.Keys.end(); ++k_pos)
 			{
 				Key = (*k_pos);
 
@@ -314,7 +313,7 @@ bool CDataFile::SetSectionComment(t_Str szSection, t_Str szComment)
 {
 	SectionItor s_pos;
 
-	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); s_pos++)
+	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); ++s_pos)
 	{
 		if ( CompareNoCase( (*s_pos).szName, szSection ) == 0 )
 		{
@@ -525,7 +524,7 @@ bool CDataFile::DeleteKey(t_Str szKey, t_Str szFromSection)
 bool CDataFile::CreateKey(t_Str szKey, t_Str szValue, t_Str szComment, t_Str szSection)
 {
 	bool bAutoKey = (m_Flags & AUTOCREATE_KEYS) == AUTOCREATE_KEYS;
-	bool bReturn  = false;
+	bool bReturn;//  = false;
 
 	m_Flags |= AUTOCREATE_KEYS;
 
@@ -691,7 +690,7 @@ SectionItor	CDataFile::GetNextSectionIter(SectionItor i){
   if (i==m_Sections.end())
 	return i/*NULL*/;
   else {
-	i++;
+   i++;
 	if (i==m_Sections.end()) {
 		return i/*NULL*/;
 	}
@@ -793,7 +792,7 @@ int WriteLn(fstream& stream, char* fmt, ...)
 {
 	char buf[MAX_BUFFER_LEN];
 	int nLength;
-	t_Str szMsg;
+	//t_Str szMsg;
 
 	memset(buf, 0, MAX_BUFFER_LEN);
 	va_list args;

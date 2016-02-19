@@ -3,6 +3,10 @@
 
 #include "task.h"
 #include "Netfunc.h"
+
+#include "gnuplot-iostream.h"
+#include <boost/tuple/tuple.hpp>
+
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
@@ -1034,4 +1038,38 @@ long Task::ImageUp() {
 	// TODO: Add your source code here
 
 	return 1;
+}
+
+void Task::plot(int trNum){
+//------------------------
+Gnuplot gp;
+
+	vector<pair<double, double> > xy_pts_A;
+	for(long i=0; i<tr_s[trNum].x_i->m(); ++i) {
+	   //	double y = x*x*x;
+		xy_pts_A.push_back(std::make_pair(tr_s[trNum].x_i->v->v[i][0], tr_s[trNum].x_i->v->v[i][1]));
+	}
+
+  //	vector<pair<double, double> > xy_pts_B;
+  //	for(double alpha=0; alpha<1; alpha+=1.0/24.0) {
+  //		double theta = alpha*2.0*3.14159;
+  //		xy_pts_B.push_back(make_pair(cos(theta), sin(theta)));
+  //	}
+
+	gp << "set xrange [-10:10]\nset yrange [-10:10]\n";
+	// Data will be sent via a temporary file.  These are erased when you call
+	// gp.clearTmpfiles() or when gp goes out of scope.  If you pass a filename
+	// (e.g. "gp.file1d(pts, 'mydata.dat')"), then the named file will be created
+	// and won't be deleted (this is useful when creating a script).
+	gp << "plot" << gp.file1d(xy_pts_A) << "with lines title 'x(t)'"
+	 /*	<< gp.file1d(xy_pts_B) << "with points title 'circle'"*/ << std::endl;
+
+#ifdef _WIN32
+	// For Windows, prompt for a keystroke before the Gnuplot object goes out of scope so that
+	// the gnuplot window doesn't get closed.
+	std::cout << "Press enter to exit." << std::endl;
+	std::cin.get();
+#endif
+//------------------------
+
 }

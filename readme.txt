@@ -1,3 +1,13 @@
+Версия 19.02.11
+Peaлизовано:
+        - подключение gnuplot (тестовое) в классы PR_Task и Task добавлены ::plot()
+                - дистрибутив http://www.gnuplot.info/download.html
+                - библиотека https://github.com/dstahlke/gnuplot-iostream , http://www.stahlke.org/dan/gnuplot-iostream/
+                - настройка (прописать PATH) https://github.com/dstahlke/gnuplot-iostream/wiki/Portability
+                - требуется дополнительно
+                        -- установка boost
+                        -- переключение на компилятор CLANG
+
 Версия 08.02.11
 Peaлизовано:
         - все индексы переведены в unsigned long или unsigned int типы

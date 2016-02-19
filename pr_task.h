@@ -34,13 +34,16 @@ class PR_Task: public Task {
 		virtual LDouble TimeCalc_PR(int trNum);
 		virtual void Control_PR(int trNum);
 		virtual void Control_PR_fullSets(int trNum);
+
+		virtual void plot(int trNum);
 	private:
 		void calcNextAltInt(int trNum, LDouble t,  /*Matrix& PiEtA,*/ Matrix& PiEtAk, Matrix& PiEtAkB, /* Matrix& PiEtAkC,*/ TNetF& c);
 		void calcNextAltInt(int trNum, LDouble t);
 		void buildFunnels(pursuerType* pT);
 
-
 };
 //---------------------------------------------------------------------------
+
+
 #endif
 

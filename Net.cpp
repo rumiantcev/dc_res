@@ -266,10 +266,11 @@ unsigned long __fastcall TNet::getCurrentPlate(unsigned long ID) {
 /* */// ------------------------------------Create----------------------------------//
 void __fastcall TNet::create( unsigned long Dim /* long perf, long Res */) {
 	// long coordNum; // номер текущей координаты по которой идёт приращение
-	unsigned long  ind, curr, mm, md, normalDir;
+	unsigned long  ind, curr, mm, md;
+	long normalDir;
 	unsigned long i, j,k ;
-	double val;
-	double step = 2.0 / double(Res /* -1/* */); // шаг приращения сетки
+	LDouble val;
+	LDouble step = 2.0 / double(Res /* -1/* */); // шаг приращения сетки
 	Vector exclude(Dim), baseV(Dim);
 
 	virtDim = Dim;
@@ -461,8 +462,7 @@ unsigned long __fastcall TNet::shift(unsigned long current, unsigned long coordN
 
 		ind = newMin;  //индекс - начало отсчёта - начальный индекс новой грани
 		// Вычисляем точку, на которую осуществляем переход
-		long  i;
-		long j = _dim - 1;
+		long i, j = _dim - 1;
 		for (i = _dim - 1; i > static_cast<long>(newPlateNorm); --i) {
 			ind +=  powVec_1->v->v[j];// * c->v->v[i];
 			--j;

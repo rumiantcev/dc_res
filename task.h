@@ -72,6 +72,7 @@ public:
 
 	void saveTask(char *);
 	// friend istream& operator >>(istream& in_f, Task* res);
+	virtual void plot(int trNum);
 	
 	void __fastcall setFuncToNetF(TNetF& net, string func);
 	virtual long ImageUp();

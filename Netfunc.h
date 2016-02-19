@@ -131,16 +131,16 @@ public:
 	void __fastcall smoothFunction(double epsilon);
 	virtual /* !inline */ Vector* __fastcall getVecAt(unsigned long i);
 	unsigned long /* !inline */ selectExtrX(const Vector& vec, scM scmul, cCrit crit,
-		unsigned long current, unsigned long& result, LDouble &extr, OpType extrOper,
+		 long current, long& result, LDouble &extr, OpType extrOper,
 		ZeroAware isZeroAware, bool &isExtrExist, TNetF& net);
 
 protected:
 	// Поиск экстермума в направлении заданном вектором vec перебором
 	unsigned long __fastcall findExtrSlowDirection(const Vector& vec, scM scmul,
-	cCrit crit,  ZeroAware isZeroAware,OpType extrOper, unsigned long index, alphType* coeff, LDouble& extr, TNetF& net);
+	cCrit crit,  ZeroAware isZeroAware,OpType extrOper, long index, alphType* coeff, LDouble& extr, TNetF& net);
 	// Поиск экстермума в направлении заданном вектором vec методом отжига
 	unsigned long __fastcall findExtrAnnealingDirection(const Vector& vec, scM scmul,
-	cCrit crit,  ZeroAware isZeroAware,OpType extrOper, unsigned long index, alphType* coeff, LDouble& extr, TNetF& net);
+	cCrit crit,  ZeroAware isZeroAware,OpType extrOper, long index, alphType* coeff, LDouble& extr, TNetF& net);
 
 
 	long __fastcall findExtrSlowGlobal(OpType extrOper,LDouble &extr);
@@ -156,7 +156,7 @@ protected:
 
 
 	unsigned long __fastcall findExtrFastXDirection(const Vector& vec, scM scmul,
-	cCrit crit, OpType extrOper, ZeroAware isZeroAware, unsigned long index, alphType* coeff,
+	cCrit crit, OpType extrOper, ZeroAware isZeroAware,  long index, alphType* coeff,
 	LDouble& extr, 	TNetF& net);
 	// Поиск экстермума в направлении заданном вектором vec
 	unsigned long __fastcall findExtrFastXGlobal(OpType extrOper,

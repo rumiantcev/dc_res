@@ -115,6 +115,9 @@ void TaskLoader::load_and_calc_tasks(){
 			prTask->Control_PR_fullSets(0);
 		}
 		elapsed = clock()-before;  //замер времени начала выполнения расчётов
+
+		taskList[j]->plot(0);
+
 		out_f << "Time evaluated.." << endl;
 		out_f << "time is: " << taskList[j]->tr_s[0].T << endl;
 		cout << "Control evaluated.." << endl;

@@ -357,4 +357,4 @@ namespace Dll {
 	/* */
 }
 /* */
-#endif _DLL_H_
+#endif

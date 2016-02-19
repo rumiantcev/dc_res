@@ -22,9 +22,6 @@
 #include <algorithm>
 //#include <system.hpp>
 
-
-
-
 typedef double LDouble;
 const std::string states[4] = {
 	"Выбор метода", "Ввод параметров", "Решение", "Анализ результатов"};

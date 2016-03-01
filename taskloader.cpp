@@ -4,6 +4,10 @@
 
 #include "taskloader.h"
 #include "environment.h"
+
+//#include <boost/program_options/detail/config_file.hpp>
+//#include <boost/property_tree/ptree.hpp>
+//#include <boost/property_tree/ini_parser.hpp>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 // ------------------------------ constructor --------------------------------//
@@ -33,6 +37,23 @@ TaskLoader::~TaskLoader() {
 	Environment::instance()._extr_e_val = exp(Environment::instance()._extr_e_param);
 	/**/
   //  DFile.Clear();
+  /*//-------------
+	using boost::property_tree::ptree;
+
+	ptree root;
+
+	ptree wave_packet;
+	wave_packet.put( "width", "1" );
+	wave_packet.put( "position", "2.0" );
+
+	ptree calculation_parameters;
+	calculation_parameters.put( "levels", "15" );
+
+	root.push_front(ptree::value_type( "calculation parameters", calculation_parameters ));
+	root.push_front(ptree::value_type( "wave packet", wave_packet ));
+
+	write_ini( std::cout, root );
+	*/
 }
 // --------------------- загрузка и запуск задач для расчётов ----------------//
 
@@ -76,6 +97,8 @@ void TaskLoader::load_and_calc_tasks(){
 			taskList[j]->perfomance = optAnnealing;
 		if (opt == "gradient")  //только для выпуклых множеств - использовать осторожно
 			taskList[j]->perfomance = optGradient;
+		if (opt == "TimS")  //с использованием нового метода овыпукления
+			taskList[j]->perfomance = optTimS;
 		taskList[j]->cP->perfomance  = taskList[j]->perfomance;
 		taskList[j]->cQ->perfomance  = taskList[j]->perfomance;
 		taskList[j]->cM->perfomance  = taskList[j]->perfomance;

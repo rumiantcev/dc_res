@@ -11,9 +11,6 @@
 using namespace std;
 
 
-typedef vector<Vector*>VecOfVec;
-
-
 // ---------------------------------------------------------------------------
 class Traectory {
 public:

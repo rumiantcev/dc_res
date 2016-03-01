@@ -867,9 +867,7 @@ unsigned long __fastcall TNetF::findExtrFastXGlobal(OpType isMax, unsigned long 
 			}
 			if (j < 0)
 				j = shift(je, 0, 1, borderChanged);
-
-		}
-		else {
+		} else {
 			isNotExtrFound = false;
 			seekPath.clear();
 		}
@@ -891,7 +889,7 @@ long __fastcall TNetF::GetExtrDirection(const Vector& vec, scM scmul,
 			return findExtrAnnealingDirection(vec, scmul, crit, isZeroAware,  extrOper,
 			index, coeff, extr, net);
 
-	if (perfomance == optGradient)
+	if ((perfomance == optGradient)||(perfomance == optTimS))
 		return findExtrFastXDirection(vec, scmul, crit, extrOper, isZeroAware,
 			index, coeff, extr, net);
 		 // Fast Evaluator
@@ -907,7 +905,7 @@ long __fastcall TNetF::GetExtrGlobal(OpType extrOper, long index, LDouble& extr)
 	if (perfomance == optAnnealing)
 			return findExtrAnnealingGlobal(extrOper,extr);
 
-	if (perfomance == optGradient) {
+	if ((perfomance == optGradient)||(perfomance == optTimS)) {
 		return findExtrFastXGlobal(extrOper, index, extr); /* */ // Fast Evaluator
 	}
 	return -1;
@@ -940,8 +938,6 @@ LDouble __fastcall scm2(long num, const Vector &vec, TNetF *v, alphType* coeff) 
 }
 
 // ----------------------------------------------------------------------------//
-/* !inline */
-/* DONE : Восстановить Функционирование поиска */
 void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 	unsigned long i, k, m;
 	LDouble extr, sk;
@@ -987,9 +983,9 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 			if (L != NULL)
 				L[ind] = true;
 		}
+
 		if (perfomance == optAnnealing) {
 			// поиск методом эмуляции отжига
-
 			j = _lrand() % (net.Count);
 			while (t > tmin) {
 				sk = scm(j, vec, &net,NULL);
@@ -1030,6 +1026,7 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 			if (L != NULL)
 				L[ind] = true;
 		}
+
 		if (alpha[i]> ldZeroDf)
 			net.is_empty = false;
 		if (alpha[i]>net.maxRad)
@@ -1065,12 +1062,12 @@ void __fastcall TNetF::Conv(bool *L) {
 	makeAlpha(alpha, L, *this);
 
 	// собственно овыпукляем и сдвигаем назад
-	for (i = 0; i < st0Net.Count; i++) {
-		if (L[i]) {
+	for (i = 0; i < Count; i++) {
+		if (!L[i]) {  //была ошибка
 			//extr_exist = false;
 			for (m = 0; m < Dim; m++)
-				vec.v->v[m] = st0Net.getIJ(i, m);
-			/* j = */GetExtrDirection(vec, scm1, convCriteria, opMax, nZAware, i, &alpha,  f->v->v[i],  st0Net);
+				vec.v->v[m] = /*st0Net.*/getIJ(i, m);   // была ошибка
+			/* j = */GetExtrDirection(vec, scm1, convCriteria, opMax, nZAware, i, &alpha,  f->v->v[i],  *this);    // была ошибка
 		}
 		f->v->v[i] += st0Net.f->v->v[i];
 		// сдвиг множества выпуклой оболочки на исходное место
@@ -1081,16 +1078,16 @@ void __fastcall TNetF::Conv(bool *L) {
 // ----------------------------------------------------------------------------//
 
 void __fastcall TNetF::ConvTimS(bool *L) {
-	unsigned long i, m;
+	unsigned long i,j, k, m, lInd, rInd, lIndEx, rIndEx, pr_rInd, pr_lInd, indNormal, ind;
 	LDouble coeff = (LDouble)Dim / Count;
+	LDouble sk,extr, pr_extr;
+	LDouble ldZeroDf = Environment::instance().ldZeroDf;
 	TNetF st0Net(Dim, perfomance, NumOfPoints);
 	Vector vec(Dim), st(Dim);
-
-	VecOfLong lnkInx;
-	alphType lambdas;
-
-	lnkInx.reserve(Count);
-	lambdas.reserve(Count);
+	//вектора "левых" и "правых" соседей для каждой точки
+	long lrV[Count][Dim*2];
+	int  normSign;
+	bool isBC, isExtr, isLExtr, isRExtr, extr_exist;
 
 	// расчёт опорной функции центра Штейнера
 	st = 0;
@@ -1105,83 +1102,217 @@ void __fastcall TNetF::ConvTimS(bool *L) {
 	for (i = 0; i < st0Net.Count; i++) {
 		st0Net.f->v->v[i] = scm(i, st, &st0Net,0);
 		f->v->v[i] -= st0Net.f->v->v[i];
-		//заодно инициализируем вектора для lambda
-	   //	lambdas[i] = -1.0;
-		//lnkInx[i] = -1;
 	}
 
-	for (i = 1; i < Count; i++) {
-	   //	extr_exist = false;
+	for (i = 0; i < Count; i++) {
+		//ищем нормаль и её знак - т.к. по координате нормали нет необходимости искать левого и правого соседей
+		indNormal = trunc(i/NumOfPoints);
+		normSign = (!!(indNormal & 1)) ? 1:-1;
+		indNormal = trunc(indNormal/2);
+		//и проверяем на локальную выпуклость
+		for (m = 0; m < Dim; m++)
+			if (m==indNormal)
+				lrV[i][m]=lrV[i][m+Dim] = -1;
+			else {
+				lInd = shift(i,m,-1,isBC);
+				rInd = shift(i,m, 1,isBC);
+				//!!!уточнить неравенство Йенсена верно всюду или только для положительно определённых функкций
+				//f[i]; - как rvalue не работает, только (*f)[i] или f->v->v[i]
+				if (f->v->v[i] >= ((f->v->v[lInd]+f->v->v[rInd])/2))//есть локальная выпуклость
+					lrV[i][m]=lrV[i][m+Dim] = 0;
+				else {//нашли локальную вогнутость
+					isExtr = isLExtr = isRExtr = false;
+					pr_lInd = pr_rInd = i;
+					lIndEx = rIndEx = 0;
+					while (isExtr){
+						//шаг влево
+						pr_lInd = lInd;
+						lInd = shift(pr_lInd,m,-1,isBC);
+						if(lrV[lInd][m] > 0){//нашли существующий путь
+							lIndEx = lrV[lInd][m];
+							rIndEx = lrV[lInd][m+Dim];
+							isExtr = true;
+							continue;
+						}
+						if (f->v->v[pr_lInd] >= ((f->v->v[lInd]+f->v->v[rInd])/2))//шаг влево. есть локальная выпуклость слева
+							isLExtr = true;
+						else
+							lrV[lInd][m]= pr_lInd;
+						if (f->v->v[pr_rInd] >= ((f->v->v[lInd]+f->v->v[rInd])/2))//шаг влево. есть локальная выпуклость справа
+							isRExtr = true;
+						else
+							lrV[rInd][m+Dim]= pr_rInd;
+
+						if(isLExtr && isRExtr){//если выпукло с всех сторон
+							isExtr = true;
+							continue;
+						}
+
+						//шаг вправо
+						pr_rInd = rInd;
+						rInd = shift(pr_lInd,m, 1,isBC);
+						if(lrV[rInd][m] > 0){//нашли существующий путь
+							lIndEx = lrV[rInd][m];
+							rIndEx = lrV[rInd][m+Dim];
+							isExtr = true;
+							continue;
+						}
+                    	if (f->v->v[pr_lInd] >= ((f->v->v[lInd]+f->v->v[rInd])/2))//шаг влево. есть локальная выпуклость слева
+							isLExtr = true;
+						else
+							lrV[lInd][m]= pr_lInd;
+
+						if (f->v->v[pr_rInd] >= ((f->v->v[lInd]+f->v->v[rInd])/2))//шаг вправо. есть локальная выпуклость справа
+							isRExtr = true;
+						else
+							lrV[rInd][m+Dim]= pr_rInd;
+
+						if(isLExtr && isRExtr)//если выпукло с всех сторон
+							isExtr = true;
+					}
+
+					if (lIndEx == 0) { //на имеющийся путь не натыкались
+						lIndEx = lInd;
+						rIndEx = rInd;
+					}
+					//обратный ход слева  с прометкой левых и правых соседей
+					j= lIndEx;
+					lrV[j][m]= lIndEx;
+					lrV[j][m+Dim]= rIndEx;
+					j = pr_lInd;
+					while (j != i){ //идём слева к i
+						pr_lInd = lrV[j][m];
+						lrV[j][m]= lIndEx;
+						lrV[j][m+Dim]= rIndEx;
+						j = pr_lInd;
+					}
+
+					//обратный ход справа с прометкой левых и правых соседей
+					j= rIndEx;
+					lrV[j][m]= lIndEx;
+					lrV[j][m+Dim]= rIndEx;
+					j = pr_rInd;
+					while (j != i){ //идём справа к i
+						pr_rInd = lrV[j][m+Dim];
+						lrV[j][m]= lIndEx;
+						lrV[j][m+Dim]= rIndEx;
+						j = pr_rInd;
+					}
+
+				}
+
+
+			}
+
+	}
+	//на выходе имеем массив, в которой для каждой точки указаны номера 2*(Dim-1) соседей в которых удовлетворяется неравенство Йенсена
+	// рассчитываем lambda_i
+	is_empty = true;
+	maxRad = 0;
+
+	for (i = 0; i < Count; i++) {
+		if (L != NULL)
+			L[i] = false;
 		for (m = 0; m < Dim; m++)
 			vec[m] = getIJ(i, m);
-		//ищем нормаль
-		//indNormal = trunc(ind/NumOfPoints);
-		//normSign = (!!(indNormal & 1)) ? 1:-1;
-		//indNormal = trunc(indNormal/2);
-		//и проверяем на локальную выпуклость
-		//т.е. если все соседние точки <c_i*sin(\theta) =  c_i*sqrt(c_{i+\delta}^2-c_i^2)\le c_i
-		//или локально выпуклы, то множество локально выпукло в этой точке,  в противном случае
-		//множество локально вогнуто
-	   //	while(!extr_exist){
-		   /*	for (m = 0; m < Dim; m++){
-				if (m!=indNormal) {
-				  probeInd = shift(ind, m, -1, borderChanged);
-				  sk = scm(probeInd, vec, &net,NULL);
-				  if (sk > 0.0) {
-					extr = f->v->v[probeInd] / sk;
-					if (alpha[prevInd] > extr){
-						alpha[i] = extr;
-						ind = probeInd;
-						m = 0;
-					}
-				  }
-				  probeInd = shift(ind, m, 1, borderChanged);
-				   sk = scm(probeInd, vec, &net,NULL);
-				  if (sk > 0.0) {
-					extr = f->v->v[probeInd] / sk;
-					if (alpha[prevInd] > extr){
-						alpha[i] = extr;
-						ind = probeInd;
-						m = 0;
-					}
-				  }
+		alpha[i] = 0.0;
+
+		extr_exist = isExtr = false;
+		 // поиск extr градиентным методом (покоординатного спуска)
+		k = i;
+		j = -1;
+		ind = -1;
+		while (!isExtr){
+			for (m = 0; m < Dim;) {
+				if(lrV[k][m]>0)   //на невыпуклом участке берём соотв левого и правого выпуклого соседа
+				  j == -1? k = lrV[k][m]: k = lrV[k][m+Dim];
+				else
+					if(lrV[k][m] == 0) //на выпуклом участке берём левого и правого соседа
+						k = shift(k,m, j,isBC);
+					else
+						continue; //вне поверхности не ищем ничего, просто проскакиваем
+
+				if (j == 1 ) {//цикл проходим дважды, по левым и правым соседям
+				  j=-1;
+				  m++;
+				} else
+					j = 1;
+
+				sk = scm(k, vec, this,NULL);
+				if (sk > 0.0) {
+					sk = f->v->v[k] / sk;
+					if (!extr_exist) {
+						extr_exist = true;
+						alpha[i] = pr_extr  = sk;
+						ind = k;
+					}else
+						if (sk < alpha[i]){
+							pr_extr  = alpha[i];
+							alpha[i] = sk;
+							ind = k;
+						}
 				}
-			}  /**/
-	   //	}
-	}
+			}
 
-	//Фиксируем точку
-	//для этой точки ищем значение lambda_, перебирая точки не последовательно, а по заданному направлению
-	//если lambda_ существует, то все точки, на пути поиска lambda_ - помечаем как выпуклые
-	//если lambda_ не существует, то точку, помечаем, как невыпуклую
+			if (alpha[i] < 0){ //по идее ситуация невозможная, т.к. обходим только выпуклые области, поэтому вставлена диагностика
+			   isExtr = true;
+			   cout << "Error: i="<< i <<", k="<<k<<endl;
+			} else
+				if (pr_extr - alpha[i] < ldZeroDf)  //по построению pr_extr - alpha[i] д.б. > 0
+				   isExtr = true;
+		}
+		if (L != NULL)
+			L[ind] = true;
 
-	//если точка "выпуклая" то анализуруем соседнюю точку и ищем lambda_ для неё среди точек, соседних отосительно индекса lambda_
-	//найденного на предыущем шаге => первое сокращение перебора
-
-	//если точка "не выпуклая", а соседняя "выпуклая", то соседнюю точку помечаем как "граничную"  - пригодится для поиска "накрывающих" множеств.
-
-
-	// рассчитываем lambda_i
-   //	makeAlpha(alpha, L, st0Net);   //тут по ходу была ошибка
-  /*	makeAlpha(alpha, L, *this);
-
+		if (alpha[i]>= ldZeroDf)
+			is_empty = false;
+		if (alpha[i]> maxRad)
+			maxRad = alpha[i];
+    }
 
 	// собственно овыпукляем и сдвигаем назад
-	for (i = 0; i < st0Net.Count; i++) {
-		if (L[i]) {
+	for (i = 0; i < Count; i++) {
+		if (!L[i]) {
 			extr_exist = false;
 			for (m = 0; m < Dim; m++)
-				vec.v->v[m] = st0Net.getIJ(i, m);
-			 j = GetExtrDirection(vec, scm1, convCriteria, opMax, nZAware, i, &alpha,  f->v->v[i],  st0Net);
-		}
-		f->v->v[i] += st0Net.f->v->v[i];
-		// сдвиг множества выпуклой оболочки на исходное место
-	}
-	alpha.clear();
-	/**/
+				vec.v->v[m] = /*st0Net.*/getIJ(i, m);
+			extr_exist = isExtr = false;
+			k = i;
+			j = -1;
+			ind = -1;
+			while (!isExtr){
+				if(lrV[k][m]>0)   //на невыпуклом участке берём соотв левого и правого выпуклого соседа
+				  j == -1? k = lrV[k][m]: k = lrV[k][m+Dim];  //по идее опять же всегда должны быть левые и правые соседи т.к. смотрим не точки где зафиксирована локальная невыпуклость
+				else
+					if(lrV[k][m] == 0) //Если так, то ошибка
+						cout << "Error: i="<< i <<", k="<<k<<endl;
+					else
+						continue; //вне поверхности не ищем ничего, просто проскакиваем
 
-	for (i = 0; i < st0Net.Count; i++)
-		f->v->v[i] += st0Net.f->v->v[i];  	// сдвиг множества выпуклой оболочки на исходное место
+				if (j == 1 ) {//цикл проходим дважды, по левым и правым соседям
+				  j=-1;
+				  m++;
+				} else
+					j = 1;
+
+				sk = alpha[k]*scm(k, vec, this, NULL);   //расчёт co_\Psi(c_\psi)
+				if (!extr_exist) {
+					extr_exist = true;
+					pr_extr = extr = sk;
+					//ind = k;
+				}else
+					if (sk > extr){
+						pr_extr  = extr;
+						extr = sk;
+						//ind = k;
+					}
+				if (extr - pr_extr < ldZeroDf)  //по построению extr - pr_extr д.б. > 0
+				   isExtr = true;
+			}
+			 //j = GetExtrDirection(vec, scm1, convCriteria, opMax, nZAware, i, &alpha,  f->v->v[i], *this);
+		}
+		f->v->v[i] += st0Net.f->v->v[i];  // сдвиг множества выпуклой оболочки на исходное место
+	}
 }
 // ----------------------------------------------------------------------------//
 TNet __fastcall TNetF::Points(/*bool compactPoints*/) {

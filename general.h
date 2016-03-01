@@ -22,6 +22,8 @@
 #include <algorithm>
 //#include <system.hpp>
 
+class Vector;
+
 typedef double LDouble;
 const std::string states[4] = {
 	"Выбор метода", "Ввод параметров", "Решение", "Анализ результатов"};
@@ -43,15 +45,15 @@ typedef enum FindPath {
 } FindPath;
 
 typedef enum optSearch {
-	optNone = 0, optAnnealing = 1, optGradient = 2
+	optNone = 0, optAnnealing = 1, optGradient = 2, optTimS = 3
 } optSearch;
 
 typedef std::vector<LDouble>alphType;
 typedef alphType::value_type aplhVal;
 typedef std::map<long, bool>seekType;
 typedef std::list<long>pathType;
-
 typedef std::vector<long>VecOfLong;
+typedef std::vector<Vector*>VecOfVec;
 
 //возващает знак значения a
 inline int signof(LDouble a) { return (a == 0.0) ? 0 : (a<0 ? -1 : 1); }

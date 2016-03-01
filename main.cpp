@@ -14,13 +14,15 @@
 #include "taskloader.h"
 #include "CDataFile.h"
 #include "environment.h"
-//#include <boost/program_options/config_file.hpp>
+
 
 using namespace Dll;
 using namespace::std;
 
 
 int _tmain(int argc, _TCHAR* argv[]) {
+
+//-------------
 
 	randomize();   //инициализируем рандомизатор
 	setlocale( LC_ALL,"Russian.1572" ); //устанавливаем локаль русского языяка так, чтобы десятичным разделителем была точка, а не запятая
@@ -33,7 +35,7 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	cout<<localPath<<endl;
 
 	cout << "Begin.." << endl;
-	cout << "Версия: 08.02.2016" << endl;
+	cout << "Версия: 01.03.2016" << endl;
 	tl.loadGlobalParameters();
 	cout << "Parameters are loaded" << endl;
 	tl.load_and_calc_tasks();

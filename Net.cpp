@@ -23,17 +23,13 @@ double __fastcall TNet:: operator()(unsigned long i, unsigned long j) {
 // ------------------------------- getVecAt -----------------------------------//
 
 Vector* __fastcall TNet::getVecAt(unsigned long i) {
-	unsigned long j;
-	// Vector result(Dim);
 	checkCacheVector();
-
-	if (!updated) {
+	if (!updated)
 		if (isVirtual)
 			dynUpdate();
 		else
 			update();
-	}
-	for (j = 0; j < Dim; j++)
+	for (unsigned long j = 0; j < Dim; j++)
 		cache->v->v[j] = getIJ(i, j);
 	return cache;
 }

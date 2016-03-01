@@ -781,7 +781,7 @@ Gnuplot gp;
    //		xy_pts_B.push_back(make_pair(cos(theta), sin(theta)));
    //	}
 
-	gp << "set xrange [-10:10]\nset yrange [-10:10]\n";
+	//gp << "set xrange [-10:10]\nset yrange [-10:10]\n";
 	// Data will be sent via a temporary file.  These are erased when you call
 	// gp.clearTmpfiles() or when gp goes out of scope.  If you pass a filename
 	// (e.g. "gp.file1d(pts, 'mydata.dat')"), then the named file will be created

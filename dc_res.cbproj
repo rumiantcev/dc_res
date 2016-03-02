@@ -235,7 +235,7 @@
         </CppCompile>
         <CppCompile Include="Netfunc.cpp">
             <DependentOn>Netfunc.h</DependentOn>
-            <BuildOrder>9</BuildOrder>
+            <BuildOrder>28</BuildOrder>
         </CppCompile>
         <PCHCompile Include="Project2PCH1.h">
             <BuildOrder>0</BuildOrder>
@@ -279,6 +279,10 @@
         <CppCompile Include="traectory.cpp">
             <DependentOn>traectory.h</DependentOn>
             <BuildOrder>18</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="t_Mx.cpp">
+            <DependentOn>t_Mx.h</DependentOn>
+            <BuildOrder>29</BuildOrder>
         </CppCompile>
         <CppCompile Include="Vector.cpp">
             <DependentOn>Vector.h</DependentOn>
@@ -401,8 +405,8 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="$(BDS)\Redist\iossim32\libcgunwind.1.0.dylib" Class="DependencyModule">
-                    <Platform Name="iOSSimulator">
+                <DeployFile Condition="'$(DynamicRTL)'=='true' And '$(Multithreaded)'!='true'" LocalName="$(BDS)\bin\cc32120.dll" Class="DependencyModule">
+                    <Platform Name="Win32">
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -411,8 +415,8 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile Condition="'$(DynamicRTL)'=='true' And '$(Multithreaded)'!='true'" LocalName="$(BDS)\bin\cc32120.dll" Class="DependencyModule">
-                    <Platform Name="Win32">
+                <DeployFile LocalName="$(BDS)\Redist\iossim32\libcgunwind.1.0.dylib" Class="DependencyModule">
+                    <Platform Name="iOSSimulator">
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -461,9 +465,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName=".\Win32\Debug\Project2.tds" Configuration="Debug" Class="DebugSymbols">
+                <DeployFile LocalName=".\Win32\Debug\dc_res.tds" Configuration="Debug" Class="DebugSymbols">
                     <Platform Name="Win32">
-                        <RemoteName>Project2.tds</RemoteName>
+                        <RemoteName>dc_res.tds</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

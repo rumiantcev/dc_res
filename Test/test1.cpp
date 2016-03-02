@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #include "Vector.h"
-
+#include "netfunc.h"
 #pragma option --xrtti
 
 class __declspec(delphirtti) dc_res_Test : public TObject
@@ -30,6 +30,7 @@ void __fastcall dc_res_Test::Test1()
 {
   // TODO
    Vector r(2);
+   TNetF *net;
 
   String s("Hello");
   Dunitx::Testframework::Assert::IsTrue(s == "Hello");

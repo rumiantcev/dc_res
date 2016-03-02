@@ -35,7 +35,7 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	cout<<localPath<<endl;
 
 	cout << "Begin.." << endl;
-	cout << "Версия: 01.03.2016" << endl;
+	cout << "Версия: 02.03.2016" << endl;
 	tl.loadGlobalParameters();
 	cout << "Parameters are loaded" << endl;
 	tl.load_and_calc_tasks();

@@ -28,8 +28,8 @@
 //}
 // ---------------------------- constructor -----------------------------------//
 
-Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, double prec,
-	double eps, LDouble delta, LDouble tmax,long st, short perf, long stat,
+Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, LDouble prec,
+	LDouble eps, LDouble delta, LDouble tmax,long st, short perf, long stat,
 	int tr_count) : A(dimX, dimX), B(dimX, dimU), C(dimX, dimV),
 	PP(dimM, dimX) {
 	Traectory tr;
@@ -477,15 +477,15 @@ void Task::Control_R1(int trNum) {
 				tcurr = tcurr * ccurr;
 			}else{
 				p = 1.0 / (1.0 + exp(-fabs(xNorm - xExtNorm) /tcurr));
-				a = double(_lrand() % c.Count) / (double)c.Count;
+				a = LDouble(_lrand() % c.Count) / (LDouble)c.Count;
 				if (a > p) {
 					xExtNorm = xNorm;
 					indExtr = jk;
 					tcurr = tcurr * ccurr;
 				}
 			}
-			a = double(_lrand() % c.Count) / double(c.Count);
-			jj = signof(a - 0.5) * tcurr * (pow((1.0 + 1.0 / tcurr), fabs(2.0 * a - 1.0)) -	1.0) * double(c.Count);
+			a = LDouble(_lrand() % c.Count) / LDouble(c.Count);
+			jj = signof(a - 0.5) * tcurr * (pow((1.0 + 1.0 / tcurr), fabs(2.0 * a - 1.0)) -	1.0) * LDouble(c.Count);
 			jk = abs(jj + jk) % c.Count;
 			for (m = 0; m < c.Dim; m++)
 				psi.v->v[m] = c.getIJ(indExtr, m);
@@ -1044,15 +1044,15 @@ void Task::plot(int trNum){
 //------------------------
 Gnuplot gp;
 
-	vector<pair<double, double> > xy_pts_A;
+	vector<pair<LDouble, LDouble> > xy_pts_A;
 	for(long i=0; i<tr_s[trNum].x_i->m(); ++i) {
-	   //	double y = x*x*x;
+	   //	LDouble y = x*x*x;
 		xy_pts_A.push_back(std::make_pair(tr_s[trNum].x_i->v->v[i][0], tr_s[trNum].x_i->v->v[i][1]));
 	}
 
-  //	vector<pair<double, double> > xy_pts_B;
-  //	for(double alpha=0; alpha<1; alpha+=1.0/24.0) {
-  //		double theta = alpha*2.0*3.14159;
+  //	vector<pair<LDouble, LDouble> > xy_pts_B;
+  //	for(LDouble alpha=0; alpha<1; alpha+=1.0/24.0) {
+  //		LDouble theta = alpha*2.0*3.14159;
   //		xy_pts_B.push_back(make_pair(cos(theta), sin(theta)));
   //	}
 

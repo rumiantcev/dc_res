@@ -168,7 +168,7 @@ ostream& __fastcall operator << (ostream& out_data, TNetF& C) {
 // ----------------------------------- >> -------------------------------------//
 istream& __fastcall operator >> (istream& in_data, TNetF& C) {
 	char c = 0;
-	double tempVal;
+	LDouble tempVal;
 	unsigned long i, j;
 
 	if ((!C.isVirtual) && (C.v == NULL))
@@ -412,19 +412,19 @@ TNetF& __fastcall TNetF:: operator *= (const LDouble &a) {
 }
 
 // ----------------------------------- + --------------------------------------//
-/* TNetF& __fastcall TNetF:: operator += (const double &a) {
+/* TNetF& __fastcall TNetF:: operator += (const LDouble &a) {
  updSum += a;
  updated = false;
  return *this;
  }
 /* */
 // ----------------------------------- * --------------------------------------//
-const TNetF __fastcall operator *(const double a, const TNetF& B) {
+const TNetF __fastcall operator *(const LDouble a, const TNetF& B) {
 	return TNetF(B) *= a;
 }
 
 // ----------------------------------- + --------------------------------------//
-/* const TNetF __fastcall operator +(const double a, const TNetF& B) {
+/* const TNetF __fastcall operator +(const LDouble a, const TNetF& B) {
  return TNetF(B) += a;
  }
 /* */
@@ -439,12 +439,12 @@ void __fastcall TNetF::AddVariables() {
 		vars = NULL;
 	}
 	if (vars == NULL)
-		vars = new double[Dim];
+		vars = new LDouble[Dim];
 
 #ifdef _WIN64
-	TDllStdProcV3<TSIC_Data64*, char*, double*>sic_avarf(*dll, "sic_avarf");
+	TDllStdProcV3<TSIC_Data64*, char*, LDouble*>sic_avarf(*dll, "sic_avarf");
 #else
-	TDllStdProcV3<TSIC_Data32*, char*, double*>sic_avarf(*dll, "sic_avarf");
+	TDllStdProcV3<TSIC_Data32*, char*, LDouble*>sic_avarf(*dll, "sic_avarf");
 #endif
 	for (i = 0; i < Dim; i++) {
 		ss << i;
@@ -475,9 +475,9 @@ LDouble __fastcall TNetF::oporn(const Vector &x, LDouble t, int sign) {
 
 	this->t = t;
 #ifdef _WIN64
-	TDllStdProc2<double, TSIC_Data64*, DWORD*>sic_exec(*dll, "sic_exec");
+	TDllStdProc2<LDouble, TSIC_Data64*, DWORD*>sic_exec(*dll, "sic_exec");
 #else
-	TDllStdProc2<double, TSIC_Data32*, DWORD*>sic_exec(*dll, "sic_exec");
+	TDllStdProc2<LDouble, TSIC_Data32*, DWORD*>sic_exec(*dll, "sic_exec");
 #endif
 	result = sic_exec(&sic, &err);
 	return result;
@@ -645,7 +645,7 @@ unsigned long  __fastcall TNetF::findExtrAnnealingDirection(const Vector& vec, s
 				}
 				else {
 					p = 1 / (1 + exp(-fabs(extr-val) / t));
-					a = double(_lrand() % net.Count) / net.Count;
+					a = LDouble(_lrand() % net.Count) / net.Count;
 					if (a > p) {
 						extr = val;
 						t = t * c;
@@ -654,7 +654,7 @@ unsigned long  __fastcall TNetF::findExtrAnnealingDirection(const Vector& vec, s
 
 			}
 		}
-		a = double(_lrand() % net.Count) / net.Count;
+		a = LDouble(_lrand() % net.Count) / net.Count;
 		jj = signof(a - 0.5) * t * (pow((1 + 1 / t), fabs(2 * a - 1)) - 1)
 				* net.Count;
 		j = abs(jj + j) % net.Count;
@@ -704,13 +704,13 @@ long  __fastcall TNetF::findExtrAnnealingGlobal(OpType extrOper, LDouble &extr) 
 		}
 		else {
 			p = 1 / (1 + exp(-fabs(val - extr) / t));
-			a = double(_lrand() % Count) / Count;
+			a = LDouble(_lrand() % Count) / Count;
 			if (a > p) {
 				extr = val;
 				t = t * c;
 			}
 		}
-		a = double(_lrand() % Count) / Count;
+		a = LDouble(_lrand() % Count) / Count;
 		jj = signof(a - 0.5) * t * (pow((1 + 1 / t), fabs(2 * a - 1)) - 1)
 			* Count;
 		j = abs(jj + j) % Count;
@@ -1008,7 +1008,7 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 					else {
 						p = 1 / (1 + exp(-fabs(alpha[i] - extr) / t));
 						// p= t/(M_PI*(pow(fabs(extr-alpha[i])/net.Count,2)+pow(t,2)));  // раскомменировать Если отжиг по Коши
-						a = double(_lrand() % net.Count) / net.Count;
+						a = LDouble(_lrand() % net.Count) / net.Count;
 						if (a > p) {
 							alpha[i] = extr;
 							t = t * c;
@@ -1018,7 +1018,7 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 						}
 					}
 				}
-				a = double(_lrand() % net.Count) / net.Count;
+				a = LDouble(_lrand() % net.Count) / net.Count;
 				jj = signof(a - 0.5) * t * (pow((1 + 1 / t), abs(2 * a - 1)) - 1) * net.Count;
 				// jj = t * tan(M_PI*(a-0.5))*net.Count;  // раскомменировать Если отжиг по Коши
 				j = abs(jj + j) % net.Count;
@@ -1085,7 +1085,9 @@ void __fastcall TNetF::ConvTimS(bool *L) {
 	TNetF st0Net(Dim, perfomance, NumOfPoints);
 	Vector vec(Dim), st(Dim);
 	//вектора "левых" и "правых" соседей для каждой точки
-	long lrV[Count][Dim*2];
+	//long lrV[Count][Dim*2];
+	t_Mx<long>  lrV(Count,Dim*2);
+
 	int  normSign;
 	bool isBC, isExtr, isLExtr, isRExtr, extr_exist;
 
@@ -1106,9 +1108,9 @@ void __fastcall TNetF::ConvTimS(bool *L) {
 
 	for (i = 0; i < Count; i++) {
 		//ищем нормаль и её знак - т.к. по координате нормали нет необходимости искать левого и правого соседей
-		indNormal = trunc(i/NumOfPoints);
+		indNormal = static_cast<long>(i/NumOfPoints); //замена trunc через приведение типа
 		normSign = (!!(indNormal & 1)) ? 1:-1;
-		indNormal = trunc(indNormal/2);
+		indNormal = static_cast<long>(indNormal/2);  //замена trunc через приведение типа
 		//и проверяем на локальную выпуклость
 		for (m = 0; m < Dim; m++)
 			if (m==indNormal)
@@ -1443,8 +1445,8 @@ void __fastcall TNetF::dynUpdate() {
 }
 
 // ------------------------------------Get IJ----------------------------------//
-inline double __fastcall TNetF::getIJ(unsigned long current, unsigned long coordNumber) {
-	double res;
+inline LDouble __fastcall TNetF::getIJ(unsigned long current, unsigned long coordNumber) {
+	LDouble res;
 	if (isVirtual) {
 		checkCacheVector();
 		if (current != cacheCurrent) {
@@ -1466,7 +1468,7 @@ inline double __fastcall TNetF::getIJ(unsigned long current, unsigned long coord
 }
 
 // ------------------------------------Smoothing-------------------------------//
-void __fastcall TNetF::smoothFunction(double epsilon) {
+void __fastcall TNetF::smoothFunction(LDouble epsilon) {
 	unsigned long i;
 	update();
 	for (i = 0; i < Count; i++) {

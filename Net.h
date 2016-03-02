@@ -36,7 +36,7 @@ public:
 	bool updated, // признак актуальности
 		umx, cached, isVirtual;
 	// isVirtual - признак расчёной сети т.е. если true, то сетка не хранится в памяти а рассчитывается при обращении к ней
-	double upd; // кешированный коэффициент умножения
+	LDouble upd; // кешированный коэффициент умножения
 	Matrix *u_mx; // кешированная матрица
 
 private:
@@ -53,7 +53,7 @@ protected:
 	unsigned long cacheCurrent; // ,
 	// parsedCacheCurrent;
 	unsigned long virtDim;
-	double halfRes, dRes;
+	LDouble halfRes, dRes;
 	unsigned long coordNumber; // , i;
 	unsigned int _mod, __mod;
 
@@ -84,25 +84,25 @@ private:
 
 	// Vector __fastcall getCoordVectorByID(long ID);
 public:
-	double __fastcall getIJ(unsigned long ID, unsigned long coordNumber);
+	LDouble __fastcall getIJ(unsigned long ID, unsigned long coordNumber);
 
 	friend ostream& __fastcall operator << (ostream&,  TNet&);
 	friend istream& __fastcall operator >> (istream&, TNet&);
 
 	/* !inline */ TNet& __fastcall operator *= (const Matrix&);
-	/* !inline */// TNet& __fastcall operator *= (const double&);
+	/* !inline */// TNet& __fastcall operator *= (const LDouble&);
 	/* !inline */ TNet& __fastcall operator += (const TNet&);
 	/* !inline */ TNet& __fastcall operator += (const Vector&);
 
 	friend const TNet __fastcall operator *(const Matrix&, const TNet&);
-	//friend const TNet __fastcall operator *(const double &, const TNet&);
+	//friend const TNet __fastcall operator *(const LDouble &, const TNet&);
 	friend const TNet __fastcall operator +(const TNet&, const TNet&);
 	friend const TNet __fastcall operator +(const Vector&, const TNet&);
 
 	TNet& __fastcall operator = (const TNet&);
 
 	virtual void __fastcall Clear();
-	double __fastcall operator()(unsigned long i, unsigned long j);
+	LDouble __fastcall operator()(unsigned long i, unsigned long j);
 	// возвращаем значение по коорд i,j
 	void /* !inline */ __fastcall copyNetFrom(const TNet&);
 	void /* !inline */ __fastcall buildPowerVectors(unsigned long);
@@ -111,7 +111,7 @@ public:
 private:
 	void /* !inline */ __fastcall MVMul(Vector* vsrc, Vector* vdst);
 	// перемножение кешированной матрицы на заданый вектор
-	void /* !inline */ __fastcall MVMul(double* vsrc, double* vdst);
+	void /* !inline */ __fastcall MVMul(LDouble* vsrc, LDouble* vdst);
 	// перемножение кешированной матрицы на заданный вектор
 
 	void inline __fastcall initNetDefault();

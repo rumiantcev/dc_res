@@ -55,6 +55,7 @@ typedef std::list<long>pathType;
 typedef std::vector<long>VecOfLong;
 typedef std::vector<Vector*>VecOfVec;
 
+
 //возващает знак значения a
 inline int signof(LDouble a) { return (a == 0.0) ? 0 : (a<0 ? -1 : 1); }
 

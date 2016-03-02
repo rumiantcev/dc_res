@@ -24,8 +24,8 @@ class PR_Task: public Task {
 		VecOfPTypes pTypes;
 		VecOfPursuers Pursuers;
 
-		PR_Task(long ,  long dimU,  long dimV,  long dimM, LDouble ts, double prec,
-			double eps, LDouble delta, LDouble tmax,  long st, short perf,
+		PR_Task(long ,  long dimU,  long dimV,  long dimM, LDouble ts, LDouble prec,
+			LDouble eps, LDouble delta, LDouble tmax,  long st, short perf,
 			long stat,	int tr_count);
 		virtual ~PR_Task();
 

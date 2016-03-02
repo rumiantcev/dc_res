@@ -18,7 +18,7 @@ unsigned long Matrix::n() const {
 }
 
 // ------------------------------- operator () --------------------------------//
-double& Matrix:: operator()(unsigned long i, unsigned long j) {
+LDouble& Matrix:: operator()(unsigned long i, unsigned long j) {
 	if ((v->linkCount > 1) && (!updated))
 		update();
 	return v->v[i][j];
@@ -55,7 +55,7 @@ __fastcall Matrix::Matrix(const Matrix &C) : v(C.v), upd(C.upd),
 }
 
 // ----------------------------- constructor ----------------------------------//
-//__fastcall Matrix::Matrix(double **vv, long mm, long nn) : upd(1), updated(true)
+//__fastcall Matrix::Matrix(LDouble **vv, long mm, long nn) : upd(1), updated(true)
 //{
 //	v = new sMx(vv, mm, nn);
 //}
@@ -93,7 +93,7 @@ __fastcall Matrix::Matrix(const string& str, unsigned long m, unsigned long n) {
 Matrix& __fastcall Matrix:: operator += (const Matrix& A) {
 	
 	// Matrix *pA = (Matrix*)(&A);
-	double coeff = A.upd / upd;
+	LDouble coeff = A.upd / upd;
 	if (A.v == v) {
 		upd += A.upd;
 	}
@@ -119,7 +119,7 @@ Matrix& __fastcall Matrix:: operator *= (const Matrix& B) {
 	unsigned long i, j, k;
 
 	sMx *result = new(sMx)(v->m, B.v->n);
-	double sum;
+	LDouble sum;
 
 	if (v->linkCount > 1)
 		detach();
@@ -143,7 +143,7 @@ const Matrix __fastcall operator *(const Matrix& A, const Matrix &B) {
 }
 
 // ------------------------------- * ------------------------------------------//
-Matrix& __fastcall Matrix:: operator *= (const double &scalar) {
+Matrix& __fastcall Matrix:: operator *= (const LDouble &scalar) {
 	// if (v->linkCount>1) detach();
 	/* DONE -orum -cCheck : Проверить корректность оптимизации для матриц. */
 	updated = false;
@@ -152,8 +152,8 @@ Matrix& __fastcall Matrix:: operator *= (const double &scalar) {
 }
 
 // ------------------------------- * ------------------------------------------//
-const Matrix __fastcall operator *(const double &scalar, const Matrix &A)
-	// Matrix __fastcall operator *(const double &scalar, const Matrix &A)
+const Matrix __fastcall operator *(const LDouble &scalar, const Matrix &A)
+	// Matrix __fastcall operator *(const LDouble &scalar, const Matrix &A)
 {
 	return Matrix(A) *= scalar;
 }
@@ -164,7 +164,7 @@ const Vector __fastcall operator *(const Matrix &A, const Vector& B) {
 	Vector result(A.v->m);
 
 	for (i = 0; i < A.v->m; i++) {
-		double sum = 0;
+		LDouble sum = 0;
 		for (j = 0; j < A.v->n; j++)
 			sum += B.v->v[j] * A.v->v[i][j];
 		result.v->v[i] = sum;
@@ -182,7 +182,7 @@ const Vector __fastcall operator *(Vector& B, Matrix &A) {
 	assert(B.v->size != A.v->m);
 
 	for (j = 0; j < A.v->n; j++) {
-		double sum = 0;
+		LDouble sum = 0;
 		for (i = 0; i < A.v->m; i++)
 			sum += B.v->v[i] * A.v->v[i][j];
 		result.v->v[j] = sum;
@@ -221,7 +221,7 @@ ostream& __fastcall operator << (ostream& out_data, Matrix& C) {
 istream& __fastcall operator >> (istream& in_data, Matrix& C) {
 	// Matrix mx(C.v->m,C.v->n);
 	char c = 0;
-	double tempVal;
+	LDouble tempVal;
 	unsigned long i, j; // ,k=0,l=0;
 
 	// Инициализируем несчитываемые значения
@@ -285,9 +285,9 @@ Matrix __fastcall Transpose(const Matrix &A) {
 } /* */
 
 // ---------------------------- Норма Фробениуса матрицы----------------------//
-double __fastcall Matrix::Norm() {
+LDouble __fastcall Matrix::Norm() {
 	unsigned long i, j;
-	double res = 0;
+	LDouble res = 0;
 	if (!updated)
 		update();
 	for (j = 0; j < v->n; j++) {
@@ -300,20 +300,20 @@ double __fastcall Matrix::Norm() {
 }
 
 // ---------------------------- Exponential ----------------------------------//
-Matrix __fastcall Exponential(Matrix& A, double t, double delta) {
+Matrix __fastcall Exponential(Matrix& A, LDouble t, LDouble delta) {
 	if (!A.updated)
 		A.update();
 	Vector x0(A.v->m);
 	Matrix E(A.v->m), B(A.v->m, A.v->n), Bn(A.v->m, A.v->n); // ,
 	unsigned long i, k;
 	unsigned long md;
-	double tp;
-	double norm = abs(t) * A.Norm();
+	LDouble tp;
+	LDouble norm = abs(t) * A.Norm();
 	if (norm >= 1)
 		md = ceil(log10(norm) / log10(2.0));
 	else
 		md = 0;
-	tp = t / pow(2.0, double(md));
+	tp = t / pow(2.0, LDouble(md));
 	B = E;
 	Bn = E;
 	k = 0;

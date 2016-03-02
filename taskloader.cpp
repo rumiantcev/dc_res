@@ -63,7 +63,7 @@ void TaskLoader::load_and_calc_tasks(){
 	ofstream out_f;
 	Task* t = NULL;
 	clock_t before;
-	double elapsed;
+	LDouble elapsed;
 	PR_Task *prTask;
 
 	CDataFile DFile(std::string(localPath+"\\control.ini").c_str());

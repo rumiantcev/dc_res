@@ -17,14 +17,14 @@ class Matrix {
 public:
 	// int		m, n;
 	sMx *v;
-	double upd;
+	LDouble upd;
 	bool updated;
 	// ,cached; Reserved
 
 	__fastcall Matrix(unsigned long, unsigned long);
 	explicit __fastcall Matrix(unsigned long);
 	__fastcall Matrix(const Matrix&);
-   //	__fastcall Matrix(double **, long, long);
+   //	__fastcall Matrix(LDouble **, long, long);
 	__fastcall Matrix(const string&, unsigned long, unsigned long);
 	// void operator delete(void *p);
 
@@ -35,18 +35,18 @@ public:
 
 	unsigned long m() const ; // число строк
 	unsigned long n() const ; // число столбцов
-	double& operator()(unsigned long i, unsigned long j);
+	LDouble& operator()(unsigned long i, unsigned long j);
 	Matrix& __fastcall operator = (const Matrix&);
 
 	friend ostream& __fastcall operator << (ostream&, Matrix&);
 	friend istream& __fastcall operator >> (istream&, Matrix&);
 
 	/* !inline */ Matrix& __fastcall operator += (const Matrix&);
-	/* !inline */ Matrix& __fastcall operator *= (const double&);
+	/* !inline */ Matrix& __fastcall operator *= (const LDouble&);
 	/* !inline */ Matrix& __fastcall operator *= (const Matrix&);
 
 	friend const Matrix __fastcall operator +(const Matrix&, const Matrix&);
-	friend const Matrix __fastcall operator *(const double&, const Matrix&);
+	friend const Matrix __fastcall operator *(const LDouble&, const Matrix&);
 	friend const Vector __fastcall operator *(const Matrix&, const Vector&);
 	friend const Matrix __fastcall operator *(const Vector&, const Matrix&);
 	friend const Matrix __fastcall operator *(const Matrix&, const Matrix&);
@@ -57,10 +57,10 @@ public:
 	Matrix __fastcall GetSubMatrix(unsigned long, unsigned long, unsigned long, unsigned long);
 	friend Matrix __fastcall Mirror(const Matrix&);
 	friend Matrix __fastcall Transpose(const Matrix&);
-	friend Matrix __fastcall Exponential(Matrix&, double, double);
+	friend Matrix __fastcall Exponential(Matrix&, LDouble, LDouble);
 	friend Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon);
 	static Matrix* __fastcall copy(Matrix* src, Matrix* dst);
-	double __fastcall Norm();
+	LDouble __fastcall Norm();
 };
 // ---------------------------------------------------------------------------
 #endif

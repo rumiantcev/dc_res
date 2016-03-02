@@ -18,8 +18,8 @@ PR_Task::~PR_Task() {
 }
 
 // ------------------------------ constructor --------------------------------//
-PR_Task::PR_Task(long dimX,  long dimU,  long dimV,  long dimM, LDouble ts, double prec,
-	double eps, LDouble delta, LDouble tmax,  long st, short perf, long stat,
+PR_Task::PR_Task(long dimX,  long dimU,  long dimV,  long dimM, LDouble ts, LDouble prec,
+	LDouble eps, LDouble delta, LDouble tmax,  long st, short perf, long stat,
 	int tr_count):Task(dimX,  dimU,  dimV,  dimM,  ts,  prec,
 	 eps,  delta,  tmax,  st,  perf,  stat,  tr_count) {
 	}
@@ -771,13 +771,13 @@ Gnuplot gp;
 
 	vector<pair<LDouble, LDouble> > xy_pts_A;
 	for(long i=0; i<tr_s[trNum].x_i->m(); ++i) {
-	   //	double y = x*x*x;
+	   //	LDouble y = x*x*x;
 		xy_pts_A.push_back(make_pair(tr_s[trNum].x_i->v->v[i][0], tr_s[trNum].x_i->v->v[i][1]));
 	}
 
-	//vector<pair<double, double> > xy_pts_B;
-   //	for(double alpha=0; alpha<1; alpha+=1.0/24.0) {
-   //		double theta = alpha*2.0*3.14159;
+	//vector<pair<LDouble, LDouble> > xy_pts_B;
+   //	for(LDouble alpha=0; alpha<1; alpha+=1.0/24.0) {
+   //		LDouble theta = alpha*2.0*3.14159;
    //		xy_pts_B.push_back(make_pair(cos(theta), sin(theta)));
    //	}
 

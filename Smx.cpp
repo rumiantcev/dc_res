@@ -44,8 +44,8 @@ void __fastcall sMx::create()
 
 	try {
 		unsigned long i, j, k, mm, count, last;
-		v = new double*[m]; // массив указателей (на строки)
-		vv = new double[m * n]; // массив значений
+		v = new LDouble*[m]; // массив указателей (на строки)
+		vv = new LDouble[m * n]; // массив значений
 		count = long(m / quant); // число страниц по 16384
 		last = m - count * quant; // mod   //остаток от числа страниц
 		for (i = 0; i < count; i++) {
@@ -79,12 +79,12 @@ __fastcall sMx::sMx(unsigned long mm, unsigned long nn) : m(mm), n(nn), linkCoun
 
 // ------------------------------- copy constr --------------------------------//
 __fastcall sMx::sMx(sMx &C) : m(C.m), n(C.n), linkCount(1) {
-	memcpy(vv, C.vv, m*n*sizeof(double));
-	memcpy(v, C.v, m*sizeof(double*));
+	memcpy(vv, C.vv, m*n*sizeof(LDouble));
+	memcpy(v, C.v, m*sizeof(LDouble*));
 }
 
 // ------------------------------- copy constr --------------------------------//
-//__fastcall sMx::sMx(double **vv, long mm, long nn) : m(mm), n(nn), linkCount(1)
+//__fastcall sMx::sMx(LDouble **vv, long mm, long nn) : m(mm), n(nn), linkCount(1)
 //{
 //	long i, j;
 //	for (i = 0; i < m; i++)

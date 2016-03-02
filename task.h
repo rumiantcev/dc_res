@@ -25,7 +25,7 @@ typedef enum TaskState {
 // typedef vector<Vector> VecOfVec;
 // typedef vector<Vector>::iterator VIter;
 // typedef vector<long> VecOfLong;
-// typedef vector<double> VecOfDouble;
+// typedef vector<LDouble> VecOfDouble;
 
 class Task {
 public:
@@ -42,18 +42,18 @@ public:
 
 	unsigned long dim_x, dim_u, dim_v, dim_m1, dim_m, steps;
 	// long maxWayLength;      //длина максимального пути по времени в шагах по tau.
-	double epsilon,
+	LDouble epsilon,
 		// ѕараметр, определ€юдий степень допустимой близости траектории
 		// к терминальному множеству
 		precision;
 	// ѕараметр точности при численных вычислени€х (напр. экспоненциал)
-	double tau, // Ўаг по времени.
+	LDouble tau, // Ўаг по времени.
 		maxTime, t0, T, tmpT;
 	int priority, method; // , traectoryCount;
 	string description;
 
    //	Task();
-	Task(long, long, long, long, LDouble, double, double, LDouble, LDouble,
+	Task(long, long, long, long, LDouble, LDouble, LDouble, LDouble, LDouble,
 		long, short, long, int);
 	Task(const Task&);
 	virtual ~Task();

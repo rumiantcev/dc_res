@@ -11,7 +11,7 @@
 using namespace std;
 
 // ------------------------------- operator () --------------------------------//
-double __fastcall TNet:: operator()(unsigned long i, unsigned long j) {
+LDouble __fastcall TNet:: operator()(unsigned long i, unsigned long j) {
 	if (v != NULL)
 		if ((v->v->linkCount > 1) && (!updated))
 			update();
@@ -19,7 +19,7 @@ double __fastcall TNet:: operator()(unsigned long i, unsigned long j) {
 }
 /* */
 // ------------------------------- operator [] --------------------------------//
-///*!inline*/  const double& __fastcall TNet::operator [](long i) const {f->v[i];}
+///*!inline*/  const LDouble& __fastcall TNet::operator [](long i) const {f->v[i];}
 // ------------------------------- getVecAt -----------------------------------//
 
 Vector* __fastcall TNet::getVecAt(unsigned long i) {
@@ -45,8 +45,8 @@ void __fastcall TNet::initNetParams(const unsigned long& res, const unsigned lon
 	unsigned long i;
 
 	virtDim = Dim;
-	halfRes = (double)Res / 2;
-	dRes = 1 / (float)Res;
+	halfRes = (LDouble)Res / 2;
+	dRes = 1 / (LDouble)Res;
 
 	SurfaceDim = Dim - 1;
 	NumOfSur = Dim * 2;
@@ -138,12 +138,12 @@ void __fastcall TNet::destroy() {
 }
 /* */// ------------------------------ MVMul ---------------------------------------//
 
-void __fastcall TNet::MVMul(double* vsrc, double* vdst) {
+void __fastcall TNet::MVMul(LDouble* vsrc, LDouble* vdst) {
 
 	if (vdst != NULL) {
 		unsigned long i, j;
-		double *vs, sum;
-		vs = new double[u_mx->v->m];
+		LDouble *vs, sum;
+		vs = new LDouble[u_mx->v->m];
 		for (i = 0; i < u_mx->v->m; i++) {
 			sum = 0;
 			for (j = 0; j < u_mx->v->n; j++)
@@ -162,8 +162,8 @@ void __fastcall TNet::MVMul(Vector* vsrc, Vector* vdst) {
 
 	if (vdst->v->v != NULL) {
 		unsigned long i, j;
-		double *vs, sum, *temp;
-		vs = new double[u_mx->v->m];
+		LDouble *vs, sum, *temp;
+		vs = new LDouble[u_mx->v->m];
 		for (i = 0; i < u_mx->v->m; i++) {
 			sum = 0;
 			for (j = 0; j < u_mx->v->n; j++)
@@ -266,7 +266,7 @@ void __fastcall TNet::create( unsigned long Dim /* long perf, long Res */) {
 	long normalDir;
 	unsigned long i, j,k ;
 	LDouble val;
-	LDouble step = 2.0 / double(Res /* -1/* */); // шаг приращения сетки
+	LDouble step = 2.0 / LDouble(Res /* -1/* */); // шаг приращения сетки
 	Vector exclude(Dim), baseV(Dim);
 
 	virtDim = Dim;
@@ -324,7 +324,7 @@ void __fastcall TNet::create( unsigned long Dim /* long perf, long Res */) {
 void __fastcall TNet::create(unsigned long mm, unsigned long nn, short perf, unsigned long res) {
 	perfomance = perf;
 	Res = res;
-	halfRes = (double)Res / 2;
+	halfRes = (LDouble)Res / 2;
 	v = new Matrix(mm, nn);
 	Count = mm;
 	Dim = nn;
@@ -336,8 +336,8 @@ void __fastcall TNet::create(unsigned long mm, unsigned long nn, short perf, uns
 /*
  * Вычисляет значение находящееся в массиве сетки
  */
-double __fastcall TNet::getIJ(unsigned long current, unsigned long coordNumber) {
-	double res;
+LDouble __fastcall TNet::getIJ(unsigned long current, unsigned long coordNumber) {
+	LDouble res;
 	if (isVirtual) {
 		checkCacheVector();
 		if (current != cacheCurrent) {
@@ -580,21 +580,21 @@ const TNet __fastcall operator*(const Matrix &A, const TNet& B) {
 }
 
 /* */// ----------------------------------- * --------------------------------------//
-/* TNet& __fastcall TNet:: operator *= (const double &a) {
+/* TNet& __fastcall TNet:: operator *= (const LDouble &a) {
  upd *= a;
  updated = false;
  return *this;
  }
 
 /* */// ----------------------------------- * --------------------------------------//
-/*const TNet __fastcall operator *(const double& a, const TNet& B) {
+/*const TNet __fastcall operator *(const LDouble& a, const TNet& B) {
 	return TNet(B) *= a;
 } /**/
 
 /* */// ----------------------------------- + --------------------------------------//
 TNet& __fastcall TNet:: operator += (const TNet& B) {
 	TNet *pB = (TNet*)&B;
-	double coeff = 1 / upd;
+	LDouble coeff = 1 / upd;
 	if (isVirtual) // если сеть была виртуальная, то создаем физическую
 			create(Count, Dim, perfomance, Res);
 	if (v == B.v) {

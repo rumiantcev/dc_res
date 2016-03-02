@@ -1,15 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>1899.12.30 00:00:00.000.709,C:\Users\alex\Documents\MSU\dc_res\Test\test1.cpp=C:\Users\alex\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.338,C:\Users\alex\Documents\MSU\dc_res\Test\dc_res_test.cbproj=C:\Users\alex\Documents\Embarcadero\Studio\Projects\Project1.cbproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.704,=C:\Users\alex\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.900,=C:\Users\alex\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.774,=C:\Users\alex\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.704,=C:\Users\alex\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.338,C:\Users\alex\Documents\MSU\dc_res\Test\dc_res_test.cbproj=C:\Users\alex\Documents\Embarcadero\Studio\Projects\Project1.cbproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.709,C:\Users\alex\Documents\MSU\dc_res\Test\test1.cpp=C:\Users\alex\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.709,C:\Users\alex\Documents\MSU\dc_res\Test\test1.h=C:\Users\alex\Documents\Embarcadero\Studio\Projects\Unit1.h</Transaction>
     <Transaction>1899.12.30 00:00:00.000.749,=C:\Users\alex\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
     <Transaction>1899.12.30 00:00:00.000.978,=C:\Users\alex\Documents\MSU\dc_res\Svec.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.798,=C:\Users\alex\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.709,C:\Users\alex\Documents\MSU\dc_res\Test\test1.h=C:\Users\alex\Documents\Embarcadero\Studio\Projects\Unit1.h</Transaction>
     <Transaction>1899.12.30 00:00:00.000.063,=C:\Users\alex\Documents\MSU\dc_res\Vector.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.948,=C:\Users\alex\Documents\MSU\dc_res\Netfunc.cpp</Transaction>
   </Transactions>
 </BorlandProject>

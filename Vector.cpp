@@ -47,7 +47,7 @@ __fastcall Vector::Vector(const Vector &C) : v(C.v), upd(C.upd),
 }
 
 // ------------------------------- copy constr --------------------------------//
-__fastcall Vector::Vector(const double* vv, unsigned long sz) : upd(1.0), updated(true) {
+__fastcall Vector::Vector(const LDouble* vv, unsigned long sz) : upd(1.0), updated(true) {
 	v = new sVec(vv, sz);
 }
 
@@ -80,7 +80,7 @@ Vector& __fastcall Vector:: operator = (const Vector & C) {
 } /* */
 
 // ------------------------------- = ------------------------------------------//
-Vector& __fastcall Vector:: operator = (const double & c) {
+Vector& __fastcall Vector:: operator = (const LDouble & c) {
    unsigned	long i;
 
 	for (i = 0; i < v->size; i++)
@@ -90,7 +90,7 @@ Vector& __fastcall Vector:: operator = (const double & c) {
 
 // ---------------------------- += --------------------------------------------//
 Vector& __fastcall Vector:: operator += (const Vector& A) {
-	double coeff = A.upd / upd;
+	LDouble coeff = A.upd / upd;
 	if (A.v == v)
 		upd += A.upd;
 	else {
@@ -126,9 +126,9 @@ const Vector __fastcall operator +(const Vector& A, const Vector &B) {
 }
 
 // ----------------------------- * -------------------------------------------//
-const double __fastcall operator *(const Vector& A, const Vector &B) {
+const LDouble __fastcall operator *(const Vector& A, const Vector &B) {
 	unsigned long i;
-	double res = 0;
+	LDouble res = 0;
 	// assert(A.v->size==B.v->size);
 	for (i = 0; i < A.v->size; i++)
 		res += A.v->v[i] * B.v->v[i];
@@ -137,17 +137,17 @@ const double __fastcall operator *(const Vector& A, const Vector &B) {
 
 }
 
-const double __fastcall scMul(const Vector& A, const Vector &B)
+const LDouble __fastcall scMul(const Vector& A, const Vector &B)
 {
 	unsigned long i;
-	double res = 0;
+	LDouble res = 0;
 	for (i = 0; i < A.v->size; i++)
 		res += A.v->v[i] * B.v->v[i];
 	return res;
 }
 
 // ------------------------------ * -------------------------------------------//
-Vector& __fastcall Vector:: operator *= (const double& scalar) {
+Vector& __fastcall Vector:: operator *= (const LDouble& scalar) {
 	// !if (v->linkCount>1) detach();
 	/* DONE -orum -cCheck : Проверить корректность оптимизации. */
 	updated = false;
@@ -156,7 +156,7 @@ Vector& __fastcall Vector:: operator *= (const double& scalar) {
 }
 
 // ------------------------------ * -------------------------------------------//
-const Vector __fastcall operator*(const double &scalar, const Vector &A) {
+const Vector __fastcall operator*(const LDouble &scalar, const Vector &A) {
 	Vector result = A;
 	result.updated = false;
 	result.upd *= scalar;
@@ -186,7 +186,7 @@ ostream& __fastcall operator << (ostream& out_data, Vector& C) {
 // -------------------------------- >> ----------------------------------------//
 istream& __fastcall operator >> (istream& in_data, Vector& C) {
 	char c = 0;
-	double tempVal;
+	LDouble tempVal;
 	unsigned long i;
 
 	// Инициализируем несчитываемые значения
@@ -312,7 +312,7 @@ Vector* __fastcall Vector::copy(Vector* src, Vector* dst) {
 /* TODO -orum -crepair :  Перенести функцию в TNet */
 void __fastcall Vector::norm(const unsigned int& halfRes) {
 	unsigned long i;
-	double acc = 0;
+	LDouble acc = 0;
 	for (i = 0; i < v->size; ++i) {
 		v->v[i] -= halfRes;
 		acc += (v->v[i]*v->v[i]);
@@ -327,7 +327,7 @@ void __fastcall Vector::norm(const unsigned int& halfRes) {
 // Вычисляет норму  вектора
 LDouble __fastcall Vector::norm() {
 	unsigned long i;
-	double acc = 0;
+	LDouble acc = 0;
 	for (i = 0; i < v->size; ++i)
 		acc += (v->v[i]*v->v[i]);
 	return sqrt(acc);

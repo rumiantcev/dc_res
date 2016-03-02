@@ -22,6 +22,7 @@ using namespace Dll;
 // #include "matrix.h"
 #include "net.h"
 #include "environment.h"
+#include "t_Mx.h"
 // #include "rapideval\RapidEvaluator.hpp"
 
 //глобальные переменные используемые в методе отжига
@@ -42,7 +43,7 @@ public:
 
 	OpType operType;
 	bool /* toPoint, */ alphaMode, is_empty; // ,updated;
-	// double upd;  //кешированный коэффициент умножения
+	// LDouble upd;  //кешированный коэффициент умножения
 	// Matrix *u_mx;   	//кешированная матрица
 	// ,isPoint; //учитывать или не учитывать длины векторов по определённому направлению
 	LDouble zeroPrecision; // Точность округления до 0;
@@ -53,13 +54,13 @@ public:
 	string fStr;
 	string lib_name;
 
-	// double updSum;
+	// LDouble updSum;
 
 	TDll *dll; // библиотека с калькулятором
 	TSIC_Data sic; // сам калькулятор
 	// TRapidEvaluator       *func;
-	double *vars;
-	double t;
+	LDouble *vars;
+	LDouble t;
 
 	__fastcall TNetF(unsigned long, long, unsigned long); // Ok
 	__fastcall TNetF(unsigned long, long, unsigned long, string); // Ok
@@ -81,7 +82,7 @@ public:
 	friend ostream& __fastcall operator << (ostream&, TNetF&); // Ok
 	friend istream& __fastcall operator >> (istream&, TNetF&); // Ok
 
-	inline  double __fastcall getIJ(unsigned long current, unsigned long coordNumber);
+	inline  LDouble __fastcall getIJ(unsigned long current, unsigned long coordNumber);
 
 	TNetF& __fastcall operator = (const TNetF&); // Ok
 
@@ -90,14 +91,14 @@ public:
 	/* !inline */ TNetF& __fastcall operator += (const TNetF&);
 	/* !inline */ TNetF& __fastcall operator -= (const TNetF&);
 	/* !inline */
-	// TNetF& __fastcall operator += (const double &); Не имеет смысла
+	// TNetF& __fastcall operator += (const LDouble &); Не имеет смысла
 
 	friend const TNetF __fastcall operator *(const Matrix&, const TNetF&);
 	friend const TNetF __fastcall operator *(const LDouble, const TNetF&);
 	friend const TNetF __fastcall operator +(const TNetF&, const TNetF&); // Ok
 	friend const TNetF __fastcall operator -(const TNetF&, const TNetF&);
-	// friend const TNetF __fastcall operator +(const double, const TNetF&); //не имеет смысла
-	// friend TNetF __fastcall operator *(double &,TNetF&); // Changes in update()
+	// friend const TNetF __fastcall operator +(const LDouble, const TNetF&); //не имеет смысла
+	// friend TNetF __fastcall operator *(LDouble &,TNetF&); // Changes in update()
 
 	LDouble __fastcall oporn(const Vector &x, LDouble t, int sign);
 	LDouble __fastcall oporn(const Vector &x, LDouble t, const string &funcStr,
@@ -118,8 +119,8 @@ public:
 	// Поиск экстермума на опорной функции
 
 	void __fastcall Clear(); // Ok
-	// /*!inline*/ double& Vector operator[](long i);
-	// /*!inline*/  const double& operator [](long i)const;
+	// /*!inline*/ LDouble& Vector operator[](long i);
+	// /*!inline*/  const LDouble& operator [](long i)const;
 
 	void /* !inline */ __fastcall SetFunc(const string& fstr); // Ok
 	void __fastcall Conv(bool *); // выпуклая оболочка
@@ -128,7 +129,7 @@ public:
 	TNet __fastcall Points(/*bool compactPoints*/);
 	// Конвертация из опорной функции в сетку из точек по границе множества
 	void __fastcall saveAsVrml(string);
-	void __fastcall smoothFunction(double epsilon);
+	void __fastcall smoothFunction(LDouble epsilon);
 	virtual /* !inline */ Vector* __fastcall getVecAt(unsigned long i);
 	unsigned long /* !inline */ selectExtrX(const Vector& vec, scM scmul, cCrit crit,
 		 long current, long& result, LDouble &extr, OpType extrOper,
@@ -149,7 +150,7 @@ protected:
 	// Поиск экстермума на опорной функции методом отжига
 
 	void __fastcall AddVariables();
-	// void __fastcall SetVariables(const DynamicArray<double> &vv);
+	// void __fastcall SetVariables(const DynamicArray<LDouble> &vv);
 
 	virtual void __fastcall makeAlpha(alphType& alpha,  bool* L,
 		 TNetF& net);

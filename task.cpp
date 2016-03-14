@@ -3,29 +3,33 @@
 
 #include "task.h"
 #include "Netfunc.h"
+
+#include "gnuplot-iostream.h"
+#include <boost/tuple/tuple.hpp>
+
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
 // ---------------------------- constructor -----------------------------------//
-Task::Task() : A(1, 1), B(1, 1), C(1, 1), PP(1, 1), /* x0(1), */ Level(0) {
-	Vector x_0(1);
-	Traectory tr;
-	tr.x0 = x_0;
-	tr_s.push_back(tr);
-	tau = 0.1;
-	perfomance = 0;
-	precision = 0.001;
-	epsilon = 0.01;
-	t0 = 0;
-	maxTime = 10;
-	steps = 10;
-	v_control = 0;
-	// traectoryCount=1;
-}
+//Task::Task() : A(1, 1), B(1, 1), C(1, 1), PP(1, 1), /* x0(1), */ Level(0) {
+//	Vector x_0(1);
+//	Traectory tr;
+//	tr.x0 = x_0;
+//	tr_s.push_back(tr);
+//	tau = 0.1;
+//	perfomance = 0;
+//	precision = 0.001;
+//	epsilon = 0.01;
+//	t0 = 0;
+//	maxTime = 10;
+//	steps = 10;
+//	v_control = 0;
+//	// traectoryCount=1;
+//}
 // ---------------------------- constructor -----------------------------------//
 
-Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, double prec,
-	double eps, LDouble delta, LDouble tmax, long st, short perf, long stat,
+Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, LDouble prec,
+	LDouble eps, LDouble delta, LDouble tmax,long st, short perf, long stat,
 	int tr_count) : A(dimX, dimX), B(dimX, dimU), C(dimX, dimV),
 	PP(dimM, dimX) {
 	Traectory tr;
@@ -55,7 +59,12 @@ Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, double prec,
 	Level = 2;
 	IndI = 1;
 	v_control = 0;
-	
+
+	T=0;
+	tmpT = 0;
+	priority = 0;
+	method = 0;
+	psi0Index = 0;
 }
 
 // -----------------------------destructor----------------------------------//
@@ -71,7 +80,7 @@ Task::~Task() {
 // ---------------------------- copy constructor ------------------------------//
 Task::Task(const Task& ts) : A(ts.A.m(), ts.A.n()), B(ts.B.m(), ts.B.n()),
 	C(ts.C.m(), ts.C.n()), PP(ts.PP.m(), ts.PP.n()) {
-	long i, size = tr_s.size();
+	long i;//, size = tr_s.size();
 
 	tr_s.clear();
 	for (i = 0; i < (long)ts.tr_s.size(); i++)
@@ -98,6 +107,16 @@ Task::Task(const Task& ts) : A(ts.A.m(), ts.A.n()), B(ts.B.m(), ts.B.n()),
 	steps = ts.steps;
 	Level = ts.Level;
 	v_control = ts.v_control;
+
+	IndI = ts.IndI;
+	*cP= *ts.cP;
+	*cQ= *ts.cQ;
+	*cM= *ts.cM;
+	T=ts.T;
+	tmpT = ts.tmpT;
+	priority = ts.priority;
+	method = ts.method;
+	psi0Index = ts.psi0Index;
 }
 
 // ---------------------------- destructor ------------------------------------//
@@ -114,7 +133,7 @@ LDouble Task::TimeCalc_Pontryagin(int trNum) {
 	LDouble t = t0, min;
 	TNetF c(PP.m(), perfomance, steps), tmpPNet(*cP), tmpQNet(*cQ), Net(c),
 		x0Net(c), tmpNet(c);
-	long i, Ind = 0;
+	unsigned long i, Ind = 0;
    //	pathType path;
 
 	m2Net.oporn(t0, 1); // опорное значение сетки по M2
@@ -188,7 +207,7 @@ LDouble Task::TimeCalc_AltInt(int trNum) {
 	LDouble t = t0, min;
 	TNetF c(PP.m(), perfomance, steps), tmpPNet(*cP), tmpQNet(*cQ), Net(c),
 		x0Net(c), tmpNet(c);
-	long i, Ind = 0;
+	unsigned long i, Ind = 0;
 
     // интегрирование методом трапеций по двум точкам
 	intEtA = (0.5 * tau) * (Exponential(A, 0, precision) + Exponential(A, -tau,
@@ -271,14 +290,14 @@ Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn) {
 }
 // ------------------------------------- rungeCutt ----------------------------//
 // Интегрирование для НЕстандартного шага по времени
-Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn, LDouble tau) {
+Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn, LDouble tau_z) {
 	Vector K1(A.m()), K2(A.m()), K3(A.m()), K4(A.m()), result(A.m());
 
 	K1 = (A * xn + (-1)* B * un + C * vn);
 	K2 = (A * (xn + 0.5 * tau * K1) + (-1)* B * un + C * vn);
 	K3 = (A * (xn + 0.5 * tau * K2) + (-1)* B * un + C * vn);
 	K4 = (A * (xn + tau * K3) + (-1)* B * un + C * vn);
-	result = xn + tau / 6 * (K1 + 2 * (K2 + K3) + K4);
+	result = xn + tau_z / 6 * (K1 + 2 * (K2 + K3) + K4);
 	result.update();
 	return result;
 	/* */
@@ -289,7 +308,9 @@ Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn, LDo
 void Task::Control_AltInt(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(*cP), tmpQNet(*cQ);
-	long i, j, k, m, Ind = 0;
+	unsigned long i, j, k, m;
+	long Ind = 0;
+
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
 	LDouble t, min,  extr;
@@ -311,7 +332,7 @@ void Task::Control_AltInt(int trNum) {
 	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
 	t = tr_s[trNum].T; // значение t = конечному времени;
 
-	while (t >= precision) {
+	while (k>0/*t >= precision*/) {  //Проверить корректность условия выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -369,7 +390,8 @@ void Task::Control_AltInt(int trNum) {
 void Task::Control_R1(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(PP.m(), perfomance, steps), tmpQNet(PP.m(), perfomance, steps);
-	long i,j,  k, m, Ind = 0;
+	unsigned long i, j, k, m;
+	long Ind = 0;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
 	LDouble t, min,  extr;
@@ -379,10 +401,10 @@ void Task::Control_R1(int trNum) {
 	VecOfVec vx_i, vu_i, vv_i;
 	Vector *r_i;
 
-	LDouble tmin = _extr_tmin_param, tmax = _extr_t0_param, tcurr = tmax, p, a =
-		LDouble(_lrand() % cP->Count) / cP->Count, ccurr = _extr_e_val;
-
-	long jk=-1,jj, prevInd,indExtr;
+	LDouble tmin = Environment::instance()._extr_tmin_param, tmax = Environment::instance()._extr_t0_param, tcurr = tmax, p, a =
+		LDouble(_lrand() % cP->Count) / cP->Count, ccurr = Environment::instance()._extr_e_val;
+	LDouble _tmin = tmin;
+	long jk=-1,jj, /* prevInd,*/indExtr;
 
 	j = 0;
 	k = tr_s[trNum].NetList.size()-1;
@@ -396,7 +418,7 @@ void Task::Control_R1(int trNum) {
 	tau_s = tau/(tmpPNet.Count*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
 
 
-	while (t >= precision) {
+	while (k>0/*t >= precision*/) {   //Проверить корректность условия выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -423,7 +445,7 @@ void Task::Control_R1(int trNum) {
 		for (m = 0; m < dim_u; m++)
 			u_i.v->v[m] = cP->getIJ(Ind, m);
 		u_i = cP->getBorderPoint(Ind, u_i);
-		prevInd = Ind;
+		//prevInd = Ind;
 
 		cout << Ind << " : " << u_i;
 
@@ -444,7 +466,7 @@ void Task::Control_R1(int trNum) {
 
 		 //--------ищем u_i при условии отсутствия информации о системе и наличия данных только о расстоянии до терм. множества
 		tau_delta=tau;
-		tmin = _extr_tmin_param; tcurr = tmax;
+		tmin = _tmin; tcurr = tmax;
 		while (tcurr>tmin) {
 
 			xNorm = c.f->v->v[jk];
@@ -455,15 +477,15 @@ void Task::Control_R1(int trNum) {
 				tcurr = tcurr * ccurr;
 			}else{
 				p = 1.0 / (1.0 + exp(-fabs(xNorm - xExtNorm) /tcurr));
-				a = double(_lrand() % c.Count) / (double)c.Count;
+				a = LDouble(_lrand() % c.Count) / (LDouble)c.Count;
 				if (a > p) {
 					xExtNorm = xNorm;
 					indExtr = jk;
 					tcurr = tcurr * ccurr;
 				}
 			}
-			a = double(_lrand() % c.Count) / double(c.Count);
-			jj = signof(a - 0.5) * tcurr * (pow((1.0 + 1.0 / tcurr), fabs(2.0 * a - 1.0)) -	1.0) * double(c.Count);
+			a = LDouble(_lrand() % c.Count) / LDouble(c.Count);
+			jj = signof(a - 0.5) * tcurr * (pow((1.0 + 1.0 / tcurr), fabs(2.0 * a - 1.0)) -	1.0) * LDouble(c.Count);
 			jk = abs(jj + jk) % c.Count;
 			for (m = 0; m < c.Dim; m++)
 				psi.v->v[m] = c.getIJ(indExtr, m);
@@ -545,13 +567,14 @@ void Task::Control_R1(int trNum) {
 void Task::Control_R2(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(PP.m(), perfomance, steps), tmpQNet(PP.m(), perfomance, steps);
-	long i,j,  k, m, Ind = 0;
+	unsigned long i, j, k, m;
+	long Ind = 0;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
 	LDouble t, min,  extr;
 	Vector PiEtAx(PP.m()), psi(PP.v->m), extrVec(PP.v->m);
 	Vector u_i(cP->Dim), v_i(cQ->Dim), x_i(dim_x);
-	bool extr_exist;
+	//bool extr_exist;
 
 	bool  isNotExtrFound, borderChanged;
 	LDouble  tau_s, tau_delta, xNorm, xExtNorm;
@@ -573,7 +596,7 @@ void Task::Control_R2(int trNum) {
 	tau_s = tau/(tmpPNet.Count*tmpPNet.Count);//пока так - потом посчитаем на сколько надо делить
 
 
-	while (t >= precision) {
+	while (k>0/*t >= precision*/) {   //Проверить корректность условия выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -626,7 +649,7 @@ void Task::Control_R2(int trNum) {
 		borderChanged = false;
 
 		 //--------ищем u_i при условии отсутствия информации о системе и наличия данных только о расстоянии до терм. множества
-		extr_exist = false;
+		//extr_exist = false;
 		tau_delta=tau;
 
 		isNotExtrFound = true;
@@ -768,7 +791,8 @@ void Task::Control_R2(int trNum) {
 void Task::Control_Pontryagin(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(*cP), tmpQNet(*cQ);
-	long i, j, k, m, Ind = 0;
+	unsigned long i, j, k, m;
+	long Ind = 0;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единичная при t=0
 	LDouble t, min, val, extr;
@@ -790,7 +814,7 @@ void Task::Control_Pontryagin(int trNum) {
 	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
 	t = tr_s[trNum].T; // значение t = конечному времени;
 
-	while (t >= precision) {
+	while (k>0/*t >= precision*/) {   //Проверить корректность условия выхода из цикла
 		EtA = Exponential(A, t, precision);
 		PiEtA = PP * EtA;
 		PiEtAB = PiEtA * B;
@@ -1014,4 +1038,38 @@ long Task::ImageUp() {
 	// TODO: Add your source code here
 
 	return 1;
+}
+
+void Task::plot(int trNum){
+//------------------------
+Gnuplot gp;
+
+	vector<pair<LDouble, LDouble> > xy_pts_A;
+	for(long i=0; i<tr_s[trNum].x_i->m(); ++i) {
+	   //	LDouble y = x*x*x;
+		xy_pts_A.push_back(std::make_pair(tr_s[trNum].x_i->v->v[i][0], tr_s[trNum].x_i->v->v[i][1]));
+	}
+
+  //	vector<pair<LDouble, LDouble> > xy_pts_B;
+  //	for(LDouble alpha=0; alpha<1; alpha+=1.0/24.0) {
+  //		LDouble theta = alpha*2.0*3.14159;
+  //		xy_pts_B.push_back(make_pair(cos(theta), sin(theta)));
+  //	}
+
+	//gp << "set xrange [-10:10]\nset yrange [-10:10]\n";
+	// Data will be sent via a temporary file.  These are erased when you call
+	// gp.clearTmpfiles() or when gp goes out of scope.  If you pass a filename
+	// (e.g. "gp.file1d(pts, 'mydata.dat')"), then the named file will be created
+	// and won't be deleted (this is useful when creating a script).
+	gp << "plot" << gp.file1d(xy_pts_A) << "with lines title 'x(t)'"
+	 /*	<< gp.file1d(xy_pts_B) << "with points title 'circle'"*/ << std::endl;
+
+#ifdef _WIN32
+	// For Windows, prompt for a keystroke before the Gnuplot object goes out of scope so that
+	// the gnuplot window doesn't get closed.
+	std::cout << "Press enter to exit." << std::endl;
+	std::cin.get();
+#endif
+//------------------------
+
 }

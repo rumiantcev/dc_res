@@ -13,13 +13,15 @@ Traectory::Traectory() {
 	x_i = NULL;
 	u_i = NULL;
 	v_i = NULL;
+	mu =0.0;
+	ind =0;
 }
 
 Traectory::~Traectory() {
 	for_each(NetList.begin(), NetList.end(), DeleteObj());
-	// for_each(u_i.begin(),u_i.end(),DeleteObj());
-	// for_each(v_i.begin(),v_i.end(),DeleteObj());
-	// for_each(x_i.begin(),x_i.end(),DeleteObj());
+   //	 for_each(uu_i.begin(),uu_i.end(),DeleteObj());
+   //	 for_each(vv_i.begin(),vv_i.end(),DeleteObj());
+   //	 for_each(xx_i.begin(),xx_i.end(),DeleteObj());
 	for_each(vecBrige.begin(), vecBrige.end(), DeleteObj());
 	for_each(w.begin(), w.end(), DeleteObj());
 	if (x_i != NULL)

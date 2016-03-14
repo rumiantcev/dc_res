@@ -10,9 +10,6 @@
 #include"general.h"
 using namespace std;
 
-typedef vector<long>VecOfLong;
-typedef vector<Vector*>VecOfVec;
-
 
 // ---------------------------------------------------------------------------
 class Traectory {
@@ -23,8 +20,8 @@ public:
 	long ind;
 	vector<TNetF*>NetList;
 	VecOfLong psiExtr; // Значения psi на которых достигается extr
-	// VecOfVec u_i, v_i, x_i;
-	Matrix *u_i, *v_i, *x_i;
+  //	VecOfVec uu_i, vv_i, xx_i; //траетория и управления для НЕфиксированного времени
+	Matrix *u_i, *v_i, *x_i; //траетория и управления для фиксированного времени
 	VecOfVec vecBrige;
 	VecOfVec w;
 

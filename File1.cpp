@@ -9,24 +9,19 @@
 #endif
 
 
-#include <stdio.h>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <locale.h>
-#include <windows.h>
-#include<time.h>
-#include <io.h>
-
+#include "general.h"
 #include "task.h"
 #include "taskloader.h"
 #include "CDataFile.h"
+#include "environment.h"
+
 
 
 //#include <boost/program_options/config_file.hpp>
 
 using namespace Dll;
 using namespace::std;
+
 
 int _tmain(int argc, _TCHAR* argv[]) {
 
@@ -35,32 +30,18 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
-	string localPath = "C://Users/Julia/Documents/Embarcadero/Studio/Projects/Test1/";  //переменная определяет где находятся данные и конф. файлы ... а также результаты расчётов
+	string localPath = getenv("DC_PATH");  //переменная определяет где находятся данные и конф. файлы ... а также результаты расчётов
+	Environment::instance().localPath=localPath;
 	TaskLoader tl(localPath);
 	cout<<localPath<<endl;
 
+
 	cout << "Begin.." << endl;
+	cout << "Версия: 01.02.2016" << endl;
 	tl.loadGlobalParameters();
 	cout << "Parameters are loaded" << endl;
-	cout << endl;
-
-	string fileName = std::string(localPath + "Task_pr_2kr2.inp");
-	PR_Task *t = NULL;
-	t =  (PR_Task *) tl.loadTask(fileName);
-	vector<TNetF*> tmp;
-	tmp = ((PR_Task *)t)->PursuerList;
-
-	/*while (!tmp.empty()) {
-		cout << "!" << endl << *(tmp.back()) << endl;
-		tmp.pop_back();
-	} /**/
-	//cout << "!!" << endl << *(t->cM) << endl;
-
-	/**/
-
-	int trNum;
-	trNum = 0;
-  ((PR_Task *)t)->Find_Ns(trNum);
+	tl.load_and_calc_tasks();
 
 	return 0;
 }
+

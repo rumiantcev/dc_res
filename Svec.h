@@ -11,7 +11,7 @@
  */
 class sVec {
 public:
-	long size;
+	unsigned long size;
 	/**
 	 * <url>element://model:project::Project2/cpp:e_class:src:Project2:TNet</url>
 	 * <url>element://model:project::Project2/cpp:e_class:src:Project2:Matrix</url>
@@ -19,11 +19,11 @@ public:
 	 * <url>element://model:project::Project2/cpp:e_class:src:Project2:sMx</url>
 	 * <url>element://model:project::Project2/cpp:e_class:src:Project2:sVec</url>
 	 */
-	double *v;
+	LDouble *v;
 	long linkCount;
 
-	__fastcall sVec(long);
-	__fastcall sVec(const double *vv, long sz);
+	explicit __fastcall sVec(unsigned long);
+	__fastcall sVec(const LDouble *vv, unsigned long sz);
 	virtual __fastcall ~sVec();
 	void operator delete(void* p);
 

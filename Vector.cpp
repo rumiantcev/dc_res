@@ -1,8 +1,8 @@
 // ---------------------------------------------------------------------------
 
-#include <assert.h>
-#include <math.h>
-#include <algorithm>
+//#include <assert.h>
+//#include <math.h>
+//#include <algorithm>
 // #include <dstring.h>
 #pragma hdrstop
 #include "Vector.h"
@@ -10,9 +10,9 @@
 using namespace std;
 
 // ------------------------------- size () ------------------------------------//
-long __fastcall Vector::size() const {
-	return v->size;
-}
+//long __fastcall Vector::size() const {
+//	return v->size;
+//}
 
 // ------------------------------- destructor ---------------------------------//
 /* void Vector::operator delete(void *p)
@@ -31,7 +31,7 @@ __fastcall Vector::~Vector() {
 }
 
 // ------------------------------- constructor --------------------------------//
-__fastcall Vector::Vector(long sz) {
+__fastcall Vector::Vector(unsigned long sz) {
 	create(sz);
 }
 
@@ -47,13 +47,13 @@ __fastcall Vector::Vector(const Vector &C) : v(C.v), upd(C.upd),
 }
 
 // ------------------------------- copy constr --------------------------------//
-__fastcall Vector::Vector(const double* vv, long sz) : upd(1.0), updated(true) {
+__fastcall Vector::Vector(const LDouble* vv, unsigned long sz) : upd(1.0), updated(true) {
 	v = new sVec(vv, sz);
 }
 
 // ------------------------------- string reader --------------------------------//
-__fastcall Vector::Vector(const string& str, long size) {
-	long k;
+__fastcall Vector::Vector(const string& str, unsigned long size) {
+	unsigned long k;
 	string::const_iterator i, j;
 	create(size);
 	i = find(str.begin(), str.end(), '[');
@@ -61,7 +61,7 @@ __fastcall Vector::Vector(const string& str, long size) {
 	string _val;
 	for (k = 0; k < size; k++) {
 		while (*j != ',')
-			j++;
+			++j;
 		_val.assign(i, j);
 		v->v[k] = atof(_val.c_str());
 		i = ++j;
@@ -80,8 +80,8 @@ Vector& __fastcall Vector:: operator = (const Vector & C) {
 } /* */
 
 // ------------------------------- = ------------------------------------------//
-Vector& __fastcall Vector:: operator = (const double & c) {
-	long i;
+Vector& __fastcall Vector:: operator = (const LDouble & c) {
+   unsigned	long i;
 
 	for (i = 0; i < v->size; i++)
 		v->v[i] = c;
@@ -90,11 +90,11 @@ Vector& __fastcall Vector:: operator = (const double & c) {
 
 // ---------------------------- += --------------------------------------------//
 Vector& __fastcall Vector:: operator += (const Vector& A) {
-	long i;
-	double coeff = A.upd / upd;
+	LDouble coeff = A.upd / upd;
 	if (A.v == v)
 		upd += A.upd;
 	else {
+		unsigned long i;
 		if (v->linkCount > 1)
 			detach();
 		for (i = 0; i < A.v->size; i++)
@@ -106,11 +106,11 @@ Vector& __fastcall Vector:: operator += (const Vector& A) {
 
 Vector& __fastcall Vector::vSum(const Vector& A) // added for profiling
 {
-	long i;
 	if (A.v == v) {
 		upd += A.upd;
 	}
 	else {
+		unsigned long i;
 		if (v->linkCount > 1)
 			detach();
 		for (i = 0; i < A.v->size; i++)
@@ -126,9 +126,9 @@ const Vector __fastcall operator +(const Vector& A, const Vector &B) {
 }
 
 // ----------------------------- * -------------------------------------------//
-const double __fastcall operator *(const Vector& A, const Vector &B) {
-	long i;
-	double res = 0;
+const LDouble __fastcall operator *(const Vector& A, const Vector &B) {
+	unsigned long i;
+	LDouble res = 0;
 	// assert(A.v->size==B.v->size);
 	for (i = 0; i < A.v->size; i++)
 		res += A.v->v[i] * B.v->v[i];
@@ -137,17 +137,17 @@ const double __fastcall operator *(const Vector& A, const Vector &B) {
 
 }
 
-const double __fastcall scMul(const Vector& A, const Vector &B)
+const LDouble __fastcall scMul(const Vector& A, const Vector &B)
 {
-	long i;
-	double res = 0;
+	unsigned long i;
+	LDouble res = 0;
 	for (i = 0; i < A.v->size; i++)
 		res += A.v->v[i] * B.v->v[i];
 	return res;
 }
 
 // ------------------------------ * -------------------------------------------//
-Vector& __fastcall Vector:: operator *= (const double& scalar) {
+Vector& __fastcall Vector:: operator *= (const LDouble& scalar) {
 	// !if (v->linkCount>1) detach();
 	/* DONE -orum -cCheck : Проверить корректность оптимизации. */
 	updated = false;
@@ -156,7 +156,7 @@ Vector& __fastcall Vector:: operator *= (const double& scalar) {
 }
 
 // ------------------------------ * -------------------------------------------//
-const Vector __fastcall operator*(const double &scalar, const Vector &A) {
+const Vector __fastcall operator*(const LDouble &scalar, const Vector &A) {
 	Vector result = A;
 	result.updated = false;
 	result.upd *= scalar;
@@ -165,7 +165,7 @@ const Vector __fastcall operator*(const double &scalar, const Vector &A) {
 
 // -------------------------------- << ----------------------------------------//
 ostream& __fastcall operator << (ostream& out_data, Vector& C) {
-	long i;
+	unsigned long i;
 	// Если просят вывести пустой вектор - возвращаем NULL
 	if ((&C == NULL) || (C.v == NULL)) {
 		out_data << "NULL;";
@@ -186,8 +186,8 @@ ostream& __fastcall operator << (ostream& out_data, Vector& C) {
 // -------------------------------- >> ----------------------------------------//
 istream& __fastcall operator >> (istream& in_data, Vector& C) {
 	char c = 0;
-	double tempVal;
-	long i;
+	LDouble tempVal;
+	unsigned long i;
 
 	// Инициализируем несчитываемые значения
 	C.upd = 1.0;
@@ -218,15 +218,15 @@ istream& __fastcall operator >> (istream& in_data, Vector& C) {
 	}
 	// C=vec;
 	in_data.get(c);
-	while (c != ';' && c != EOF)
+	while ((c != ';') /*&& c != ','*/ && (!in_data.eof()))
 		in_data.get(c);
-	in_data.get(c);
+	//in_data.get(c);
 	return in_data;
 }
 
 // ------------------------ GetSubVector --------------------------------------//
-Vector __fastcall Vector::GetSubVector(long start, long end) {
-	long i;
+Vector __fastcall Vector::GetSubVector(unsigned long start, unsigned long end) {
+	unsigned long i;
 	Vector result(end - start + 1);
 
 	update();
@@ -252,9 +252,10 @@ Vector __fastcall Vector::GetSubVector(long start, long end) {
 
 // ------------------------------- detach -------------------------------------//
 Vector& __fastcall Vector::detachT() {
-	long i;
-
+	
 	if (v->linkCount > 1) {
+		unsigned long i;
+		
 		Vector *vv = new Vector(v->size);
 		for (i = 0; i < v->size; i++)
 			vv->v->v[i] = v->v[i];
@@ -265,10 +266,11 @@ Vector& __fastcall Vector::detachT() {
 }
 
 // ------------------------------- detach -------------------------------------//
-void __fastcall Vector::detach() const {
-	long i;
+void __fastcall Vector::detach() const {	
 
 	if (v->linkCount > 1) {
+		unsigned long i;
+		
 		sVec *vv = v;
 		delete v;
 		v = new sVec(vv->size);
@@ -279,11 +281,13 @@ void __fastcall Vector::detach() const {
 
 // ------------------------------- Update -------------------------------------//
 void __fastcall Vector::update() const {
-	long i;
 	detach();
-	if (upd != 1.0)
+	if (upd != 1.0){
+		unsigned long i;
+		
 		for (i = 0; i < v->size; i++)
 			v->v[i] *= upd;
+	}
 	upd = 1;
 	updated = true;
 }
@@ -306,9 +310,9 @@ Vector* __fastcall Vector::copy(Vector* src, Vector* dst) {
 // в принципе т.к. это расчёт нормали относяценся только к гиперкубическим сеткам,
 // то имеет смысл перенести это в соотв. модуль
 /* TODO -orum -crepair :  Перенести функцию в TNet */
-void __fastcall Vector::norm(const int& halfRes) {
-	int i;
-	double acc = 0;
+void __fastcall Vector::norm(const unsigned int& halfRes) {
+	unsigned long i;
+	LDouble acc = 0;
 	for (i = 0; i < v->size; ++i) {
 		v->v[i] -= halfRes;
 		acc += (v->v[i]*v->v[i]);
@@ -322,9 +326,19 @@ void __fastcall Vector::norm(const int& halfRes) {
 // ------------------------------------Get real Vector norm-------------------//
 // Вычисляет норму  вектора
 LDouble __fastcall Vector::norm() {
-	int i;
-	double acc = 0;
+	unsigned long i;
+	LDouble acc = 0;
 	for (i = 0; i < v->size; ++i)
 		acc += (v->v[i]*v->v[i]);
 	return sqrt(acc);
+}
+
+//-------------евклидово расстояние между векторами---------------------------//
+const LDouble eu_dist(const Vector& a, const Vector& b){
+ unsigned long i;
+ LDouble dist=0;
+
+ for (i = 0; i < a.size(); i++)
+	dist += (a[i]-b[i]) * (a[i]-b[i]);
+ return sqrt(dist);
 }

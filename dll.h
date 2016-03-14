@@ -47,10 +47,10 @@ namespace Dll {
 		// __fastcall EDllError(const AnsiString a_Name) {
 		// m_Name = a_Name;
 		// };
-		__fastcall EDllError(const std::string a_Fmt, const std::string a_Name)
+		__fastcall EDllError(const std::string &a_Fmt, const std::string &a_Name): Name(a_Name)
 			/* : Exception(Format(a_Fmt,ARRAYOFCONST((a_Name)))), m_Name(a_Name) */
 		{
-			Name = a_Name;
+		 //	Name = a_Name;
 		};
 
 		/* __property */
@@ -61,8 +61,8 @@ namespace Dll {
 	public:
 		// __fastcall EDllProcError(const AnsiString a_Name) : EDllError(a_Name) {
 		// };
-		__fastcall EDllProcError(const std::string a_Fmt,
-			const std::string a_Name) : EDllError(a_Fmt, a_Name) {
+		__fastcall EDllProcError(const std::string &a_Fmt,
+			const std::string &a_Name) : EDllError(a_Fmt, a_Name) {
 		};
 	}; /* */
 
@@ -71,7 +71,7 @@ namespace Dll {
 		HINSTANCE m_DLLInstance;
 
 	public:
-		TDll(const char* a_Name) {
+		explicit TDll(const char* a_Name) {
 # pragma option push  -w-pia
 			if (!(m_DLLInstance = LoadLibraryA(a_Name)))
 # pragma option pop
@@ -357,4 +357,4 @@ namespace Dll {
 	/* */
 }
 /* */
-#endif _DLL_H_
+#endif

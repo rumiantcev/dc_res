@@ -3,6 +3,11 @@
 #pragma hdrstop
 
 #include "taskloader.h"
+#include "environment.h"
+
+//#include <boost/program_options/detail/config_file.hpp>
+//#include <boost/property_tree/ptree.hpp>
+//#include <boost/property_tree/ini_parser.hpp>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 // ------------------------------ constructor --------------------------------//
@@ -21,17 +26,34 @@ TaskLoader::~TaskLoader() {
 	string fileName = localPath+"\\dconsole.ini";
 	cout<<fileName<<endl;
 	CDataFile DFile(fileName);
-	Report(E_INFO, "[doSomething] The file <control.ini> contains %d sections, & %d keys.",
+	Report(E_INFO, "[doSomething] The file <dconsole.ini> contains %d sections, & %d keys.",
 				   DFile.SectionCount(), DFile.KeyCount());
 
-	_extr_e_param = DFile.GetFloat("extr_e_param","Параметры метода отжига");
-	_extr_t0_param  = DFile.GetFloat("extr_t0_param", "Параметры метода отжига");
+	Environment::instance()._extr_e_param = DFile.GetFloat("extr_e_param","Параметры метода отжига");
+	Environment::instance()._extr_t0_param  = DFile.GetFloat("extr_t0_param", "Параметры метода отжига");
 
-	_extr_tmin_param  = DFile.GetFloat("extr_tmin_param", "Параметры метода отжига");
+	Environment::instance()._extr_tmin_param  = DFile.GetFloat("extr_tmin_param", "Параметры метода отжига");
 
-	_extr_e_val = exp(_extr_e_param);
+	Environment::instance()._extr_e_val = exp(Environment::instance()._extr_e_param);
 	/**/
   //  DFile.Clear();
+  /*//-------------
+	using boost::property_tree::ptree;
+
+	ptree root;
+
+	ptree wave_packet;
+	wave_packet.put( "width", "1" );
+	wave_packet.put( "position", "2.0" );
+
+	ptree calculation_parameters;
+	calculation_parameters.put( "levels", "15" );
+
+	root.push_front(ptree::value_type( "calculation parameters", calculation_parameters ));
+	root.push_front(ptree::value_type( "wave packet", wave_packet ));
+
+	write_ini( std::cout, root );
+	*/
 }
 // --------------------- загрузка и запуск задач для расчётов ----------------//
 
@@ -41,7 +63,8 @@ void TaskLoader::load_and_calc_tasks(){
 	ofstream out_f;
 	Task* t = NULL;
 	clock_t before;
-	double elapsed;
+	LDouble elapsed;
+	PR_Task *prTask;
 
 	CDataFile DFile(std::string(localPath+"\\control.ini").c_str());
 	Report(E_INFO, "[doSomething] The file <control.ini> contains %d sections, & %d keys.",
@@ -49,8 +72,8 @@ void TaskLoader::load_and_calc_tasks(){
 	SectionItor i = DFile.GetFirstSectionIter();
 	//i++;  //пропускаем пустую секцию
 	t_Section* section;
-	string fileName, method, opt,v_control;
-	string sectionName;
+	string fileName, method, opt/*,v_control*/, type;
+   //	string sectionName;
 	i++;
 	while (i!=DFile.m_Sections.end()){
 		section = (t_Section*)&(*i);
@@ -60,12 +83,13 @@ void TaskLoader::load_and_calc_tasks(){
 		cout << "Task "<< t->description<< "  loaded" << endl;
 		taskList.push_back(t);
 		fileName = localPath+"\\";
-		fileName += section->Keys[4].szValue;//DFile.GetValue(section->szName, "result");
+		fileName += section->Keys[5].szValue;//DFile.GetValue(section->szName, "result");
 		out_f.open(fileName.c_str());
 		//загрузка настроечных параметров задачи
-		method =  section->Keys[1].szValue;//DFile.GetValue(section->szName, "method");
-		opt =  section->Keys[2].szValue;//DFile.GetValue(section->szName, "search_optimisation");
-		v_control =  section->Keys[3].szValue;
+		type =  section->Keys[1].szValue;
+		method =  section->Keys[2].szValue;//DFile.GetValue(section->szName, "method");
+		opt =  section->Keys[3].szValue;//DFile.GetValue(section->szName, "search_optimisation");
+	   //	v_control =  section->Keys[4].szValue;
 		//Настройка параметров поиска экстремума на сетке
 		if (opt == "none")
 			taskList[j]->perfomance = optNone;
@@ -73,34 +97,55 @@ void TaskLoader::load_and_calc_tasks(){
 			taskList[j]->perfomance = optAnnealing;
 		if (opt == "gradient")  //только для выпуклых множеств - использовать осторожно
 			taskList[j]->perfomance = optGradient;
+		if (opt == "TimS")  //с использованием нового метода овыпукления
+			taskList[j]->perfomance = optTimS;
 		taskList[j]->cP->perfomance  = taskList[j]->perfomance;
 		taskList[j]->cQ->perfomance  = taskList[j]->perfomance;
 		taskList[j]->cM->perfomance  = taskList[j]->perfomance;
 		before = clock(); //замер времени начала выполнения расчётов
-		if (method == "pontryagin")
-			taskList[j]->TimeCalc_Pontryagin(0);
-		if (method == "alt_int")
-			taskList[j]->TimeCalc_AltInt(0);
-		if (method == "gr1")
-			taskList[j]->TimeCalc_AltInt(0);
-		if (method == "gr2")
-			taskList[j]->TimeCalc_AltInt(0);
+		if (type == "pursue"){
+			if (method == "pontryagin")
+				taskList[j]->TimeCalc_Pontryagin(0);
+			if (method == "alt_int")
+				taskList[j]->TimeCalc_AltInt(0);
+			if (method == "gr1")
+				taskList[j]->TimeCalc_AltInt(0);
+			if (method == "gr2")
+				taskList[j]->TimeCalc_AltInt(0);
+		}
+		if (type == "pursue_run"){
+			prTask = static_cast<PR_Task*>(taskList[j]);
+		   	prTask->calcPursuerSets(0);
+		   // prTask->Find_Ns(0);
+			prTask->TimeCalc_PR(0);
+		}
 		cout << "Time evaluated.." << endl;
-		out_f << "Time evaluated.." << endl;
-		cout << "time is: " << taskList[j]->tr_s[0].T << endl;
+		cout << "time is: " << taskList[j]->tr_s[0].T << endl;
+		if (type == "pursue"){
+			if (method == "pontryagin")
+				taskList[j]->Control_Pontryagin(0);
+			if (method == "alt_int")
+				taskList[j]->Control_AltInt(0);
+			if (method == "gr1")
+				taskList[j]->Control_R1(0);
+			if (method == "gr2")
+				taskList[j]->Control_R2(0);
+		}
+
+		if (type == "pursue_run"){
+			prTask = static_cast<PR_Task*>(taskList[j]);
+			//prTask->Control_PR(0);
+			prTask->Control_PR_fullSets(0);
+		}
+		elapsed = clock()-before;  //замер времени начала выполнения расчётов
+
+		taskList[j]->plot(0);
+
+		out_f << "Time evaluated.." << endl;
 		out_f << "time is: " << taskList[j]->tr_s[0].T << endl;
-		if (method == "pontryagin")
-			taskList[j]->Control_Pontryagin(0);
-		if (method == "alt_int")
-			taskList[j]->Control_AltInt(0);
-		if (method == "gr1")
-			taskList[j]->Control_R1(0);
-		if (method == "gr2")
-			taskList[j]->Control_R2(0);
-		elapsed = clock()-before;  //замер времени начала выполнения расчётов
 		cout << "Control evaluated.." << endl;
-		cout << "Traectory: " << endl;
-		cout<< *taskList[j]->tr_s[0].x_i;
+		//cout << "Traectory: " << endl;
+		//cout<< *taskList[j]->tr_s[0].x_i;
 		cout<< "Evaluation time: "<<elapsed<<endl;   //вывод времени на экран
 		out_f << "Control evaluated.." << endl;
 		out_f << "Traectory: " <<  endl;
@@ -108,8 +153,8 @@ void TaskLoader::load_and_calc_tasks(){
 		out_f << "Evaluation time: "<<elapsed<<endl; //вывод времени в файл
 		out_f.flush();
 		out_f.close();
-		j++;
-		i++;
+		++j;
+		++i;
 		//i = DFile.GetNextSectionIter(i);
 	}
 }
@@ -119,10 +164,7 @@ Task* TaskLoader::loadTask(string szFileName) {
 	char c, buf[20], long_buf[2048];
 	int Lev, len, vecs, m, n, dx, du, dv, dm, stp, i, perf, meth, prior;
 	LDouble ts, prec, tt, maxT, eps;
-	// TNet *tmpNet;
-	// Vector *tmpVec;
-	string *tmpStr, descr;
-	TNetF* tmpPRNet;
+	string *tmpStr/*, descr*/;
 	vector<Traectory>trs;
 
 	fstream in_f(szFileName.c_str(), ios::in|ios::nocreate);
@@ -338,7 +380,7 @@ Task* TaskLoader::loadTask(string szFileName) {
 		default:
 			res = new Task(dx, du, dv, dm, ts, prec, eps, tt, maxT, stp, perf,
 									Lev, 1);
-		}
+		};
 
 		res->A = AA;
 		res->B = BB;
@@ -381,6 +423,7 @@ Task* TaskLoader::loadTask(string szFileName) {
 		// Значение опорных функций  множеств преследователей
 		if (meth==1) {
 			in_f.get(c);
+			/*
 			while (c != '[')
 					in_f.get(c);
 			while (!in_f.eof()){
@@ -393,8 +436,19 @@ Task* TaskLoader::loadTask(string szFileName) {
 				res->setFuncToNetF(*(tmpPRNet), *tmpStr);
 				((PR_Task *)res)->PursuerList.push_back(tmpPRNet);
 				delete tmpStr;
-			  	in_f.get(c);
-			}
+				in_f.get(c);
+			} */
+		  pursuerType *tmpPType;
+		  while (!in_f.eof()){
+			while ((c != '[')&&(!in_f.eof()))
+				in_f.get(c);
+			if (in_f.eof())
+				break;
+			in_f.putback(c);
+			tmpPType =  new pursuerType(res->dim_m, res->perfomance, res->steps);
+			in_f >> *tmpPType;
+			(static_cast<PR_Task *>(res))->pTypes.push_back(tmpPType);
+		  }
 		}
 
 

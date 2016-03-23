@@ -5,11 +5,9 @@
 #include "taskloader.h"
 #include "environment.h"
 
-//#include <boost/program_options/detail/config_file.hpp>
-//#include <boost/property_tree/ptree.hpp>
-//#include <boost/property_tree/ini_parser.hpp>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
+
 // ------------------------------ constructor --------------------------------//
 TaskLoader::TaskLoader(string path):localPath(path) {
 	localPath.append("\\Data");
@@ -417,37 +415,23 @@ Task* TaskLoader::loadTask(string szFileName) {
 		in_f.get(long_buf, 256, ']');
 		tmpStr = new string(long_buf);
 		res->setFuncToNetF(*(res->cM), *tmpStr);
+
 		delete tmpStr;
 		/* */
 
 		// Значение опорных функций  множеств преследователей
 		if (meth==1) {
 			in_f.get(c);
-			/*
-			while (c != '[')
-					in_f.get(c);
+			pursuerType *tmpPType;
 			while (!in_f.eof()){
 				while ((c != '[')&&(!in_f.eof()))
 					in_f.get(c);
-				if (in_f.eof())  break;
-				in_f.get(long_buf, 256, ']');
-				tmpStr = new string(long_buf);
-				tmpPRNet  =  new TNetF(*res->cM);
-				res->setFuncToNetF(*(tmpPRNet), *tmpStr);
-				((PR_Task *)res)->PursuerList.push_back(tmpPRNet);
-				delete tmpStr;
-				in_f.get(c);
-			} */
-		  pursuerType *tmpPType;
-		  while (!in_f.eof()){
-			while ((c != '[')&&(!in_f.eof()))
-				in_f.get(c);
-			if (in_f.eof())
-				break;
-			in_f.putback(c);
-			tmpPType =  new pursuerType(res->dim_m, res->perfomance, res->steps);
-			in_f >> *tmpPType;
-			(static_cast<PR_Task *>(res))->pTypes.push_back(tmpPType);
+				if (in_f.eof())
+					break;
+				in_f.putback(c);
+				tmpPType =  new pursuerType(res->dim_m, res->perfomance, res->steps);
+				in_f >> *tmpPType;
+				(static_cast<PR_Task *>(res))->pTypes.push_back(tmpPType);
 		  }
 		}
 

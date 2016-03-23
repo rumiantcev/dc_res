@@ -2,6 +2,8 @@
 #pragma hdrstop
 
 #include "Netfunc.h"
+#include "gnuplot-iostream.h"
+#include <boost/tuple/tuple.hpp>
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
@@ -1317,21 +1319,37 @@ void __fastcall TNetF::ConvTimS(bool *L) {
 	}
 }
 // ----------------------------------------------------------------------------//
-TNet __fastcall TNetF::Points(/*bool compactPoints*/) {
+vector<pair<LDouble, LDouble>> __fastcall TNetF::Points(Vector& center) {
 	unsigned long i, j;
-  //	pathType path;
-	makeAlpha(alpha, 0, *this);
-
-	TNet result(alpha.size(), Dim, perfomance, Res);
-	result.copyNetFrom(*this);
-	result.isVirtual = false;
-	//i = 0;
-	for (i = 0; i < Count; i++) {
-		for (j = 0; j < Dim; j++)
-			result.v->v->v[i][j] = alpha[i] * getIJ(i, j);
-		i++;
+	bool *L;
+	L = new bool[Count];
+	(*this).Conv(L);
+	vector<pair<LDouble, LDouble> > xy;
+	LDouble x, y;
+	for (i = 0; i < Count/4; i++) {
+		x = alpha[i] * getIJ(i, 0) + center.v->v[0];
+		y = alpha[i] * getIJ(i, 1) + center.v->v[1];
+		cout << x << "   " << y << endl;
+		xy.push_back(make_pair(x, y));
 	}
-	return result;
+	for (i = 3*Count/4; i < Count; i++) {
+		x = alpha[i] * getIJ(i, 0) + center.v->v[0];
+		y = alpha[i] * getIJ(i, 1) + center.v->v[1];
+		xy.push_back(make_pair(x, y));
+	}
+	for (i = Count/2 - 1; i >= Count/4; i--) {
+		x = alpha[i] * getIJ(i, 0) + center.v->v[0];
+		y = alpha[i] * getIJ(i, 1) + center.v->v[1];
+		xy.push_back(make_pair(x, y));
+	}
+	for (i = 3*Count/4 - 1; i >= Count/2; i--) {
+		x = alpha[i] * getIJ(i, 0) + center.v->v[0];
+		y = alpha[i] * getIJ(i, 1) + center.v->v[1];
+		xy.push_back(make_pair(x, y));
+	}
+	//Gnuplot gp;
+	//gp << "plot" << gp.file1d(xy) << "with lines title 'qqq'," << endl;
+	return xy;
 }
 
 // ----------------------------------------------------------------------------//

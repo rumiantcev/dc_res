@@ -4,8 +4,6 @@
 
 #include "pr_task.h"
 
-#include "gnuplot-iostream.h"
-#include <boost/tuple/tuple.hpp>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 // ------------------------------ desttructor --------------------------------//
@@ -14,7 +12,7 @@ PR_Task::~PR_Task() {
 	for_each(PursuerList.begin(), PursuerList.end(), DeleteObj());
 	for_each(NList.begin(), NList.end(), DeleteObj());
 	for_each(pTypes.begin(), pTypes.end(), DeleteObj());
-   	for_each(Pursuers.begin(), Pursuers.end(), DeleteObj());
+	for_each(Pursuers.begin(), Pursuers.end(), DeleteObj());
 }
 
 // ------------------------------ constructor --------------------------------//
@@ -30,22 +28,25 @@ void PR_Task::Find_Ns(pursuerType* pT) {
 	Matrix PiEtA(A.m(), A.n()), PiEtAB(B.m(), B.n()), PiEtAC(C.m(), C.n()), intEtA(A.m());
 	TNetF tmpPNet(*cP), tmpNet(PP.m(), perfomance, steps), c(pT->dim, pT->perfomance, pT->steps);
 	intEtA = (0.5 * tau) * (Exponential(A, 0, precision) + Exponential(A, -tau, precision));
-	string func_m, func_v;
+	string func_m, func_v, tmp;
 
 	for (unsigned long i = 0; i < pT->centres.size(); i++) {
 
-        Pursuer *tmpPr;
+		Pursuer *tmpPr;
 		tmpPr = new Pursuer();
 		tmpPr->center = new Vector(*pT->centres[i]);
 		func_m = pT->func_m;
+		tmp = func_m;
 		for (unsigned long j = 0; j < pT->dim; j++) {
 			func_m.append(" + p" + intToStr(j) + " * (" + ldToStr(pT->centres[i]->v->v[j]) + ")");
 		}
-
-		TNetF NiNet(c);
+		TNetF NiNet(c), tmpNet(c);
 		NiNet.SetFunc(func_m);
 		NiNet.oporn(t0, 1);
-		NiNet.is_empty = false;
+
+		bool *L;
+		L = new bool[NiNet.Count];
+		NiNet.Conv(L);
 
 		func_v = pT->func_v;
 		TNetF QNet(c);
@@ -54,16 +55,14 @@ void PR_Task::Find_Ns(pursuerType* pT) {
 		TNetF tmpQNet(QNet);
 
 		t = t0;
-
 		alphType alpha;
 		alpha.reserve(NiNet.Count);
 		for (unsigned long j = 0; j < NiNet.Count; j++) {
-			alpha[j] = 0;
+			alpha[j] = NiNet.alpha[j];
 		}
 
 		while (!NiNet.is_empty) {
 			t += tau;
-            cout << i << ' ' << t << endl;
 			PiEtA = PP * Exponential(A, t, precision) * intEtA;
 
 			PiEtAB = PiEtA * B;
@@ -72,28 +71,29 @@ void PR_Task::Find_Ns(pursuerType* pT) {
 			tmpPNet *= PiEtAB;
 
 			PiEtAC = PiEtA * C;
-			tmpQNet = QNet; //*cQ;
+			tmpQNet = QNet;
 			tmpQNet.oporn(t, 1);
 			tmpQNet *= PiEtAC;
 
 			NiNet = NiNet + tmpQNet;
 			NiNet -= tmpPNet; // геометрическа€ разность
-			cout << NiNet << endl;
-		  /* */
-			cout << NiNet.is_empty << endl;
-			//cout << NiNet.alpha << endl;
 			for (unsigned long j = 0; j < NiNet.Count; j++) {
-				if (alpha[j] > NiNet.alpha[i]) {
-					NiNet.alpha[i] = alpha[i];
-				} else {
-					alpha[i] = NiNet.alpha[i];
-                }
+				if (alpha[j] < NiNet.alpha[j]) {
+					alpha[j] = NiNet.alpha[j];
+				}
 			}
+
 		}
-
-		NList.push_back(&NiNet);
-
-
+		LDouble x, y;
+		for (unsigned long j = 0; j < NiNet.Count; j++) {
+			NiNet.f->v->v[j] = alpha[i];
+		}
+		cout << NiNet << endl;
+		tmpPr->funnelDepth = 1;
+		tmpPr->funnel.push_back(new TNetF(NiNet));
+		cout << *(tmpPr->funnel[0]) << endl;
+		//tmpPr->radarVisibility = ?
+		Pursuers.push_back(tmpPr);
 		cout << i << ' ' << t << endl;
 	}
 
@@ -101,33 +101,14 @@ void PR_Task::Find_Ns(pursuerType* pT) {
 
 // ------ расчЄт множеств альтернированных интегралов преследователей -  остыль --------//
 void PR_Task::calcPursuerSets(int trNum){
-//	TNetF m2Net(*PursuerList[0]); // сеточна€ опорна€ функци€ терминального множества
-// дл€ первого преследовател€
-  //	Matrix PiEtA(A.m(), A.n()), PiEtAk(A.m(), A.n()), PiEtAkC(C.m(), C.n()),
-  //		PiEtAkB(A.m(), A.n()), EtA(A.m()), intEtA(A.m());
-	// EtA(A.m()) - единична€ при t=0
-  //	Vector PiEtAx0(A.m()), psi(A.v->m), extrVec(PP.v->m);
-   //	LDouble t = t0, min;
- //	TNetF c(PP.m(), perfomance, steps), tmpPNet(*cP), tmpQNet(*cQ), Net(c),
- //		x0Net(c), tmpNet(c);
-    unsigned long /*i,*/j/*, Ind = 0*/;
+	unsigned long j;
 	pursuerType *pt;
 
-   //	Find_Ns(trNum);
-   /*
-	//костыль
-	//просто рассчитываем опорную функцию, пользу€сь тем, что управление константа не завис€ща€ от времени
-	for(j=0;j<PursuerList.size();j++){
-	   PursuerList[j]->oporn(0.0,1);
-	 //  cout<<*PursuerList[j]<<endl;
-	}
-	/**/
 
-   for(j=0;j<pTypes.size();j++){
-	   pt = pTypes[j];
-	   Find_Ns(pt);
-	   //buildFunnels(pt);
-	 //  cout<<*PursuerList[j]<<endl;
+	for(j=0;j<pTypes.size();j++){
+		pt = pTypes[j];
+		//Find_Ns(pt);
+		buildFunnels(pt);
 	}
 
 }
@@ -536,6 +517,7 @@ void PR_Task::buildFunnels(pursuerType* pT){
 				maxRad=c.maxRad;
 			cout << c.is_empty<<" : "<< t << endl;
 			tmpPr->funnel.push_back(new TNetF(c));
+			//c.Points();
 		}
 		tmpPr->funnelDepth = t;
 		tmpPr->radarVisibility = sqrt(t*t+c.Dim*maxRad*maxRad); //проверить расчЄт видимости
@@ -772,30 +754,32 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 void PR_Task::plot(int trNum){      //пока тест только дл€ двумерных векторов
 //------------------------
 Gnuplot gp;
-
+    //2D
 	vector<pair<LDouble, LDouble> > xy_pts_A;
 	for(long i=0; i<tr_s[trNum].x_i->m(); ++i) {
-	   //	LDouble y = x*x*x;
 		xy_pts_A.push_back(make_pair(tr_s[trNum].x_i->v->v[i][0], tr_s[trNum].x_i->v->v[i][1]));
 	}
+	gp << "plot" << gp.file1d(xy_pts_A) << "with lines title 'x(t)', ";
+	Pursuer* ps;
+	TNetF c(PP.m(), perfomance, steps), px_net(c);
+	vector<pair<LDouble, LDouble>> xy, xyM;
+	cout << endl << Pursuers.size() << endl;
+	for (unsigned long l = 0; l < Pursuers.size(); l++) {
+		ps = Pursuers[l];
+		xy = (*(ps->funnel[0])).Points(*ps->center);
+		string str = "with lines title";
+		str.append(" 'N" + intToStr(l + 1) + "', ");
+		gp << gp.file1d(xy) << str;
+	}
+	TNetF m2Net(*cM);
+	m2Net.oporn(t0, 1);
+	Vector cc("[0,0]",2);
+	cout << cc << endl;
+	xyM = m2Net.Points(cc);
 
-	//vector<pair<LDouble, LDouble> > xy_pts_B;
-   //	for(LDouble alpha=0; alpha<1; alpha+=1.0/24.0) {
-   //		LDouble theta = alpha*2.0*3.14159;
-   //		xy_pts_B.push_back(make_pair(cos(theta), sin(theta)));
-   //	}
-
-	//gp << "set xrange [-10:10]\nset yrange [-10:10]\n";
-	// Data will be sent via a temporary file.  These are erased when you call
-	// gp.clearTmpfiles() or when gp goes out of scope.  If you pass a filename
-	// (e.g. "gp.file1d(pts, 'mydata.dat')"), then the named file will be created
-	// and won't be deleted (this is useful when creating a script).
-	gp << "plot" << gp.file1d(xy_pts_A) << "with lines title 'x(t)'"//<<" ,"
-		/*<< gp.file1d(xy_pts_B) << "with points title 'circle'"*/ << endl;
+	gp << gp.file1d(xyM) << "with lines title 'M'," << endl;
 
 #ifdef _WIN32
-	// For Windows, prompt for a keystroke before the Gnuplot object goes out of scope so that
-	// the gnuplot window doesn't get closed.
 	std::cout << "Press enter to exit." << std::endl;
 	std::cin.get();
 #endif

@@ -8,6 +8,8 @@
 #include "traectory.h"
 #include "pursuerType.h"
 #include "pursuer.h"
+#include "gnuplot-iostream.h"
+#include <boost/tuple/tuple.hpp>
 
 #include "general.h"
 
@@ -20,6 +22,7 @@ class PR_Task: public Task {
 	public:
 		vector<TNetF*>PursuerList;
 		vector<TNetF*> NList;
+		//vector<pair<LDouble, LDouble> > xy;
 
 		VecOfPTypes pTypes;
 		VecOfPursuers Pursuers;

@@ -126,7 +126,7 @@ public:
 	void __fastcall Conv(bool *); // выпуклая оболочка
     void __fastcall ConvTimS(bool *); // выпуклая оболочка
 	void __fastcall ConvSerial(bool *, const Vector & a);
-	TNet __fastcall Points(/*bool compactPoints*/);
+	vector<pair<LDouble, LDouble>> __fastcall Points(Vector& center/*bool compactPoints*/);
 	// Конвертация из опорной функции в сетку из точек по границе множества
 	void __fastcall saveAsVrml(string);
 	void __fastcall smoothFunction(LDouble epsilon);

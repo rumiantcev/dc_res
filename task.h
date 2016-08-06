@@ -49,6 +49,7 @@ public:
 	// Параметр точности при численных вычислениях (напр. экспоненциал)
 	LDouble tau, // Шаг по времени.
 		maxTime, t0, T, tmpT;
+    LDouble pinMark;
 	int priority, method; // , traectoryCount;
 	string description;
 

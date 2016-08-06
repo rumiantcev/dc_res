@@ -8,7 +8,7 @@
 #include <list>
 #include <vector>
 #include <math.h>
-//#include <assert.h>
+#include <assert.h>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -59,7 +59,14 @@ typedef std::vector<Vector*>VecOfVec;
 //возващает знак значения a
 inline int signof(LDouble a) { return (a == 0.0) ? 0 : (a<0 ? -1 : 1); }
 
+inline bool isOdd(long a) { return (a%2 == 0.0) ? true : false; }
 
+// ------------------------------constructor ----------------------------------//
+inline unsigned long __fastcall factorial( unsigned long i){
+	while (i == 0)
+		i *= (i-1);
+	return i;
+}
 
 //очистка ссылок в векторах объектов
 struct DeleteObj {

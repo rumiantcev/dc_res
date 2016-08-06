@@ -310,7 +310,7 @@ Vector* __fastcall Vector::copy(Vector* src, Vector* dst) {
 // в принципе т.к. это расчёт нормали относяценся только к гиперкубическим сеткам,
 // то имеет смысл перенести это в соотв. модуль
 /* TODO -orum -crepair :  Перенести функцию в TNet */
-void __fastcall Vector::norm(const unsigned int& halfRes) {
+void __fastcall Vector::norm(const LDouble& halfRes) {
 	unsigned long i;
 	LDouble acc = 0;
 	for (i = 0; i < v->size; ++i) {
@@ -341,4 +341,34 @@ const LDouble eu_dist(const Vector& a, const Vector& b){
  for (i = 0; i < a.size(); i++)
 	dist += (a[i]-b[i]) * (a[i]-b[i]);
  return sqrt(dist);
+}
+//------------------------- заполнение константами ---------------------------//
+void Vector::one() {
+	// 	memset(v->v,1.0,v->size*sizeof(LDouble));
+	for (unsigned long i = 0; i < v->size; i++)
+		v->v[i] = 1.0;
+}
+
+ void Vector::zero() {
+	memset(v->v,0,v->size*sizeof(LDouble));
+  //for (unsigned long i = 0; i < v->size; i++)
+  //		v->v[i] = 0.0;
+}
+//------------------------- двоичное представление val -----------------------//
+int Vector::toBinary(unsigned long val) {
+	unsigned long len(log(val)/log(2));
+	unsigned long i, rem, quot;
+
+	if (size() <= len) {
+		return -1; //не хватит места в массиве
+	}
+	quot = val;
+    zero();
+	for (i = v->size-1; i>=0; i--) {
+		quot >>= 1;
+		rem = val - (quot<<1);
+		v->v[i] = rem;
+		val = quot;
+	}
+    return 0;
 }

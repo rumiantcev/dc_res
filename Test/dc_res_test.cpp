@@ -1,36 +1,89 @@
-#include <System.Sysutils.hpp>
-#include <DUnitX.Loggers.Console.hpp>
-#include <DUnitX.Loggers.Xml.NUnit.hpp>
-#include <DUnitX.TestFramework.hpp>
-#include <stdio.h>
+// Boost.Test
+#include <boost/test/unit_test.hpp>
+using namespace boost::unit_test;
 
-int main()
+//____________________________________________________________________________//
+
+// this test case is automatically registered
+BOOST_AUTO_TEST_CASE( force_division_by_zero )
 {
-  try
-  {
-    TDUnitX::CheckCommandLine();
-    _di_ITestRunner runner = TDUnitX::CreateRunner();
-    _di_ITestLogger logger(*new TDUnitXConsoleLogger(true));
-    runner->AddLogger(logger);
+    BOOST_CHECK( false );
 
-    _di_ITestLogger nunitLogger(*new TDUnitXXMLNUnitFileLogger(TDUnitX::Options->XMLOutputFile));
-    runner->AddLogger(nunitLogger);
+    // unit test framework can catch operating system signals
+    BOOST_TEST_CHECKPOINT("About to force division by zero!");
+    int i = 1, j = 0;
 
-    _di_IRunResults results = runner->Execute();
-
-#if !defined(CI)
-    if (TDUnitX::Options->ExitBehavior == TDUnitXExitBehavior::Pause)
-    {
-      printf("Done.. press <Enter> key to quit.");
-      getchar();
-    }
-#endif
-
-    return results->AllPassed ? EXIT_SUCCESS : EXIT_FAILURE;
-  }
-  catch(System::Sysutils::Exception& Ex)
-  {
-    printf("Exception: ''Project1''\n", AnsiString(Ex.Message).c_str());
-  }
-  return EXIT_FAILURE;
+    // reports 'unknown location(0): fatal error in "force_division_by_zero": integer divide by zero'
+    i = i / j;
 }
+
+//____________________________________________________________________________//
+
+// this test case will have tobe registered manually
+void infinite_loop()
+{
+    // unit test framework can break infinite loops by timeout
+#ifdef __unix  // don't have timeout on other platforms
+    BOOST_TEST_CHECKPOINT("About to enter an infinite loop!");
+    while(1);
+#else
+	BOOST_TEST_MESSAGE( "Timeout support is not implemented on your platform" );
+#endif
+}
+
+//____________________________________________________________________________//
+
+test_suite*
+init_unit_test_suite( int , char* [] )
+{
+	framework::master_test_suite().p_name.value = "Unit test example 03";
+
+    // with explicit registration we could specify a test case timeout
+    framework::master_test_suite().add( BOOST_TEST_CASE( &infinite_loop ), 0, /* timeout */ 2 );
+
+	return 0;
+}
+
+
+//#include <System.Sysutils.hpp>
+//#include <DUnitX.Loggers.Console.hpp>
+//#include <DUnitX.Loggers.Xml.NUnit.hpp>
+//#include <DUnitX.TestFramework.hpp>
+//#include <stdio.h>
+////#include <boost/test>
+//
+
+#if defined(NOTHING_MORE_MAIN)
+int main()    {}
+#endif
+//{
+//  try
+//  {
+//    TDUnitX::CheckCommandLine();
+//    _di_ITestRunner runner = TDUnitX::CreateRunner();
+//    _di_ITestLogger logger(*new TDUnitXConsoleLogger(true));
+//    runner->AddLogger(logger);
+//
+//    _di_ITestLogger nunitLogger(*new TDUnitXXMLNUnitFileLogger(TDUnitX::Options->XMLOutputFile));
+//    runner->AddLogger(nunitLogger);
+//
+//    _di_IRunResults results = runner->Execute();
+//
+//#if !defined(CI)
+//    if (TDUnitX::Options->ExitBehavior == TDUnitXExitBehavior::Pause)
+//    {
+//      printf("Done.. press <Enter> key to quit.");
+//      getchar();
+//    }
+//#endif
+//
+//    return results->AllPassed ? EXIT_SUCCESS : EXIT_FAILURE;
+//  }
+//  catch(System::Sysutils::Exception& Ex)
+//  {
+//    printf("Exception: ''dc_res''\n", AnsiString(Ex.Message).c_str());
+//  }
+//  return EXIT_FAILURE;
+//}
+
+

@@ -74,9 +74,13 @@ public:
 			update();
 		return v->v[i];
 	}
+
+	void one();  //заполнение единицами
+	void zero(); //заполнение нулями
+	int toBinary(unsigned long val);
 	// /*!inline*/ const LDouble operator [](long i) const{return v->v[i];}
 	static Vector* __fastcall copy(Vector* src, Vector* dst);
-	void __fastcall norm(const unsigned int& halfRes);
+	void __fastcall norm(const LDouble& halfRes);
 	LDouble __fastcall norm();
 	friend const LDouble eu_dist(const Vector&, const Vector&);
 };

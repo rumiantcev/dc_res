@@ -14,6 +14,7 @@ class Environment { // Singleton
 	LDouble _extr_tmin_param;
 	LDouble _extr_e_val;
 	LDouble ldZeroDf;
+    LDouble _pinMark;
 	std::string localPath;
    // virtual void op1() = 0;
     // other operations...

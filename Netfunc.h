@@ -61,6 +61,10 @@ public:
 	// TRapidEvaluator       *func;
 	LDouble *vars;
 	LDouble t;
+	LDouble pinMark; //маркер значения, которое будет обходиться при прогонке массива
+					//во избежанни дублей, можно не копировать т.к. при создании
+					//всегда имеет одно глобальное значение из Environment
+    unsigned long markCount;
 
 	__fastcall TNetF(unsigned long, long, unsigned long); // Ok
 	__fastcall TNetF(unsigned long, long, unsigned long, string); // Ok
@@ -82,7 +86,7 @@ public:
 	friend ostream& __fastcall operator << (ostream&, TNetF&); // Ok
 	friend istream& __fastcall operator >> (istream&, TNetF&); // Ok
 
-	inline  LDouble __fastcall getIJ(unsigned long current, unsigned long coordNumber);
+	 LDouble __fastcall getIJ(unsigned long current, unsigned long coordNumber);
 
 	TNetF& __fastcall operator = (const TNetF&); // Ok
 
@@ -99,6 +103,9 @@ public:
 	friend const TNetF __fastcall operator -(const TNetF&, const TNetF&);
 	// friend const TNetF __fastcall operator +(const LDouble, const TNetF&); //не имеет смысла
 	// friend TNetF __fastcall operator *(LDouble &,TNetF&); // Changes in update()
+
+	unsigned long __fastcall shift(unsigned long current, unsigned long coordNumber, int step,
+	bool& borderChanged) throw(exInvalidMoveDirection);
 
 	LDouble __fastcall oporn(const Vector &x, LDouble t, int sign);
 	LDouble __fastcall oporn(const Vector &x, LDouble t, const string &funcStr,
@@ -134,6 +141,7 @@ public:
 	unsigned long /* !inline */ selectExtrX(const Vector& vec, scM scmul, cCrit crit,
 		 long current, long& result, LDouble &extr, OpType extrOper,
 		ZeroAware isZeroAware, bool &isExtrExist, TNetF& net);
+	void __fastcall pin_Mark();
 
 protected:
 	// Поиск экстермума в направлении заданном вектором vec перебором

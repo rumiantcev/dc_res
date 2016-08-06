@@ -113,6 +113,8 @@
         <PackageImports>adortl;appanalytics;bindcomp;bindcompdbx;bindcompfmx;bindcompvcl;bindengine;CloudService;CustomIPTransport;DataSnapClient;DataSnapCommon;DataSnapConnectors;DatasnapConnectorsFreePascal;DataSnapFireDAC;DataSnapIndy10ServerTransport;DataSnapNativeClient;DataSnapProviderClient;DataSnapServer;DataSnapServerMidas;dbexpress;dbrtl;dbxcds;DbxClientDriver;DbxCommonDriver;DBXDb2Driver;DBXFirebirdDriver;DBXInformixDriver;DBXInterBaseDriver;DBXMSSQLDriver;DBXMySQLDriver;DBXOdbcDriver;DBXOracleDriver;DBXSqliteDriver;DBXSybaseASADriver;DBXSybaseASEDriver;dsnap;dsnapcon;dsnapxml;emsclient;emsclientfiredac;FireDAC;FireDACADSDriver;FireDACASADriver;FireDACCommon;FireDACCommonDriver;FireDACDb2Driver;FireDACDBXDriver;FireDACDSDriver;FireDACIBDriver;FireDACInfxDriver;FireDACMongoDBDriver;FireDACMSAccDriver;FireDACMSSQLDriver;FireDACMySQLDriver;FireDACODBCDriver;FireDACOracleDriver;FireDACPgDriver;FireDACSqliteDriver;FireDACTDataDriver;fmx;fmxase;fmxdae;fmxFireDAC;fmxobj;FMXTee;FmxTeeUI;ibmonitor;ibxbindings;ibxpress;IndyCore;IndyIPClient;IndyIPCommon;IndyIPServer;IndyProtocols;IndySystem;inet;inetdb;inetdbxpress;Intraweb;RESTBackendComponents;RESTComponents;rtl;soapmidas;soaprtl;soapserver;Tee;TeeDB;TeeUI;tethering;vcl;vclactnband;vcldb;vcldsnap;vclFireDAC;vclib;vclie;vclimg;VCLRESTComponents;vclribbon;VclSmp;vcltouch;vclwinx;vclx;xmlrtl;$(PackageImports)</PackageImports>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
+        <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
+        <VerInfo_Locale>1049</VerInfo_Locale>
         <BCC_OptimizeForSpeed>false</BCC_OptimizeForSpeed>
         <BCC_DisableOptimizations>true</BCC_DisableOptimizations>
         <DCC_Optimize>false</DCC_Optimize>
@@ -135,6 +137,8 @@
         <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\debug\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <Debugger_DebugSourcePath>C:\Program Files (x86)\Embarcadero\Studio\17.0\include\boost_1_39\boost\test\impl\;C:\Program Files (x86)\Embarcadero\Studio\17.0\include\boost_1_39\boost\test\utils\runtime\cla\;$(Debugger_DebugSourcePath)</Debugger_DebugSourcePath>
+        <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
         <BCC_IncludePath>C:\Users\alex\Documents\MSU\dc_res;$(BCC_IncludePath)</BCC_IncludePath>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Manifest_File>None</Manifest_File>
@@ -144,9 +148,28 @@
         <TASM_Debugging>None</TASM_Debugging>
     </PropertyGroup>
     <ItemGroup>
+        <CppCompile Include="..\environment.cpp">
+            <DependentOn>..\environment.h</DependentOn>
+            <BuildOrder>9</BuildOrder>
+        </CppCompile>
+        <None Include="..\general.h">
+            <BuildOrder>10</BuildOrder>
+        </None>
+        <CppCompile Include="..\Matrix.cpp">
+            <DependentOn>..\Matrix.h</DependentOn>
+            <BuildOrder>6</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\Net.cpp">
+            <DependentOn>..\Net.h</DependentOn>
+            <BuildOrder>5</BuildOrder>
+        </CppCompile>
         <CppCompile Include="..\Netfunc.cpp">
             <DependentOn>..\Netfunc.h</DependentOn>
             <BuildOrder>4</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\Smx.cpp">
+            <DependentOn>..\Smx.h</DependentOn>
+            <BuildOrder>7</BuildOrder>
         </CppCompile>
         <CppCompile Include="..\Svec.cpp">
             <DependentOn>..\Svec.h</DependentOn>
@@ -158,6 +181,10 @@
         <CppCompile Include="test1.cpp">
             <DependentOn>test1.h</DependentOn>
             <BuildOrder>1</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\t_Mx.cpp">
+            <DependentOn>..\t_Mx.h</DependentOn>
+            <BuildOrder>8</BuildOrder>
         </CppCompile>
         <CppCompile Include="..\Vector.cpp">
             <DependentOn>..\Vector.h</DependentOn>
@@ -197,6 +224,11 @@
                 </Excluded_Packages>
             </CPlusPlusBuilder.Personality>
             <Deployment Version="2">
+                <DeployFile LocalName="$(BDS)\Redist\Win32\DUnitXRuntime230.bpl" Configuration="Debug" Class="DependencyPackage">
+                    <Platform Name="Win32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile Condition="'$(DynamicRTL)'=='true'" LocalName="$(BDS)\Redist\osx32\libcgcrtl.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
@@ -244,6 +276,11 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="$(BDS)\Redist\Win32\rtl230.bpl" Configuration="Debug" Class="DependencyPackage">
+                    <Platform Name="Win32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
@@ -251,6 +288,11 @@
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libPCRE.dylib" Class="DependencyModule">
                     <Platform Name="iOSSimulator">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="$(BDS)\Redist\Win32\fmx230.bpl" Configuration="Debug" Class="DependencyPackage">
+                    <Platform Name="Win32">
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -264,16 +306,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -587,7 +620,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

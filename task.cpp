@@ -65,6 +65,7 @@ Task::Task(long dimX, long dimU, long dimV, long dimM, LDouble ts, LDouble prec,
 	priority = 0;
 	method = 0;
 	psi0Index = 0;
+    pinMark = Environment::instance()._pinMark;
 }
 
 // -----------------------------destructor----------------------------------//
@@ -123,7 +124,7 @@ Task::Task(const Task& ts) : A(ts.A.m(), ts.A.n()), B(ts.B.m(), ts.B.n()),
 // ------------------------------- Time calc-----------------------------------//
 /*LDouble Task::TimeCalc() {
 }
-  /**/
+  */
 // ------------------------------- Time calc-----------------------------------//
 LDouble Task::TimeCalc_Pontryagin(int trNum) {
 	TNetF m2Net(*cM); // сеточна€ опорна€ функци€ терминального множества
@@ -146,7 +147,8 @@ LDouble Task::TimeCalc_Pontryagin(int trNum) {
 
 	// опорна€ функци€ PiEtA*x0 - строим пользу€сь тем что это просто скал€рное произведение
 	for (i = 0; i < x0Net.Count; i++)
-		x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
+		if (x0Net.f->v->v[i] != pinMark)
+			x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
 
 	c = m2Net + (-1) * x0Net;
 
@@ -183,7 +185,8 @@ LDouble Task::TimeCalc_Pontryagin(int trNum) {
 		m2Net.oporn(t, 1);
 		// опорна€ функци€ PiEtA*x0 - строим пользу€сь тем что это просто скал€рное произведение
 		for (i = 0; i < x0Net.Count; i++)
-			x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
+			if (x0Net.f->v->v[i] != pinMark)
+				x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
 
 		c = m2Net + tmpNet + (-1) * x0Net;
 		// ¬от на этой сетке и ищем мин, дл€ того, чтобы найти T
@@ -226,7 +229,8 @@ LDouble Task::TimeCalc_AltInt(int trNum) {
 
 	// опорна€ функци€ PiEtA*x0 - строим пользу€сь тем что это просто скал€рное произведение
 	for (i = 0; i < x0Net.Count; i++)
-		x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
+		if (x0Net.f->v->v[i] != pinMark)
+			x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
 
 	Net = c + (-1) * x0Net;
 
@@ -258,7 +262,8 @@ LDouble Task::TimeCalc_AltInt(int trNum) {
 
 		// опорна€ функци€ PiEtA*x0 - строим пользу€сь тем что это просто скал€рное произведение
 		for (i = 0; i < x0Net.Count; i++)
-			x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
+			if (x0Net.f->v->v[i] != pinMark)
+				x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
 
 		tr_s[trNum].NetList.push_back(new TNetF(c));
 		// —охран€ем дл€ последующего поиска Psi
@@ -342,8 +347,10 @@ void Task::Control_AltInt(int trNum) {
 		cP->oporn(t, 1);
 		cQ->oporn(t, 1);
 		for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
+			if (x_Net.f->v->v[i] != pinMark){
 				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
 				c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+			}
 		}
 		k--;
 		//выбираем psi
@@ -391,7 +398,7 @@ void Task::Control_R1(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(PP.m(), perfomance, steps), tmpQNet(PP.m(), perfomance, steps);
 	unsigned long i, j, k, m;
-	long Ind = 0;
+	long Ind = 0, _j;
 	Matrix PiEtA(PP.m(), A.n()), PiEtAC(PP.m(), C.n()), PiEtAB(PP.m(), B.n()),
 		EtA(A.m()); // EtA(A.m()) - единична€ при t=0
 	LDouble t, min,  extr;
@@ -401,8 +408,12 @@ void Task::Control_R1(int trNum) {
 	VecOfVec vx_i, vu_i, vv_i;
 	Vector *r_i;
 
+	do{
+		_j = _lrand() % (cP->Count);
+	}while (cP->f->v->v[_j] == pinMark);
+
 	LDouble tmin = Environment::instance()._extr_tmin_param, tmax = Environment::instance()._extr_t0_param, tcurr = tmax, p, a =
-		LDouble(_lrand() % cP->Count) / cP->Count, ccurr = Environment::instance()._extr_e_val;
+		LDouble(_j) / cP->Count, ccurr = Environment::instance()._extr_e_val;
 	LDouble _tmin = tmin;
 	long jk=-1,jj, /* prevInd,*/indExtr;
 
@@ -428,8 +439,10 @@ void Task::Control_R1(int trNum) {
 		cP->oporn(t, 1);
 		cQ->oporn(t, 1);
 		for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
+			if (x_Net.f->v->v[i] != pinMark){
 				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
 				c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+            }
 		}
 		k--;
 		//выбираем psi
@@ -458,7 +471,10 @@ void Task::Control_R1(int trNum) {
 		v_i=cQ->getBorderPoint(Ind,v_i);
 
 		if (jk<0) {
-            jk = _lrand() % (c.Count);
+			do{
+				jk = _lrand() % (c.Count);
+			}while (c.f->v->v[jk] == pinMark);
+		  //  jk = _lrand() % (c.Count);
 		}
 		xExtNorm = c.f->v->v[jk];
 		xNorm =  xExtNorm;
@@ -477,14 +493,20 @@ void Task::Control_R1(int trNum) {
 				tcurr = tcurr * ccurr;
 			}else{
 				p = 1.0 / (1.0 + exp(-fabs(xNorm - xExtNorm) /tcurr));
-				a = LDouble(_lrand() % c.Count) / (LDouble)c.Count;
+				do{
+					_j = _lrand() % (c.Count);
+				}while (c.f->v->v[_j] == pinMark);
+				a = LDouble(_j) / (LDouble)c.Count;
 				if (a > p) {
 					xExtNorm = xNorm;
 					indExtr = jk;
 					tcurr = tcurr * ccurr;
 				}
 			}
-			a = LDouble(_lrand() % c.Count) / LDouble(c.Count);
+			do{
+				_j = _lrand() % (c.Count);
+			}while (c.f->v->v[_j] == pinMark);
+			a = LDouble(_j) / LDouble(c.Count);
 			jj = signof(a - 0.5) * tcurr * (pow((1.0 + 1.0 / tcurr), fabs(2.0 * a - 1.0)) -	1.0) * LDouble(c.Count);
 			jk = abs(jj + jk) % c.Count;
 			for (m = 0; m < c.Dim; m++)
@@ -581,7 +603,7 @@ void Task::Control_R2(int trNum) {
 	VecOfVec vx_i, vu_i, vv_i;
 	Vector *r_i;
 
-	long jk=-1, prevInd,indExtr;
+	long jk=-1, prevInd,indExtr, _j;
 	int currPlateNorm, currDirection=-1, prevDirection = -1, moveSign = 1, exitSign = 0, exitLim = (c.Dim-1)*2;
 
 	j = 0;
@@ -606,8 +628,10 @@ void Task::Control_R2(int trNum) {
 		cP->oporn(t, 1);
 		cQ->oporn(t, 1);
 		for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
+			if (x_Net.f->v->v[i] != pinMark){
 				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
 				c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+			}
 		}
 		k--;
 		//выбираем psi
@@ -635,7 +659,10 @@ void Task::Control_R2(int trNum) {
 		v_i=cQ->getBorderPoint(Ind,v_i);
 
 		if (jk<0){      //первый узел по любому случаен
-			jk = _lrand() % (c.Count);
+			do{
+				jk = _lrand() % (c.Count);
+			}while (c.f->v->v[_j] == pinMark);
+			//jk = _lrand() % (c.Count);
 			indExtr = jk;
 			currDirection= rand()%c.Dim;
 		}
@@ -822,7 +849,9 @@ void Task::Control_Pontryagin(int trNum) {
 		PiEtAx = PiEtA * x_i;
 
 		for (i = 0; i < x_Net.Count; i++) // считаем опорную функцию точки PiEtAx
+			if (x_Net.f->v->v[i] != pinMark){
 				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
+			}
 		c = *tr_s[trNum].NetList[k] + (-1) * x_Net;
 		k--;
 		 c.perfomance = 0;
@@ -837,18 +866,20 @@ void Task::Control_Pontryagin(int trNum) {
 		extr_exist = false;
 		extrVec = /* Transpose(PiEtAC)* */ psi;
 		for (i = 0; i < tmpQNet.Count; i++) {
-			val = scm(i, extrVec, &tmpQNet,NULL);
-			if (!extr_exist) {
-				extr_exist = true;
-				extr = val;
-				Ind = i;
-			}
-			else {
-				if (val > extr) {
+			if (tmpQNet.f->v->v[i] != pinMark){
+				val = scm(i, extrVec, &tmpQNet,NULL);
+				if (!extr_exist) {
+					extr_exist = true;
 					extr = val;
 					Ind = i;
 				}
-			}
+				else {
+					if (val > extr) {
+						extr = val;
+						Ind = i;
+					}
+				}
+            }
 		} /* */
 		for (m = 0; m < dim_v; m++)
 			v_i.v->v[m] = tmpQNet.getIJ(Ind, m);
@@ -882,7 +913,7 @@ void Task::Control() {
 
 	Level = 2;
 }
-  /**/
+  */
 // ------------------------------ saveTask ------------------------------------//
 void Task::saveTask(char *fileName) {
 	long len, i, size = tr_s.size();
@@ -1017,7 +1048,7 @@ void Task::saveTask(char *fileName) {
 	 out_f<<'\n';
 
 	 }
-	/* */
+	 */
 	// out_f.flush();
 	out_f.close();
 }
@@ -1028,7 +1059,7 @@ void Task::saveTask(char *fileName) {
  {
  return in_f;
  }
-/* */
+ */
 // ---------------------- changes default function zero value--------------------
 void __fastcall Task::setFuncToNetF(TNetF& net, string func) {
 	net.SetFunc(func);

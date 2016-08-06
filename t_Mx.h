@@ -17,14 +17,14 @@ protected:
 		~pr_Mx(){
 		};
 
-		T operator [] (long n) const{
-			assert ((long)n < (long)p_n);
-			return p_v[n];
+		T operator [] (long row) const{
+			assert ((long)row < (long)p_n);
+			return p_v[row];
 		};
 
-		T& operator [] (long n){
-			assert ((long)n < (long)p_n);
-			return p_v[n];
+		T& operator [] (long row){
+			assert ((long)row < (long)p_n);
+			return p_v[row];
 		};
 	private:
 		T * p_v;
@@ -32,7 +32,7 @@ protected:
 	};
 
 public:
-	t_Mx(long cols, long rows):n(cols),m(rows){
+	t_Mx(long rows, long cols):n(cols),m(rows){
 		v = new T [n * m];
 	};
 	~t_Mx(){

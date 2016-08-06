@@ -35,7 +35,7 @@ void PR_Task::Find_Ns(int trNum) {
 	Matrix PiEtAk(A.m(), A.n());//было забыто
 	//Vector PiEtAx0(A.m()), psi(A.v->m), Fs(A.v->m), vmin(A.v->m);
 
-	TNetF /* *c,/**/ tmpPNet(*cP), tmpQNet(*cQ), tmpNet(PP.m(), perfomance, steps);
+	TNetF /* *c,*/ tmpPNet(*cP), tmpQNet(*cQ), tmpNet(PP.m(), perfomance, steps);
 
 	//long i, j;
 
@@ -118,7 +118,7 @@ void PR_Task::calcPursuerSets(int trNum){
 	   PursuerList[j]->oporn(0.0,1);
 	 //  cout<<*PursuerList[j]<<endl;
 	}
-	/**/
+	*/
 
    for(j=0;j<pTypes.size();j++){
 	   pt = pTypes[j];
@@ -202,7 +202,9 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 
 	// опорна€ функци€ PiEtA*x0 - строим пользу€сь тем что это просто скал€рное произведение
 	for (i = 0; i < x0Net.Count; i++)
-		x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
+		if (x0Net.f->v->v[i] != pinMark){
+			x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
+		}
 
 	Net = c + (-1) * x0Net;
 
@@ -233,11 +235,13 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 		c = c + tmpPNet;
 		//c -= tmpQNet; // геометрическа€ разность
 		c.update();
-		/**/
+		*/
 		PiEtAx0 = PiEtA * tr_s[trNum].x0;
 		// опорна€ функци€ PiEtA*x0 - строим пользу€сь тем что это просто скал€рное произведение
 		for (i = 0; i < x0Net.Count; i++)
-			x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
+			if (x0Net.f->v->v[i] != pinMark){
+				x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
+			}
 
 	   //	tr_s[trNum].NetList.push_back(new TNetF(c));
 		// —охран€ем дл€ последующего поиска Psi
@@ -308,8 +312,10 @@ void PR_Task::Control_PR(int trNum) {
 				PiEtA = PP * EtA;
 				PiEtAx = PiEtA * x_i;
 				for (i = 0; i < x_Net.Count; i++){
-					x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
-					c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+					if (x_Net.f->v->v[i] != pinMark){
+						x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
+						c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+					}
 				}
 
 				Ind = c.GetExtrGlobal(opMin, 0, min_x);
@@ -583,8 +589,10 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 			PiEtAx = PiEtA * x_i;
 
 			for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
-				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
-				c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+				if (x_Net.f->v->v[i] != pinMark){
+					x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
+					c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+				}
 			}
 
 			//выбираем psi
@@ -599,8 +607,10 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 				PiEtA = PP * EtA;
 				PiEtAx = PiEtA * x_i;
 				for (i = 0; i < x_Net.Count; i++){
-					x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
-					c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+					if (x_Net.f->v->v[i] != pinMark){
+						x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
+						c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+                    }
 				}
 
 				Ind = c.GetExtrGlobal(opMin, 0, min_x);
@@ -655,7 +665,7 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 		tmpPNet *= PiEtAB;
 		absmin = 0.0;
 		isCollisionPossible = false;
-		for (l=0; l < Pursuers/* *PursuerList/**//*NList*/.size(); l++) {
+		for (l=0; l < Pursuers/* *PursuerList*//*NList*/.size(); l++) {
 		   ps = Pursuers[l];
 		   //проверить радиус видимости
 		   cout << eu_dist(*ps->center, x_i)<<endl;

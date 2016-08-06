@@ -48,14 +48,14 @@ protected:
 	Vector *powVec,
 		// вектор степеней размерности- необходим для расчётов в виртуализированном виде
 		*powVec_1,
-		// вектор степеней размерности- необходим для расчётов в виртуализированном виде  (Для поверхностей?)
+		// вектор степеней размерности- необходим для расчётов в виртуализированном виде  (Для поверхностей)
 		*cache; // , *parsedCache;
 	unsigned long cacheCurrent; // ,
 	// parsedCacheCurrent;
 	unsigned long virtDim;
 	LDouble halfRes, dRes;
 	unsigned long coordNumber; // , i;
-	unsigned int _mod, __mod;
+	unsigned long _mod, __mod;
 
 	// protected:
 public:
@@ -115,8 +115,7 @@ private:
 	// перемножение кешированной матрицы на заданный вектор
 
 	void inline __fastcall initNetDefault();
-	void /* !inline */ __fastcall initNetParams(const unsigned long& res,
-		const unsigned long& _res);
+	void /* !inline */ __fastcall initNetParams(const unsigned long& res);
 
 public:
 	void /* !inline */ __fastcall checkCacheVector();

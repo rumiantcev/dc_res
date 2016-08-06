@@ -20,6 +20,7 @@ Environment::Environment()	{
 	_extr_e_val = exp(_extr_e_param);
 	ldZeroDf = 0.0000000001f;
 	localPath = "..//Data";
+    _pinMark = -99999;
 }
 
 Environment::~Environment()

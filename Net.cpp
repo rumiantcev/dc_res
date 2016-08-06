@@ -24,11 +24,12 @@ LDouble __fastcall TNet:: operator()(unsigned long i, unsigned long j) {
 
 Vector* __fastcall TNet::getVecAt(unsigned long i) {
 	checkCacheVector();
-	if (!updated)
+	if (!updated) {
 		if (isVirtual)
 			dynUpdate();
 		else
 			update();
+	}
 	for (unsigned long j = 0; j < Dim; j++)
 		cache->v->v[j] = getIJ(i, j);
 	return cache;
@@ -41,19 +42,17 @@ Vector* __fastcall TNet::getVecAt(unsigned long i) {
 
 /* */// ------------------------------Parameters Initializatin----------------------//
 
-void __fastcall TNet::initNetParams(const unsigned long& res, const unsigned long& _res) {
-	unsigned long i;
-
+void __fastcall TNet::initNetParams(const unsigned long& res) {
 	virtDim = Dim;
-	halfRes = (LDouble)Res / 2;
-	dRes = 1 / (LDouble)Res;
+	halfRes = (LDouble)(Res) / 2;
+	dRes = 1 / (LDouble)(Res);
 
 	SurfaceDim = Dim - 1;
 	NumOfSur = Dim * 2;
 
-	// (сетка сокращается только по одной коодинате)для двумерных сеток сразу считаем разрешение без одной точки. Хоть и небольшая экономия, но всё равно приятно
-	NumOfPoints = _res;
-	for (i = 2; i <= SurfaceDim; i++)
+	// (сетка строится по принципу половина грани стороны относится к текущей, половина к соседней
+	NumOfPoints = res;
+	for (unsigned long i = 2; i <= SurfaceDim; i++)
 		NumOfPoints *= (res);
 	/* */
 	Count = NumOfPoints * NumOfSur;
@@ -62,14 +61,10 @@ void __fastcall TNet::initNetParams(const unsigned long& res, const unsigned lon
 /* */// ------------------------------constructor ----------------------------------//
 __fastcall TNet::TNet( unsigned long dim, long perf,  unsigned long res, bool virt)
 	: perfomance(perf), Res(res), isVirtual(virt), Dim(dim) {
-	// int i;
-	unsigned long _res = res; // - 1;
-	// Для экономии памяти, в случае если сетка реальная, число точек на грани можно сделать на одну меньше.
 
 	initNetDefault(); // инициаизируем по умолчанию
-	initNetParams(res, _res);
-	buildPowerVectors(_res);
-	// кешируем значения степеней для ускорения расчёта значений сетки
+	initNetParams(res);
+	buildPowerVectors(res); // кешируем значения степеней для ускорения расчёта значений сетки
 	if (!isVirtual)
 		create(Dim /* , perf, res */);
 	else
@@ -78,10 +73,9 @@ __fastcall TNet::TNet( unsigned long dim, long perf,  unsigned long res, bool vi
 
 /* */// ------------------------------constructor ----------------------------------//
 __fastcall TNet::TNet(unsigned long mm, unsigned long nn, long perf, unsigned long res) {
-	unsigned long _res = res;
-	initNetDefault(); // инициаизируем по умолчанию
-	initNetParams(res, _res);
-	buildPowerVectors(_res);
+    initNetDefault(); // инициаизируем по умолчанию
+	initNetParams(res);
+	buildPowerVectors(res);
 	create(mm, nn, perf, res);
 }
 
@@ -100,8 +94,8 @@ __fastcall TNet::TNet(const TNet& Net) {
  else
  p = NULL;
  }
-
-/* */// ---------------------------- destructor-------------------------------------//
+  */
+// ---------------------------- destructor-------------------------------------//
 __fastcall TNet::~TNet() {
 	destroy();
 }
@@ -259,15 +253,17 @@ unsigned long __fastcall TNet::getCurrentPlate(unsigned long ID) {
  {
  return parseCoordinate(ID);
  }
-/* */// ------------------------------------Create----------------------------------//
+ */
+ // ------------------------------------Create----------------------------------//
 void __fastcall TNet::create( unsigned long Dim /* long perf, long Res */) {
 	// long coordNum; // номер текущей координаты по которой идёт приращение
 	unsigned long  ind, curr, mm, md;
-	long normalDir;
+	int normalDir;
 	unsigned long i, j,k ;
 	LDouble val;
-	LDouble step = 2.0 / LDouble(Res /* -1/* */); // шаг приращения сетки
+	LDouble step = 2.0 / LDouble(Res /* -1 */); // шаг приращения сетки
 	Vector exclude(Dim), baseV(Dim);
+	bool oddInd;
 
 	virtDim = Dim;
 	// Count = NumOfPoints * NumOfSur;  //Общее количество точек
@@ -275,14 +271,14 @@ void __fastcall TNet::create( unsigned long Dim /* long perf, long Res */) {
 
 	for (j = 0; j < NumOfSur; j++) {
 		ind = long(j * 0.5); // № текущей координаты
+		oddInd = isOdd(ind);
 		md = (ind + 1) % Dim; // номер координаты по которой происходит экономия памяти
 		(ind == 0 ? mm = 1 : mm = 0);  //с какой координаты начинаются изменения - если нулевая координата фиксирована, то с первой,
 		//в противном случае  с нулевой
-		normalDir = (j % 2) * 2 - 1;
-		// направление нормали, а также какой конец будем исключать из построения сетки - верхний или нижний
+		normalDir = (j % 2) * 2 - 1;  	// направление нормали, а также какой конец будем исключать из построения сетки - верхний или нижний
 		for (k = 0; k < Dim; k++) // заполняем базовый вектор -1.0
 				baseV[k] = -1.0;
-		if (normalDir > 0) {	// корректируем базовый вектор с учётом фиксированной грани и отсупа для экономии памати
+		if (((normalDir > 0)&& oddInd)||((normalDir < 0)&& (!oddInd))) {	// корректируем базовый вектор с учётом фиксированной грани и отсупа для экономии памати
 			baseV[ind] = 1.0;
 			baseV[md] += step;
 			// если нормаль направлена в положительную сторону - исключаем начальные значения,
@@ -297,8 +293,7 @@ void __fastcall TNet::create( unsigned long Dim /* long perf, long Res */) {
 				break;
 			if (val > 1 || (val >= 1 && normalDir < 0)) {  //если координату прирастили до res - переходим к следующей
 				mm++;
-				if ((mm == ind) && (mm < Dim))
-					// если чего - проскакиваем текущую кооддинату
+				if ((mm == ind) && (mm < Dim)) // если чего - проскакиваем текущую кооддинату
 						mm = (mm + 1) % Dim;
 				for (k = 0; k < mm; k++) {    // и перестраиваем базовый вектор
 					baseV.v->v[k] = -1.0;
@@ -324,7 +319,7 @@ void __fastcall TNet::create( unsigned long Dim /* long perf, long Res */) {
 void __fastcall TNet::create(unsigned long mm, unsigned long nn, short perf, unsigned long res) {
 	perfomance = perf;
 	Res = res;
-	halfRes = (LDouble)Res / 2;
+	halfRes = (LDouble)(Res) / 2;
 	v = new Matrix(mm, nn);
 	Count = mm;
 	Dim = nn;
@@ -375,8 +370,7 @@ Vector* __fastcall TNet::parseCoordinateForShift(unsigned long current) {
 	if (current != cacheCurrent) {
 		cacheCurrent = current;
 
-		_mod = current / NumOfPoints;
-		// Номер координаты*2 , нормалью к которой будет построенный вектор - номер стороны гиперкуба
+		_mod = current / NumOfPoints;// Номер координаты*2 , нормалью к которой будет построенный вектор - номер стороны гиперкуба
 		__mod = _mod % 2; // Определяем знак нормали   (0,1)
 		coordNumber = _mod * 0.5; // Определяем  номер координаты
 
@@ -393,6 +387,13 @@ Vector* __fastcall TNet::parseCoordinateForShift(unsigned long current) {
 				cache->v->v[i] = current % Res;
 				current *= dRes;
 			}
+
+	   /*	unsigned int md = (coordNumber + 1) % Dim;
+		int normalDir = __mod * 2 - 1;
+		bool oddInd = isOdd(coordNumber);
+		if (((normalDir > 0)&& oddInd)||((normalDir < 0)&& (!oddInd))) // корректируем базовый вектор с учётом фиксированной грани и отсупа для экономии памати
+				cache->v->v[md]  += 1.0;
+		*/
 	}
 	return cache;
 }
@@ -409,7 +410,7 @@ unsigned long __fastcall TNet::shift(unsigned long current, unsigned long coordN
 	unsigned long _dim = Dim == virtDim ? Dim : virtDim;
 	unsigned long ind = current;
 	// зациклить при попытке перехода за нижнюю или верхнюю границу массива
-	if ((ind < 0)||(ind >= Count))
+	if (/*(ind < 0)||*/(ind >= Count))
 		return labs(ind) % Count;
 
 	// вернуть ошибку при попытке перехода не по поверхности куба
@@ -417,13 +418,13 @@ unsigned long __fastcall TNet::shift(unsigned long current, unsigned long coordN
 		// throw(exInvalidMoveDirection());
 			return current;
 	// вернуть ошибку если при попытке перехода на не сущ. координату
-	if (coordNumber < 0 || coordNumber > _dim)
+	if (/*coordNumber < 0 ||*/ coordNumber > _dim)
 		// throw(exInvalidMoveDirection());
 			return current;
 
 	Vector* c = parseCoordinateForShift(current);
 	unsigned long posWithShift = step + c->v->v[coordNumber];
-	if ((posWithShift < Res) && (posWithShift >= 0)) {
+	if ((posWithShift < Res) /*&& (posWithShift >= 0)*/) {
 		long tOldCoordShift;
 		if (coordNumber > currPlateNorm)
 			tOldCoordShift = step * powVec->v->v[coordNumber - 1];
@@ -435,26 +436,65 @@ unsigned long __fastcall TNet::shift(unsigned long current, unsigned long coordN
 		ind = current + tOldCoordShift;
 	   //	borderChanged = false;
 	}
-	else {
-		minBorder = -1;
-		maxBorder = minBorder;
+	else
+		maxBorder = minBorder = -1;
 		//borderChanged = true;
-	}
 	// Если не выходим за пределы текущей грани, то возврашаем индекс соотв. вектора
 	if ((ind >= minBorder) && (ind <= maxBorder)) {
+		borderChanged = false;
 		return ind;
 	}
 	else {
 		borderChanged = true;
-		long newNormSign = (step / labs(step) + 1) * 0.5;
+		int newNormSign = (step / labs(step) + 1) * 0.5;
 		// направление нормали к грани, на которую осуществляется сдвиг (0 - если отрицательный шаг, 1 - если шаг положителен) ;
 		//новой нормалью становится та координата, по направлению которой происходил сдвиг
 		// вычисляем нижнюю границу грани, на которую осуществляется переход переход
-		 long newMin = ((2 * coordNumber + newNormSign) /*% (2 * _dim)*/)
-			* NumOfPoints;
+		 long newMin = ((2 * coordNumber + newNormSign)) * NumOfPoints;
 		// нормаль к грани  - индекс соотв. направления сдвига
-		unsigned long newPlateNorm = coordNumber;
-		// нормаль к грани, на которую осуществляется переход
+		unsigned int newPlateNorm = coordNumber;  		// нормаль к грани, на которую осуществляется переход
+
+		unsigned int newCoordNumber =  currPlateNorm; ///!!!! А Старая нормаль c обратным знаком становится индексом в направлении которого осуществляется переход!!!!!!!!
+
+		///---------------вставка
+		int _mod = current / NumOfPoints; 	// Номер координаты*2 , нормалью к которой будет построенный вектор - номер стороны гиперкуба
+		int oldNormalDir = ((_mod % 2)*2-1); // Определяем знак исходной нормали   (-1,1)
+		int _step;   //новый шаг
+	   //	bool oddInd = isOdd(coordNumber);
+	   //	unsigned int md = (currPlateNorm  + 1) % Dim; //координата, по которой происходит экономия памяти
+		//условия перехода с учётом экономии
+			//если двигались по координате  , по которой была экономия (coordNumber == md)
+				//в сторону уменьшения  (step<0) при условии  чётной исходной координаты и увеличения (stepЮ0) при условии  нечётной исходной координаты
+
+		/*if ((coordNumber == md)&& (((step < 0)&& oddInd)||((step > 0)&& (!oddInd))))  {	// с учётом фиксированной грани и отсупа для экономии памати
+			//сначала делаем последний шаг по текущей грани на новую, после чего шаг в размере _step-1 уже по новой грани
+			_step =   -oldNormalDir * (labs(step)-1);
+			if(oddInd)
+				c->v->v[coordNumber] = 0.0;
+			else
+				c->v->v[coordNumber] = Res-1;
+			c->v->v[newCoordNumber] =  _step;
+			//assert(_step>0);
+		} else {   */
+			_step =   -oldNormalDir * (labs(step));
+        	c->v->v[newCoordNumber] =  _step;
+		   /*	long delta = c->v->v[coordNumber]+_step;
+			long fromBorder;//,toBorder;
+			if (delta>(Res-1)){
+				fromBorder = delta-(Res-1);
+			  //	toBorder = Res-1- c->v->v[coordNumber];
+				c->v->v[coordNumber] = Res-1;
+			} else {
+				fromBorder = -delta;
+			   //	toBorder = -c->v->v[coordNumber];
+				c->v->v[coordNumber] = 0.0;
+			}
+			c->v->v[newCoordNumber] = fromBorder;
+			*/
+
+	   //	}
+		wasteCache();//т.к. кеш испортили - пометим его как "грязный"
+		//вставка
 
 		ind = newMin;  //индекс - начало отсчёта - начальный индекс новой грани
 		// Вычисляем точку, на которую осуществляем переход
@@ -585,11 +625,11 @@ const TNet __fastcall operator*(const Matrix &A, const TNet& B) {
  updated = false;
  return *this;
  }
-
-/* */// ----------------------------------- * --------------------------------------//
+ */
+// ----------------------------------- * --------------------------------------//
 /*const TNet __fastcall operator *(const LDouble& a, const TNet& B) {
 	return TNet(B) *= a;
-} /**/
+} */
 
 /* */// ----------------------------------- + --------------------------------------//
 TNet& __fastcall TNet:: operator += (const TNet& B) {

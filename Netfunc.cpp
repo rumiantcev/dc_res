@@ -12,26 +12,32 @@ LDouble convCriteria( long num, LDouble sk, const TNetF *v) {
 
 // ----------------------------------------------------------------------------//
 LDouble convCriteria1(long num, LDouble sk, const TNetF *v) {
-	return (v->f->v->v[num]) / sk;
+	return (v->f->v->v[num]) / sk;         //сюда с pinMark заходить не должны
 }
 
 // ----------------------------------------------------------------------------//
 LDouble convCriteria2(long num, LDouble sk, const TNetF *v) {
-	return v->f->v->v[num] * sk;
+	return v->f->v->v[num] * sk;        //сюда с pinMark заходить не должны
 }
 
 // ------------------------------------Create----------------------------------//
 /* !inline */
 void __fastcall TNetF::create( unsigned long Dim /* , long perf, long res */) {
 	unsigned long i, j;
-	LDouble acc;
-	NumOfSur = Dim * 2;
-	Vector norm(Dim);
+
 	f = new Vector(Count);
-	for (i = 0; i < Count; i++) {
-		f->v->v[i] = 0;
-		acc = 0;
-		if (!isVirtual) {
+
+	if (isVirtual) {
+		//для точек, лежащих на границе в принципе можно помечать -min если
+		//вектор координат нечётный (т.е точка непринадлежит сетке) и 0
+		//(т.е. точка принадлежит сетке) если вектор координат "чётный"
+		f->zero();
+		pin_Mark();
+
+	} else { //есди массив не виртуальный, а надо заполнять его точками
+		LDouble acc;
+		for (i = 0; i < Count; i++) {
+			acc = 0;
 			for (j = 0; j < Dim; j++)
 				acc += v->v->v[i][j] * v->v->v[i][j];
 			acc = sqrt(acc);
@@ -40,14 +46,90 @@ void __fastcall TNetF::create( unsigned long Dim /* , long perf, long res */) {
 		}
 	}
 	zeroPrecision = 1 / (Count * 100000.0);
+	//cout << (*this);
+   //	cout << (*f);
 	vars = NULL;
 }
+//------------------------------ pinMark -------------------------------------//
+void __fastcall TNetF::pin_Mark(){
+	unsigned long i, j, k, l, m, ind, curr;
+	unsigned long v2_len(pow(2,Dim-2));
+	bool oddInd, currOdd;
 
-// ------------------------------constructor ----------------------------------//
+	Vector vec(Dim);
+	Vector tmp(Dim-2);
+	Matrix mx(v2_len,Dim-2);
+	markCount =0 ;
+
+	if (Dim>2 ) {
+		for (j = 0; j< Dim-2; j++)
+				mx.v->v[0][j] = 0;
+		for (i = 1; i < v2_len; i++) { //заполняем матрицу бинарными значениями индекса i для размерности Dim-2
+			tmp.toBinary(i);
+			for (j = 0; j< Dim-2; j++)
+				mx.v->v[i][j] = tmp[j];
+		}
+	}
+
+	for (j = 0; j < NumOfSur; j++) {
+		currOdd = oddInd = isOdd(j)^isOdd(j/2);//куда смещаем "пустые" точки: 0-вправо, 1 - влево
+		curr = (j * NumOfPoints); // первая точка текущей грани
+		if (Dim>2) {
+			cout << "проверить отдельно!!!!!!!!!!!" << endl;	break;
+			for (i = 0; i < Dim; i++){
+				vec.zero();  //зануляем вектор
+				vec[i] = -1; //помечаем первую "свободную" координату
+					for (k = i+1; k < Dim; k++) {
+						vec[k] = -2; //помечаем вторую "свободную" координату
+						currOdd = oddInd;
+						for (l = 0; l < v2_len; l++) {
+							for (m = 0; m < Dim; m++) { //заполням вектор очередным вектором
+														// бинарного разложения, пропуская
+														//соотвественно места, "свободных" переменных
+								if (vec[m] >= 0)
+									vec[m] = mx.v->v[l][m];
+								else
+									m++;
+							}
+							ind = 0;
+							for (m = 0; m < Dim; m++) {   //формируем целевой индекс
+								if (vec[m] >= 0)
+									ind += vec[m]*(powVec->v->v[m]);
+								else {
+									if (vec[m]== -1)
+										ind += i*(powVec_1->v->v[m]);
+									else
+										ind += k*(powVec_1->v->v[m]);
+								}
+							}
+							if (currOdd)    //маркируем значение в целевом индексе с учётом очерёдности
+								f->v->v[curr+ind] = pinMark;
+							else
+								f->v->v[curr+ind] = 0;
+							currOdd = (!currOdd);
+						}
+						vec[k] = 0;
+					}
+			}
+		} else {  //для двумерных векторов алгоритм прост и незатейлив
+		  if (currOdd){
+			f->v->v[curr] = pinMark;
+
+		   //	f->v->v[curr + NumOfPoints-1] = 0;
+		  } else {
+		  //	f->v->v[curr] = 0;
+			f->v->v[curr + NumOfPoints-1] = pinMark;
+		  }
+           markCount++;
+		}
+	}
+}
+
+//------------------------------constructor ----------------------------------//
 __fastcall TNetF::TNetF(unsigned long dim, long perf, unsigned long res)
 	: TNet(dim, perf, res, true) {
 	initNetFDefault();
-	create(dim );
+	create(dim);
 	SetFunc("0");
 }
 
@@ -56,7 +138,7 @@ __fastcall TNetF::TNetF(unsigned  long Dim, long perf, unsigned  long res, strin
 	: TNet(Dim, perf, res, true) {
 	/* TODO -orum -caddon : Сделать конструктор с возможностью переключения Virt/Non Virt net */
 	initNetFDefault();
-	create(Dim );
+	create(Dim);
 	SetFunc(fstr);
 }
 
@@ -65,16 +147,15 @@ __fastcall TNetF::TNetF(unsigned long mm, unsigned long nn, long perf, unsigned 
 	: TNet(nn, perf, res, true) {
 	initNetFDefault();
 	f = new Vector(mm);
-	create(nn );
+	create(nn);
 	SetFunc("0");
 }
 
 // ------------------------copy constructor-----------------------------|------//
 __fastcall TNetF::TNetF(TNet& Net) : TNet(Net) {
 	initNetFDefault();
-	create(Dim );
+	create(Dim);
 	SetFunc("0");
-
 }
 
 /* */// ------------------------copy constructor-------------------------------//
@@ -109,7 +190,8 @@ void TNetF:: operator delete(void *p) {
 	TNetF *ptr = static_cast<TNetF*>(p);
 
 	if (ptr->f == NULL)
-		delete(void*) p;
+		//delete(void *) p;
+        delete ptr;
 	else
 		p = NULL;
 }
@@ -152,14 +234,17 @@ ostream& __fastcall operator << (ostream& out_data, TNetF& C) {
 		NumOfPoints *= C.Res;
 
 	for (i = 0; i < C.Count; i++) {
-		out_data << "[";
-		for (j = 0; j < C.Dim; j++)
-			out_data << C.getIJ(i, j) << ",";
-		out_data << C.f->v->v[i];
-		out_data << "]";
-		if (i == NumOfPoints*NumOfSur - 1)
-			out_data << ";";
-		out_data << endl;
+		//if(C.f->v->v[i] != C.pinMark)  //подавляем вывод дубликатов - если чего  - закомменитровать
+		{
+			out_data << "[";
+			for (j = 0; j < C.Dim; j++)
+				out_data << C.getIJ(i, j) << ",";
+			out_data << C.f->v->v[i];
+			out_data << "]";
+			if (i == NumOfPoints*NumOfSur - 1)
+				out_data << ";";
+			out_data << endl;
+		}
 	}
 	/* */
 	return out_data;
@@ -237,7 +322,8 @@ TNetF& __fastcall TNetF:: operator += (const TNetF& B) {
 		f = new Vector(Count);
 	}
 	for (i = 0; i < Count; i++)
-		f->v->v[i] += pB->f->v->v[i];
+		if (f->v->v[i] != pinMark) // при суммировании не трогаем pinMark
+			f->v->v[i] += pB->f->v->v[i];
 	return *this;
 }
 
@@ -248,10 +334,10 @@ const TNetF __fastcall operator +(const TNetF& A, const TNetF& B) {
 
 // ----------------------------------- Геометрическая - -----------------------//
 TNetF& __fastcall TNetF:: operator -= (const TNetF& B) {
-	unsigned long i, /*j, */ m;
+	unsigned long i, j(0),  m;
 	Vector vec(Dim), st(Dim);
 	TNetF st0Net(Dim, perfomance, Res);
-	LDouble coeff = (LDouble)Dim / Count;
+	LDouble coeff;
 	bool /*extr_exist,*/ *L;
    //	FindPath ynPath = perfomance > 1 ? yPath : nPath;
 
@@ -270,23 +356,38 @@ TNetF& __fastcall TNetF:: operator -= (const TNetF& B) {
 		if (f != NULL)
 			delete f;
 		f = new Vector(Count);
+        pin_Mark();
 	}
+
 	for (i = 0; i < Count; i++)
-		f->v->v[i] -= pB->f->v->v[i];
+		if (f->v->v[i] != pinMark)
+			f->v->v[i] -= pB->f->v->v[i];
+
+
+	//	if (f->v->v[0]> 1000000) {
+//	   cout<<st0Net;//(*this);
+//	}
 	// расчёт опорной функции центра Штейнера
 	st = 0;
 	for (i = 0; i < Count; /* i=i+2 */ i++) {
-		for (m = 0; m < Dim; m++)
-			vec.v->v[m] = st0Net.getIJ(i, m);
-		st += (f->v->v[i]*vec);
+		if (st0Net.f->v->v[i] != pinMark) {
+			for (m = 0; m < Dim; m++)
+				vec.v->v[m] = st0Net.getIJ(i, m);
+			st += (f->v->v[i]*vec);
+		} //else
+			//j++;
 	}
+	coeff = (LDouble)Dim / (Count - markCount );
 	st *= coeff;
 
 	// сдвигаем множество "на центр Штейнера" так чтобы 0 был в центре
 	for (i = 0; i < st0Net.Count; i++) {
-		st0Net.f->v->v[i] = scm(i, st, &st0Net,0);
-		f->v->v[i] -= st0Net.f->v->v[i];
+		if (f->v->v[i] != pinMark){
+			st0Net.f->v->v[i] = scm(i, st, &st0Net,0);
+			f->v->v[i] -= st0Net.f->v->v[i];
+		}
 	}
+
 	// рассчитываем lambda_i
 	L = new bool[Count];
 	// alpha.clear();
@@ -297,14 +398,15 @@ TNetF& __fastcall TNetF:: operator -= (const TNetF& B) {
 
 	// Собственно овыпукление и сдвиг множества обратно
 	for (i = 0; i < st0Net.Count; i++) {
-		if (L[i]) {
-			//extr_exist = false;
-			for (m = 0; m < Dim; m++)
-				vec.v->v[m] = st0Net.getIJ(i, m);
-
+		if (f->v->v[i] != pinMark){
+			if (L[i]) {
+				//extr_exist = false;
+				for (m = 0; m < Dim; m++)
+					vec.v->v[m] = st0Net.getIJ(i, m);
 			/*j =*/ GetExtrDirection(vec, scm1, convCriteria, opMax, nZAware, i, &alpha,  f->v->v[i],  st0Net);
+			}
+			f->v->v[i] += st0Net.f->v->v[i];
 		}
-		f->v->v[i] += st0Net.f->v->v[i];
 	}
 	alpha.clear();
 	delete[]L;
@@ -337,17 +439,18 @@ void __fastcall TNetF::update() {
 				}
 			}
 			for (i = 0; i < Count; i++) {
-				if (!umx) {
-					for (j = 0; j < Dim; j++)
-						res->v->v[j] = getIJ(i, j);
-					(*res) = (*u_mx) * (*res);
-					f1->f->v->v[i] = oporn(*res, t, upd);
-					for (j = 0; j < Dim; j++)
-						f1->v->v->v[i][j] = res->v->v[j];
-				}
-				else if (upd != 1.0)
-					f->v->v[i] *= upd;
-
+				if (f->v->v[i] != pinMark){
+					if (!umx) {
+						for (j = 0; j < Dim; j++)
+							res->v->v[j] = getIJ(i, j);
+						(*res) = (*u_mx) * (*res);
+						f1->f->v->v[i] = oporn(*res, t, upd);
+						for (j = 0; j < Dim; j++)
+							f1->v->v->v[i][j] = res->v->v[j];
+					}
+					else if (upd != 1.0)
+						f->v->v[i] *= upd;
+			   }
 			}
 
 			if ((!umx) && (u_mx->v->m != Dim)) {
@@ -417,7 +520,7 @@ TNetF& __fastcall TNetF:: operator *= (const LDouble &a) {
  updated = false;
  return *this;
  }
-/* */
+ */
 // ----------------------------------- * --------------------------------------//
 const TNetF __fastcall operator *(const LDouble a, const TNetF& B) {
 	return TNetF(B) *= a;
@@ -427,7 +530,7 @@ const TNetF __fastcall operator *(const LDouble a, const TNetF& B) {
 /* const TNetF __fastcall operator +(const LDouble a, const TNetF& B) {
  return TNetF(B) += a;
  }
-/* */
+ */
 // ------------------------------------AddVariables----------------------------//
 void __fastcall TNetF::AddVariables() {
 	unsigned long i;
@@ -446,7 +549,7 @@ void __fastcall TNetF::AddVariables() {
 #else
 	TDllStdProcV3<TSIC_Data32*, char*, LDouble*>sic_avarf(*dll, "sic_avarf");
 #endif
-	for (i = 0; i < Dim; i++) {
+	for (i = 0; i < Dim; i++) {  //переменные будут - p0...pn
 		ss << i;
 		var = "p";
 		var.append(ss.str());
@@ -454,7 +557,8 @@ void __fastcall TNetF::AddVariables() {
 		ss.clear();
 		sic_avarf(&sic, (char*)var.c_str(), &vars[i]);
 	}
-	sic_avarf(&sic, "t", &t);
+	var = "t";
+	sic_avarf(&sic, (char*)var.c_str(), &t); //переменная для времени - t
 #ifdef _WIN64
 	TDllStdProcV1<TSIC_Data64*>sic_patab(*dll, "sic_patab");
 #else
@@ -501,13 +605,17 @@ void __fastcall TNetF::oporn(LDouble t, int sign) {
 		f = NULL;
 	}
 
-	if (f == NULL)
+	if (f == NULL) {
 		f = new Vector(Count);
+		pin_Mark();//промаркировать то, что пересоздаётся
+	}
 
 	for (i = 0; i < Count; i++) {
-		for (j = 0; j < Dim; j++)
-			vv[j] = getIJ(i, j);
-		f->v->v[i] = oporn(vv, t, sign);
+		if (f->v->v[i] != pinMark){
+			for (j = 0; j < Dim; j++)
+				vv[j] = getIJ(i, j);
+			f->v->v[i] = oporn(vv, t, sign);
+		}
 	}
 }
 
@@ -531,9 +639,11 @@ void __fastcall TNetF::oporn(LDouble t, int sign, const Matrix &A) {
 	Vector vv(Dim);
 
 	for (i = 0; i < Count; i++) {
-		for (j = 0; j < Dim; j++)
-			vv.v->v[j] = v->v->v[i][j];
-		f->v->v[i] = oporn(vv, t, sign, A);
+		if (f->v->v[i] != pinMark){
+			for (j = 0; j < Dim; j++)
+				vv.v->v[j] = v->v->v[i][j];
+			f->v->v[i] = oporn(vv, t, sign, A);
+		}
 	}
 }
 // ----------------------------------------------------------------------------//
@@ -589,23 +699,25 @@ unsigned long __fastcall TNetF::findExtrSlowDirection(const Vector& vec, scM scm
 	bool isExtrExist = false, isGrZero, isExtr;
 
 	for (i = 0; i < Count; i++) {
-		sc = scmul(i, vec, &net,coeff);
-		// на будущее
-		// считаем скалярное произведение текущего вектора  сетки (сurrent)  и заданного (vec)
-		isGrZero = sc > zeroPrecision;
-		if ((isZeroAware == nZAware) || ((isZeroAware == ZAware) && isGrZero)){
-			val = crit(i, sc, this);
-			if (!isExtrExist){
-				// Если экстремума  ещё не было - берём первое значение и запоминаем как экстремум
-				isExtrExist = true;
-				extr = val;
-				j = i;
-			}
-			else{
-				extrOper == opMax? isExtr = (val > extr) :  isExtr = (val < extr);
-				if (isExtr)	{
+		if (f->v->v[i] != pinMark){
+			sc = scmul(i, vec, &net,coeff);
+			// на будущее
+			// считаем скалярное произведение текущего вектора  сетки (сurrent)  и заданного (vec)
+			isGrZero = sc > zeroPrecision;
+			if ((isZeroAware == nZAware) || ((isZeroAware == ZAware) && isGrZero)){
+				val = crit(i, sc, this);
+				if (!isExtrExist){
+					// Если экстремума  ещё не было - берём первое значение и запоминаем как экстремум
+					isExtrExist = true;
 					extr = val;
-				   j=i;
+					j = i;
+				}
+				else{
+					extrOper == opMax? isExtr = (val > extr) :  isExtr = (val < extr);
+					if (isExtr)	{
+						extr = val;
+					j=i;
+					}
 				}
 			}
 		}
@@ -619,14 +731,17 @@ unsigned long __fastcall TNetF::findExtrSlowDirection(const Vector& vec, scM scm
 unsigned long  __fastcall TNetF::findExtrAnnealingDirection(const Vector& vec, scM scmul,
 	cCrit crit, ZeroAware isZeroAware,OpType extrOper,  long index, alphType* coeff, LDouble &extr, TNetF& net) {
 
-	long j, jj;
+	long j, jj,j1;
 	LDouble val,sc;
 	LDouble tmin = Environment::instance()._extr_tmin_param, tmax = Environment::instance()._extr_t0_param, t = tmax, p, a, c =
 		Environment::instance()._extr_e_val;
 
 	bool isGrZero, isExtrExist = false, isExtr;
 
-	j = _lrand() % (net.Count);
+	do{
+		j = _lrand() % (net.Count);
+	}while (f->v->v[j] == pinMark);
+
 	while (t > tmin) {
 		sc = scmul(j, vec, &net, coeff);
 		isGrZero = sc > zeroPrecision;
@@ -645,7 +760,10 @@ unsigned long  __fastcall TNetF::findExtrAnnealingDirection(const Vector& vec, s
 				}
 				else {
 					p = 1 / (1 + exp(-fabs(extr-val) / t));
-					a = LDouble(_lrand() % net.Count) / net.Count;
+					do{ //если выбран pinMark индекс - идём дальше
+						j1 = _lrand() % (net.Count);
+					}while (f->v->v[j1] == pinMark);
+					a = LDouble(j1) / net.Count;
 					if (a > p) {
 						extr = val;
 						t = t * c;
@@ -654,10 +772,14 @@ unsigned long  __fastcall TNetF::findExtrAnnealingDirection(const Vector& vec, s
 
 			}
 		}
-		a = LDouble(_lrand() % net.Count) / net.Count;
-		jj = signof(a - 0.5) * t * (pow((1 + 1 / t), fabs(2 * a - 1)) - 1)
+		do{ //если выбран pinMark индекс - идём дальше
+			j1 = _lrand() % (net.Count);
+		//}while (f->v->v[j1] == pinMark);
+			a = LDouble(j1) / net.Count;
+			jj = signof(a - 0.5) * t * (pow((1 + 1 / t), fabs(2 * a - 1)) - 1)
 				* net.Count;
-		j = abs(jj + j) % net.Count;
+			j = abs(jj + j) % net.Count;
+		}while ((f->v->v[j1] == pinMark)||(f->v->v[j] == pinMark)); //под тестирование !!!!!!!!!!!!!!
 	}
 	return j;
 }
@@ -672,11 +794,13 @@ long __fastcall TNetF::findExtrSlowGlobal(OpType extrOper, LDouble &extr) {
 	extr = f->v->v[0];
 	val = extr;
 	for (i = 1; i < Count; i++) {
-		val = f->v->v[i];
-		extrOper == opMax? isExtr = (val > extr) :  isExtr = (val < extr);
-		if (isExtr) {
-			extr = val;
-			j = i;
+		if (f->v->v[i] != pinMark){
+			val = f->v->v[i];
+			extrOper == opMax? isExtr = (val > extr) :  isExtr = (val < extr);
+			if (isExtr) {
+				extr = val;
+				j = i;
+			}
 		}
 	}
 	return j;
@@ -685,11 +809,15 @@ long __fastcall TNetF::findExtrSlowGlobal(OpType extrOper, LDouble &extr) {
 // -------------------------- findExtrAnnealingGlobal -------------------------//
 long  __fastcall TNetF::findExtrAnnealingGlobal(OpType extrOper, LDouble &extr) {
 	// Поиск максимума опорной функции на сетке методом отжига
-	long  j=_lrand() % (Count), jj;
+	long  j, jj, j1;
 	LDouble val;
 	LDouble tmin = Environment::instance()._extr_tmin_param, tmax = Environment::instance()._extr_t0_param, t = tmax, p, a, c =
 		Environment::instance()._extr_e_val;
 	bool isExtr;
+
+	do{
+		j = _lrand() % (Count);
+	}while (f->v->v[j] == pinMark);
 
 	extr = f->v->v[j];
 	val = extr;
@@ -704,16 +832,23 @@ long  __fastcall TNetF::findExtrAnnealingGlobal(OpType extrOper, LDouble &extr) 
 		}
 		else {
 			p = 1 / (1 + exp(-fabs(val - extr) / t));
-			a = LDouble(_lrand() % Count) / Count;
+			do{ //если выбран pinMark индекс - идём дальше
+				j1 = _lrand() % (Count);
+			}while (f->v->v[j1] == pinMark);
+			a = LDouble(j1) / Count;
 			if (a > p) {
 				extr = val;
 				t = t * c;
 			}
 		}
-		a = LDouble(_lrand() % Count) / Count;
-		jj = signof(a - 0.5) * t * (pow((1 + 1 / t), fabs(2 * a - 1)) - 1)
-			* Count;
-		j = abs(jj + j) % Count;
+		do{ //если выбран pinMark индекс - идём дальше
+			j1 = _lrand() % (Count);
+
+			a = LDouble(j1) / Count;
+			jj = signof(a - 0.5) * t * (pow((1 + 1 / t), fabs(2 * a - 1)) - 1)
+				* Count;
+			j = abs(jj + j) % Count;
+		}while ((f->v->v[j1] == pinMark)||((f->v->v[j] == pinMark)));
 	}
 
 	return j;
@@ -944,117 +1079,137 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 	bool extr_exist;
 	Vector vec(Dim);
 
-	long /*k = 1,*/j, jj, ind=0;
+	long /*k = 1,*/j, jj, j1, ind=0;
 	LDouble tmin = Environment::instance()._extr_tmin_param, tmax = Environment::instance()._extr_t0_param, t = tmax, p, a =
 		LDouble(_lrand() % net.Count) / net.Count, c = Environment::instance()._extr_e_val;
 	LDouble ldZeroDf = Environment::instance().ldZeroDf;
 	alpha.reserve(Count);
 	net.is_empty = true;
 	net.maxRad = 0;
+   // cout<<net;
 	for (i = 0; i < Count; i++) {
-		if (L != NULL)
-			L[i] = false;
-		for (m = 0; m < Dim; m++)
-			vec[m] = net.getIJ(i, m);
-		// ------------GetMin by criteria---------------------------------------
-
 		alpha[i] = 0.0;
+		if (net.f->v->v[i] != pinMark){
+			if (L != NULL)
+				L[i] = false;
+			for (m = 0; m < Dim; m++)
+				vec[m] = net.getIJ(i, m);
+			// ------------GetMin by criteria---------------------------------------
 
-		extr_exist = false;
-		if (perfomance == optNone) {
-			// поиск последовательным перебором
-			for (k = 0; k < (net.Count); k++) {
-				sk = scm(k, vec, &net,NULL);
-				if (sk > 0.0) {
-					extr = f->v->v[k] / sk;
-					if (!extr_exist) {
-						extr_exist = true;
-						alpha[i] = extr;
-						//if (L != NULL)
-						//	L[i] = true;
-						ind = k;
-					}
-					else if (alpha[i] > extr){
-						alpha[i] = extr;
-						ind = k;
+			//alpha[i] = 0.0;
+
+			extr_exist = false;
+			if (perfomance == optNone) {
+				// поиск последовательным перебором
+				for (k = 0; k < (net.Count); k++) {
+				   if (net.f->v->v[k] != pinMark){
+						sk = scm(k, vec, &net,NULL);
+						if (sk > /*ldZeroDf*/0.0) {
+							extr = f->v->v[k] / sk;
+							if (!extr_exist) {
+								extr_exist = true;
+								alpha[i] = extr;
+								ind = k;
+							}
+							else
+								if (alpha[i] > extr){
+									alpha[i] = extr;
+									ind = k;
+								}
+						}
 					}
 				}
+				if (L != NULL)
+					L[ind] = true;
 			}
-			if (L != NULL)
-				L[ind] = true;
-		}
 
-		if (perfomance == optAnnealing) {
-			// поиск методом эмуляции отжига
-			j = _lrand() % (net.Count);
-			while (t > tmin) {
-				sk = scm(j, vec, &net,NULL);
-				if (sk > zeroPrecision) {
-					extr = f->v->v[j] / sk;//convCriteria1(j,sk,&net);
-					if (!extr_exist) {
-						extr_exist = true;
-						alpha[i] = extr;
-					   //	if (L != NULL)
-					   //		L[i] = true;
-						ind = j;
-					}
-					else if (alpha[i] >= extr) {
-						alpha[i] = extr;
-						t = t * c;
-						ind = j;
-						// t = tmax / k; // раскомменировать Если отжиг по Коши
-						//k++;  // раскомменировать Если отжиг по Коши
-					}
-					else {
-						p = 1 / (1 + exp(-fabs(alpha[i] - extr) / t));
-						// p= t/(M_PI*(pow(fabs(extr-alpha[i])/net.Count,2)+pow(t,2)));  // раскомменировать Если отжиг по Коши
-						a = LDouble(_lrand() % net.Count) / net.Count;
-						if (a > p) {
+			if (perfomance == optAnnealing) {
+				// поиск методом эмуляции отжига
+				do{ //если выбран pinMark индекс - идём дальше
+					j = _lrand() % (net.Count);
+				}while (f->v->v[j1] == pinMark);
+				while (t > tmin) {
+					sk = scm(j, vec, &net,NULL);
+					if (sk > zeroPrecision) {
+						extr = f->v->v[j] / sk;//convCriteria1(j,sk,&net);
+						if (!extr_exist) {
+							extr_exist = true;
+							alpha[i] = extr;
+						//	if (L != NULL)
+						//		L[i] = true;
+							ind = j;
+						}
+						else if (alpha[i] >= extr) {
 							alpha[i] = extr;
 							t = t * c;
 							ind = j;
 							// t = tmax / k; // раскомменировать Если отжиг по Коши
-							//k++;    // раскомменировать Если отжиг по Коши
+							//k++;  // раскомменировать Если отжиг по Коши
+						}
+						else {
+							p = 1 / (1 + exp(-fabs(alpha[i] - extr) / t));
+							// p= t/(M_PI*(pow(fabs(extr-alpha[i])/net.Count,2)+pow(t,2)));  // раскомменировать Если отжиг по Коши
+                            do{ //если выбран pinMark индекс - идём дальше
+								j1 = _lrand() % (net.Count);
+							}while (f->v->v[j1] == pinMark);
+							a = LDouble(j1) / net.Count;
+							if (a > p) {
+								alpha[i] = extr;
+								t = t * c;
+								ind = j;
+								// t = tmax / k; // раскомменировать Если отжиг по Коши
+								//k++;    // раскомменировать Если отжиг по Коши
+							}
 						}
 					}
-				}
-				a = LDouble(_lrand() % net.Count) / net.Count;
-				jj = signof(a - 0.5) * t * (pow((1 + 1 / t), abs(2 * a - 1)) - 1) * net.Count;
-				// jj = t * tan(M_PI*(a-0.5))*net.Count;  // раскомменировать Если отжиг по Коши
-				j = abs(jj + j) % net.Count;
-			}
-			if (L != NULL)
-				L[ind] = true;
-		}
+                    do{ //если выбран pinMark индекс - идём дальше
+						j1 = _lrand() % (net.Count);
+					}while (f->v->v[j1] == pinMark);  //разобраться почему работает!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					a = LDouble(j1) / net.Count;
+					jj = signof(a - 0.5) * t * (pow((1 + 1 / t), abs(2 * a - 1)) - 1) * net.Count;
+					// jj = t * tan(M_PI*(a-0.5))*net.Count;  // раскомменировать Если отжиг по Коши
+					j = abs(jj + j) % net.Count;
 
-		if (alpha[i]> ldZeroDf)
-			net.is_empty = false;
-		if (alpha[i]>net.maxRad)
-			net.maxRad = alpha[i];
+				}
+				if (L != NULL)
+					L[ind] = true;
+			}
+
+			if (alpha[i]> ldZeroDf)
+				net.is_empty = false;
+			if (alpha[i]>net.maxRad)
+				net.maxRad = alpha[i];
+		}
 	}
 }
 
 // ----------------------------------------------------------------------------//
 
 void __fastcall TNetF::Conv(bool *L) {
-	unsigned long i, /*j,*/ m/*, k*/;
-	LDouble coeff = (LDouble)Dim / Count;
+	unsigned long i, j(0), m/*, k*/;
+	LDouble coeff;
 	TNetF st0Net(Dim, perfomance, NumOfPoints);
 	Vector vec(Dim), st(Dim);
 
 	// расчёт опорной функции центра Штейнера
 	st = 0;
 	for (i = 0; i < Count; i++) {
-		for (m = 0; m < Dim; m++)
-			vec.v->v[m] = st0Net.getIJ(i, m);
-		st += (f->v->v[i]*vec);
+		if (f->v->v[i] != pinMark){
+			for (m = 0; m < Dim; m++)
+				vec.v->v[m] = st0Net.getIJ(i, m);
+			st += (f->v->v[i]*vec);
+		} //else
+		  //	j++;
 	}
+	coeff = (LDouble)Dim / (Count - markCount);
 	st *= coeff;
 
 	// сдвигаем множество "на центр Штайнера" так чтобы 0 был в центре
 	for (i = 0; i < st0Net.Count; i++) {
-		st0Net.f->v->v[i] = scm(i, st, &st0Net,0);
-		f->v->v[i] -= st0Net.f->v->v[i];
+		if (f->v->v[i] != pinMark){
+			st0Net.f->v->v[i] = scm(i, st, &st0Net,0);
+			f->v->v[i] -= st0Net.f->v->v[i];
+		}
 	}
 
 	// рассчитываем lambda_i
@@ -1063,14 +1218,16 @@ void __fastcall TNetF::Conv(bool *L) {
 
 	// собственно овыпукляем и сдвигаем назад
 	for (i = 0; i < Count; i++) {
-		if (!L[i]) {  //была ошибка
-			//extr_exist = false;
-			for (m = 0; m < Dim; m++)
-				vec.v->v[m] = /*st0Net.*/getIJ(i, m);   // была ошибка
-			/* j = */GetExtrDirection(vec, scm1, convCriteria, opMax, nZAware, i, &alpha,  f->v->v[i],  *this);    // была ошибка
-		}
-		f->v->v[i] += st0Net.f->v->v[i];
-		// сдвиг множества выпуклой оболочки на исходное место
+		if (f->v->v[i] != pinMark){
+			if (!L[i]) {  //была ошибка
+				//extr_exist = false;
+				for (m = 0; m < Dim; m++)
+					vec.v->v[m] = /*st0Net.*/getIJ(i, m);   // была ошибка
+				/* j = */GetExtrDirection(vec, scm1, convCriteria, opMax, nZAware, i, &alpha,  f->v->v[i],  *this);    // была ошибка
+			}
+			f->v->v[i] += st0Net.f->v->v[i];
+			// сдвиг множества выпуклой оболочки на исходное место
+        }
 	}
 	alpha.clear();
 }
@@ -1078,8 +1235,10 @@ void __fastcall TNetF::Conv(bool *L) {
 // ----------------------------------------------------------------------------//
 
 void __fastcall TNetF::ConvTimS(bool *L) {
-	unsigned long i,j, k, m, lInd, rInd, lIndEx, rIndEx, pr_rInd, pr_lInd, indNormal, ind;
-	LDouble coeff = (LDouble)Dim / Count;
+	unsigned long i, k, m, lInd, rInd, lIndEx, rIndEx, pr_rInd, pr_lInd, indNormal, ind;
+	long ml,mr,sl,sr;
+	long j;
+	LDouble coeff;
 	LDouble sk,extr, pr_extr;
 	LDouble ldZeroDf = Environment::instance().ldZeroDf;
 	TNetF st0Net(Dim, perfomance, NumOfPoints);
@@ -1089,21 +1248,30 @@ void __fastcall TNetF::ConvTimS(bool *L) {
 	t_Mx<long>  lrV(Count,Dim*2);
 
 	int  normSign;
-	bool isBC, isExtr, isLExtr, isRExtr, extr_exist;
+	bool isBCl, isBCr, isExtr, isLExtr, isRExtr, extr_exist;
 
 	// расчёт опорной функции центра Штейнера
 	st = 0;
 	for (i = 0; i < Count; i++) {
-		for (m = 0; m < Dim; m++)
-			vec.v->v[m] = st0Net.getIJ(i, m);
-		st += (f->v->v[i]*vec);
+		if (f->v->v[i] != pinMark){
+			for (m = 0; m < Dim; m++)
+				vec.v->v[m] = st0Net.getIJ(i, m);
+			st += (f->v->v[i]*vec);
+			//st.update();
+			cout<<st<<endl;
+		} //else
+		  //	j++;
 	}
+	coeff = (LDouble)Dim / (Count - markCount);
 	st *= coeff;
 
+	cout<<st<<endl;
 	// сдвигаем множество "на центр Штайнера" так чтобы 0 был в центре
 	for (i = 0; i < st0Net.Count; i++) {
-		st0Net.f->v->v[i] = scm(i, st, &st0Net,0);
-		f->v->v[i] -= st0Net.f->v->v[i];
+		if (f->v->v[i] != pinMark){
+			st0Net.f->v->v[i] = scm(i, st, &st0Net,0);
+			f->v->v[i] -= st0Net.f->v->v[i];
+		}
 	}
 
 	for (i = 0; i < Count; i++) {
@@ -1113,94 +1281,129 @@ void __fastcall TNetF::ConvTimS(bool *L) {
 		indNormal = static_cast<long>(indNormal/2);  //замена trunc через приведение типа
 		//и проверяем на локальную выпуклость
 		for (m = 0; m < Dim; m++)
-			if (m==indNormal)
-				lrV[i][m]=lrV[i][m+Dim] = -1;
-			else {
-				lInd = shift(i,m,-1,isBC);
-				rInd = shift(i,m, 1,isBC);
-				//!!!уточнить неравенство Йенсена верно всюду или только для положительно определённых функкций
-				//f[i]; - как rvalue не работает, только (*f)[i] или f->v->v[i]
-				if (f->v->v[i] >= ((f->v->v[lInd]+f->v->v[rInd])/2))//есть локальная выпуклость
-					lrV[i][m]=lrV[i][m+Dim] = 0;
-				else {//нашли локальную вогнутость
-					isExtr = isLExtr = isRExtr = false;
+			if (f->v->v[i] != pinMark){
+				if (m==indNormal)
+					lrV[i][m]=lrV[i][m+Dim] = -1;
+				else {
+					ml = mr = m;
 					pr_lInd = pr_rInd = i;
-					lIndEx = rIndEx = 0;
-					while (isExtr){
-						//шаг влево
-						pr_lInd = lInd;
-						lInd = shift(pr_lInd,m,-1,isBC);
-						if(lrV[lInd][m] > 0){//нашли существующий путь
-							lIndEx = lrV[lInd][m];
-							rIndEx = lrV[lInd][m+Dim];
-							isExtr = true;
-							continue;
-						}
-						if (f->v->v[pr_lInd] >= ((f->v->v[lInd]+f->v->v[rInd])/2))//шаг влево. есть локальная выпуклость слева
-							isLExtr = true;
-						else
-							lrV[lInd][m]= pr_lInd;
-						if (f->v->v[pr_rInd] >= ((f->v->v[lInd]+f->v->v[rInd])/2))//шаг влево. есть локальная выпуклость справа
-							isRExtr = true;
-						else
-							lrV[rInd][m+Dim]= pr_rInd;
-
-						if(isLExtr && isRExtr){//если выпукло с всех сторон
-							isExtr = true;
-							continue;
-						}
-
-						//шаг вправо
-						pr_rInd = rInd;
-						rInd = shift(pr_lInd,m, 1,isBC);
-						if(lrV[rInd][m] > 0){//нашли существующий путь
-							lIndEx = lrV[rInd][m];
-							rIndEx = lrV[rInd][m+Dim];
-							isExtr = true;
-							continue;
-						}
-                    	if (f->v->v[pr_lInd] >= ((f->v->v[lInd]+f->v->v[rInd])/2))//шаг влево. есть локальная выпуклость слева
-							isLExtr = true;
-						else
-							lrV[lInd][m]= pr_lInd;
-
-						if (f->v->v[pr_rInd] >= ((f->v->v[lInd]+f->v->v[rInd])/2))//шаг вправо. есть локальная выпуклость справа
-							isRExtr = true;
-						else
-							lrV[rInd][m+Dim]= pr_rInd;
-
-						if(isLExtr && isRExtr)//если выпукло с всех сторон
-							isExtr = true;
+					sl = -1;
+					sr = 1;
+					lInd = shift(i,ml,-1,isBCl);
+					if (isBCl){
+						ml=  i / (NumOfPoints * 2);   //если перешли на другую грань, то соотв. образом надо менять направление сдвига по координате
+						sl = -(((i / NumOfPoints)% 2)*2-1);//и в некоторых случаях его знак
 					}
-
-					if (lIndEx == 0) { //на имеющийся путь не натыкались
-						lIndEx = lInd;
-						rIndEx = rInd;
+					rInd = shift(i,mr, 1,isBCr);
+					if (isBCr){
+						mr=  i / (NumOfPoints * 2);   //если перешли на другую грань, то соотв. образом надо менять направление сдвига по координате
+						sr = -(((i / NumOfPoints)% 2)*2-1);//и в некоторых случаях его знак
 					}
-					//обратный ход слева  с прометкой левых и правых соседей
-					j= lIndEx;
-					lrV[j][m]= lIndEx;
-					lrV[j][m+Dim]= rIndEx;
-					j = pr_lInd;
-					while (j != i){ //идём слева к i
-						pr_lInd = lrV[j][m];
-						lrV[j][m]= lIndEx;
-						lrV[j][m+Dim]= rIndEx;
+					//!!!уточнить неравенство Йенсена верно всюду или только для положительно определённых функкций
+					//f[i]; - как rvalue не работает, только (*f)[i] или f->v->v[i]
+					if(((lrV[lInd][m] > 0)||(lrV[rInd][m] > 0))&&(pr_rInd == i))//нашли существующий путь на первом шаге
+						continue;
+					if ((f->v->v[i]) >= ((f->v->v[lInd]+f->v->v[rInd])/2))//есть локальная выпуклость
+						lrV[i][m]=lrV[i][m+Dim] = 0;
+					else {//нашли локальную вогнутость
+						isExtr = isLExtr = isRExtr =  false;
+					//	pr_lInd = pr_rInd = i;
+						lIndEx = rIndEx = 0;
+						LDouble fVal;
+
+						while (!isExtr){
+							//шаг влево
+							pr_lInd = lInd;
+							lInd = shift(pr_lInd,ml,sl,isBCl);
+					   //	cout<<"l: "<<lInd;
+							if (isBCl){
+								ml =  pr_lInd / (NumOfPoints * 2);   //если перешли на другую грань, то соотв. образом надо менять направление сдвига по координате
+								sl = -(((pr_lInd / NumOfPoints)% 2)*2-1);//и в некоторых случаях его знак
+							}
+							if(lrV[lInd][m] > 0){//нашли существующий путь
+								lIndEx = lrV[lInd][m];
+								rIndEx = lrV[lInd][m+Dim];
+								isExtr = true;
+								continue;
+							}
+							fVal = ((f->v->v[lInd]+f->v->v[rInd])/2);  //среднее значение между точками
+							if (f->v->v[pr_lInd] >= fVal )//шаг влево. есть локальная выпуклость слева
+								isLExtr = true;
+							//else
+						   //	lrV[lInd][m]= pr_lInd;
+							if (f->v->v[pr_rInd] >= fVal)//шаг влево. есть локальная выпуклость справа
+								isRExtr = true;
+							//else
+								//lrV[rInd][m+Dim]= pr_rInd;
+
+							if(isLExtr && isRExtr){//если выпукло с всех сторон
+								isExtr = true;
+								continue;
+							} else {
+								lrV[lInd][m]= pr_lInd;
+								lrV[rInd][m+Dim]= pr_rInd;
+							}
+
+							//шаг вправо
+							pr_rInd = rInd;
+							rInd = shift(pr_rInd,mr, sr,isBCr);
+						  //	cout<<", r: "<<rInd<<endl;
+							if (isBCr){
+								mr=  pr_rInd / (NumOfPoints * 2);   //если перешли на другую грань, то соотв. образом надо менять направление сдвига по координате
+								sr = -(((pr_rInd / NumOfPoints)% 2)*2-1);//и в некоторых случаях его знак
+							}
+							if(lrV[rInd][m] > 0){//нашли существующий путь
+								lIndEx = lrV[rInd][m];
+								rIndEx = lrV[rInd][m+Dim];
+								isExtr = true;
+								continue;
+							}
+
+							fVal = ((f->v->v[lInd]+f->v->v[rInd])/2);  //среднее значение между точками
+							if (f->v->v[pr_lInd] >= fVal)//шаг влево. есть локальная выпуклость слева
+								isLExtr = true;
+						 //	else
+							//	lrV[lInd][m]= pr_lInd;
+
+							if (f->v->v[pr_rInd] >= fVal)//шаг вправо. есть локальная выпуклость справа
+								isRExtr = true;
+						//	else
+							 //	lrV[rInd][m+Dim]= pr_rInd;
+
+							if(isLExtr && isRExtr)//если выпукло с всех сторон
+								isExtr = true;
+							else {
+								lrV[lInd][m]= pr_lInd;
+								lrV[rInd][m+Dim]= pr_rInd;
+							}
+						}
+
+						if (lIndEx == 0) { //на имеющийся путь не натыкались
+							lIndEx = lInd;
+							rIndEx = rInd;
+						}
+						//обратный ход слева  с прометкой левых и правых соседей
+						lrV[lIndEx][m]= lIndEx;
+						lrV[lIndEx][m+Dim]= rIndEx;
 						j = pr_lInd;
-					}
+						while (j != i){ //идём слева к i
+							pr_lInd = lrV[j][m];
+							lrV[j][m]= lIndEx;
+							lrV[j][m+Dim]= rIndEx;
+							j = pr_lInd;
+						}
 
-					//обратный ход справа с прометкой левых и правых соседей
-					j= rIndEx;
-					lrV[j][m]= lIndEx;
-					lrV[j][m+Dim]= rIndEx;
-					j = pr_rInd;
-					while (j != i){ //идём справа к i
-						pr_rInd = lrV[j][m+Dim];
-						lrV[j][m]= lIndEx;
-						lrV[j][m+Dim]= rIndEx;
+						//обратный ход справа с прометкой левых и правых соседей
+						lrV[rIndEx][m]= lIndEx;
+						lrV[rIndEx][m+Dim]= rIndEx;
 						j = pr_rInd;
+						while (j != i){ //идём справа к i
+							pr_rInd = lrV[j][m+Dim];
+							lrV[j][m]= lIndEx;
+							lrV[j][m+Dim]= rIndEx;
+							j = pr_rInd;
+						}
 					}
-
 				}
 
 
@@ -1211,110 +1414,121 @@ void __fastcall TNetF::ConvTimS(bool *L) {
 	// рассчитываем lambda_i
 	is_empty = true;
 	maxRad = 0;
-
+	alpha.reserve(Count);
 	for (i = 0; i < Count; i++) {
-		if (L != NULL)
-			L[i] = false;
-		for (m = 0; m < Dim; m++)
-			vec[m] = getIJ(i, m);
-		alpha[i] = 0.0;
-
-		extr_exist = isExtr = false;
-		 // поиск extr градиентным методом (покоординатного спуска)
-		k = i;
-		j = -1;
-		ind = -1;
-		while (!isExtr){
-			for (m = 0; m < Dim;) {
-				if(lrV[k][m]>0)   //на невыпуклом участке берём соотв левого и правого выпуклого соседа
-				  j == -1? k = lrV[k][m]: k = lrV[k][m+Dim];
-				else
-					if(lrV[k][m] == 0) //на выпуклом участке берём левого и правого соседа
-						k = shift(k,m, j,isBC);
-					else
-						continue; //вне поверхности не ищем ничего, просто проскакиваем
-
-				if (j == 1 ) {//цикл проходим дважды, по левым и правым соседям
-				  j=-1;
-				  m++;
-				} else
-					j = 1;
-
-				sk = scm(k, vec, this,NULL);
-				if (sk > 0.0) {
-					sk = f->v->v[k] / sk;
-					if (!extr_exist) {
-						extr_exist = true;
-						alpha[i] = pr_extr  = sk;
-						ind = k;
-					}else
-						if (sk < alpha[i]){
-							pr_extr  = alpha[i];
-							alpha[i] = sk;
-							ind = k;
-						}
-				}
-			}
-
-			if (alpha[i] < 0){ //по идее ситуация невозможная, т.к. обходим только выпуклые области, поэтому вставлена диагностика
-			   isExtr = true;
-			   cout << "Error: i="<< i <<", k="<<k<<endl;
-			} else
-				if (pr_extr - alpha[i] < ldZeroDf)  //по построению pr_extr - alpha[i] д.б. > 0
-				   isExtr = true;
-		}
-		if (L != NULL)
-			L[ind] = true;
-
-		if (alpha[i]>= ldZeroDf)
-			is_empty = false;
-		if (alpha[i]> maxRad)
-			maxRad = alpha[i];
-    }
-
-	// собственно овыпукляем и сдвигаем назад
-	for (i = 0; i < Count; i++) {
-		if (!L[i]) {
-			extr_exist = false;
+		if (f->v->v[i] != pinMark){
+			if (L != NULL)
+				L[i] = false;
 			for (m = 0; m < Dim; m++)
-				vec.v->v[m] = /*st0Net.*/getIJ(i, m);
+				vec[m] = getIJ(i, m);
+			alpha[i] = 0.0;
+
 			extr_exist = isExtr = false;
+			// поиск extr градиентным методом (покоординатного спуска)
 			k = i;
 			j = -1;
 			ind = -1;
 			while (!isExtr){
-				if(lrV[k][m]>0)   //на невыпуклом участке берём соотв левого и правого выпуклого соседа
-				  j == -1? k = lrV[k][m]: k = lrV[k][m+Dim];  //по идее опять же всегда должны быть левые и правые соседи т.к. смотрим не точки где зафиксирована локальная невыпуклость
-				else
-					if(lrV[k][m] == 0) //Если так, то ошибка
-						cout << "Error: i="<< i <<", k="<<k<<endl;
+				for (m = 0; m < Dim;) {
+					if(lrV[k][m]>0)   //на невыпуклом участке берём соотв левого и правого выпуклого соседа
+					  j == -1? k = lrV[k][m]: k = lrV[k][m+Dim];
 					else
-						continue; //вне поверхности не ищем ничего, просто проскакиваем
+						if(lrV[k][m] == 0) //на выпуклом участке берём левого и правого соседа
+							k = shift(k,m, j,isBCl);
+						else {
+							++m;
+							continue; //вне поверхности не ищем ничего, просто проскакиваем
+						}
 
-				if (j == 1 ) {//цикл проходим дважды, по левым и правым соседям
-				  j=-1;
-				  m++;
-				} else
-					j = 1;
+					if (j == 1 ) {//цикл проходим дважды, по левым и правым соседям
+						j=-1;
+						++m;
+					} else
+						j = 1;
 
-				sk = alpha[k]*scm(k, vec, this, NULL);   //расчёт co_\Psi(c_\psi)
-				if (!extr_exist) {
-					extr_exist = true;
-					pr_extr = extr = sk;
-					//ind = k;
-				}else
-					if (sk > extr){
-						pr_extr  = extr;
-						extr = sk;
-						//ind = k;
+					sk = scm(k, vec, this,NULL);
+					if (sk > 0.0) {
+						sk = f->v->v[k] / sk;
+						if (!extr_exist) {
+							extr_exist = true;
+							alpha[i] = pr_extr  = sk;
+							ind = k;
+						}else
+							if (sk < alpha[i]){
+								pr_extr  = alpha[i];
+								alpha[i] = sk;
+								ind = k;
+							}
 					}
-				if (extr - pr_extr < ldZeroDf)  //по построению extr - pr_extr д.б. > 0
-				   isExtr = true;
+				}
+
+				if (alpha[i] < 0){ //по идее ситуация невозможная, т.к. обходим только выпуклые области, поэтому вставлена диагностика
+				 isExtr = true;
+				 cout << "Error: i="<< i <<", k="<<k<<endl;
+				} else
+					if (pr_extr - alpha[i] < ldZeroDf)  //по построению pr_extr - alpha[i] д.б. > 0
+					isExtr = true;
 			}
-			 //j = GetExtrDirection(vec, scm1, convCriteria, opMax, nZAware, i, &alpha,  f->v->v[i], *this);
+			if (L != NULL)
+				L[ind] = true;
+
+			if (alpha[i]>= ldZeroDf)
+				is_empty = false;
+			if (alpha[i]> maxRad)
+				maxRad = alpha[i];
 		}
-		f->v->v[i] += st0Net.f->v->v[i];  // сдвиг множества выпуклой оболочки на исходное место
 	}
+
+	// собственно овыпукляем и сдвигаем назад
+	for (i = 0; i < Count; i++) {
+		if (f->v->v[i] != pinMark){
+			if (!L[i]) {
+				extr_exist = false;
+				for (m = 0; m < Dim; m++)
+					vec.v->v[m] = getIJ(i, m);
+				extr_exist = isExtr = false;
+				k = i;
+				j = -1;
+				ind = -1;
+				while (!isExtr){
+					if(lrV[k][m]>0)   //на невыпуклом участке берём соотв левого и правого выпуклого соседа
+						j == -1? k = lrV[k][m]: k = lrV[k][m+Dim];  //по идее опять же всегда должны быть левые и правые соседи т.к. смотрим не точки где зафиксирована локальная невыпуклость
+					else
+						if(lrV[k][m] == 0) //Если так, то ошибка
+							cout << "Error: i="<< i <<", k="<<k<<endl;
+						else{
+							++m;
+							continue; //вне поверхности не ищем ничего, просто проскакиваем
+						}
+
+					if (j == 1 ) {//цикл проходим дважды, по левым и правым соседям
+					j=-1;
+					++m;
+					} else
+						j = 1;
+
+					sk = alpha[k]*scm(k, vec, this, NULL);   //расчёт co_\Psi(c_\psi)
+					if (!extr_exist) {
+						extr_exist = true;
+						pr_extr = extr = sk;
+						//ind = k;
+					}else
+						if (sk > extr){
+							pr_extr  = extr;
+							extr = sk;
+							//ind = k;
+						}
+					if (extr - pr_extr < ldZeroDf)  //по построению extr - pr_extr д.б. > 0
+						isExtr = true;
+				}
+			 //j = GetExtrDirection(vec, scm1, convCriteria, opMax, nZAware, i, &alpha,  f->v->v[i], *this);
+			}
+		f->v->v[i] += st0Net.f->v->v[i];  // сдвиг множества выпуклой оболочки на исходное место
+		}
+	}
+
+	alpha.clear();
+	/**/
 }
 // ----------------------------------------------------------------------------//
 TNet __fastcall TNetF::Points(/*bool compactPoints*/) {
@@ -1327,9 +1541,11 @@ TNet __fastcall TNetF::Points(/*bool compactPoints*/) {
 	result.isVirtual = false;
 	//i = 0;
 	for (i = 0; i < Count; i++) {
-		for (j = 0; j < Dim; j++)
-			result.v->v->v[i][j] = alpha[i] * getIJ(i, j);
-		i++;
+		if (f->v->v[i] != pinMark){
+			for (j = 0; j < Dim; j++)
+				result.v->v->v[i][j] = alpha[i] * getIJ(i, j);
+			i++;
+		}
 	}
 	return result;
 }
@@ -1383,6 +1599,7 @@ void /* !inline */ __fastcall TNetF::initNetFDefault() {
 	is_empty = false;
 	maxRad = 0.0;
 	t = 0;
+	pinMark = Environment::instance()._pinMark;
 
 #ifdef _WIN64
 	lib_name = "SICx64.dll";
@@ -1426,14 +1643,16 @@ void __fastcall TNetF::dynUpdate() {
 			}
 		}
 		for (i = 0; i < Count; i++) {
-			if (!umx) {
-				for (j = 0; j < Dim; j++)
-					res->v->v[j] = getIJ(i, j);
-				(*res) = (*u_mx) * (*res);
-				f1->f->v->v[i] = oporn(*res, t, upd);
+			if (f->v->v[i] != pinMark){
+				if (!umx) {
+					for (j = 0; j < Dim; j++)
+						res->v->v[j] = getIJ(i, j);
+					(*res) = (*u_mx) * (*res);
+					f1->f->v->v[i] = oporn(*res, t, upd);
+				}
+				else if (upd != 1.0)
+					f->v->v[i] *= upd;
 			}
-			else if (upd != 1.0)
-				f->v->v[i] *= upd;
 		}
 		if ((!umx) && (u_mx->v->m != Dim)) {
 			*this = *f1;
@@ -1445,7 +1664,7 @@ void __fastcall TNetF::dynUpdate() {
 }
 
 // ------------------------------------Get IJ----------------------------------//
-inline LDouble __fastcall TNetF::getIJ(unsigned long current, unsigned long coordNumber) {
+ LDouble __fastcall TNetF::getIJ(unsigned long current, unsigned long coordNumber) {
 	LDouble res;
 	if (isVirtual) {
 		checkCacheVector();
@@ -1472,8 +1691,10 @@ void __fastcall TNetF::smoothFunction(LDouble epsilon) {
 	unsigned long i;
 	update();
 	for (i = 0; i < Count; i++) {
-		f->v->v[i] = (f->v->v[i] + epsilon) / 2 +
-			sqrt(pow(epsilon, 2) + pow(((f->v->v[i] - epsilon) / 2), 2));
+		if (f->v->v[i] != pinMark){
+			f->v->v[i] = (f->v->v[i] + epsilon) / 2 +
+				sqrt(pow(epsilon, 2) + pow(((f->v->v[i] - epsilon) / 2), 2));
+		}
 	}
 }
 
@@ -1484,4 +1705,21 @@ Vector* __fastcall TNetF::getVecAt(unsigned long i) {
 	for (j = 0; j < Dim; j++)
 		cache->v->v[j] = getIJ(i, j);
 	return cache;
+}
+//---------------------------------shift---------------------------------------
+unsigned long __fastcall TNetF::shift(unsigned long current, unsigned long coordNumber, int step,
+	bool& borderChanged) throw(exInvalidMoveDirection) {
+
+	bool tmp(false);
+	unsigned long j1(current);
+
+	  do{ //если выбран pinMark индекс - идём дальше
+		borderChanged = false;
+		j1 = TNet::shift(j1, coordNumber, step,  borderChanged );
+		if (borderChanged)
+			tmp = true;
+	  }while ((f->v->v[j1] == pinMark)||(borderChanged));
+	  if(tmp)
+		borderChanged = true;
+	  return j1;
 }

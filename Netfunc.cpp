@@ -1718,7 +1718,7 @@ unsigned long __fastcall TNetF::shift(unsigned long current, unsigned long coord
 		j1 = TNet::shift(j1, coordNumber, step,  borderChanged );
 		if (borderChanged)
 			tmp = true;
-	  }while ((f->v->v[j1] == pinMark)||(borderChanged));
+	  }while ((f->v->v[j1] == pinMark)/*||(borderChanged)*/);
 	  if(tmp)
 		borderChanged = true;
 	  return j1;

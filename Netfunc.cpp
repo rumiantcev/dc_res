@@ -54,7 +54,10 @@ void __fastcall TNetF::create( unsigned long Dim /* , long perf, long res */) {
 void __fastcall TNetF::pin_Mark(){
 	unsigned long i, j, k, l, m, ind, curr;
 	unsigned long v2_len(pow(2,Dim-2));
-	bool oddInd, currOdd;
+	std::vector<unsigned long> indexes;
+	bool oddInd, currOdd, isOneMarked;
+	int __mod, coordNumber, borderCount;
+
 
 	Vector vec(Dim);
 	Vector tmp(Dim-2);
@@ -62,8 +65,8 @@ void __fastcall TNetF::pin_Mark(){
 	markCount =0 ;
 
 	if (Dim>2 ) {
-		for (j = 0; j< Dim-2; j++)
-				mx.v->v[0][j] = 0;
+		for (i = 0; i< Dim-2; i++)
+				mx.v->v[0][i] = 0;
 		for (i = 1; i < v2_len; i++) { //заполняем матрицу бинарными значениями индекса i для размерности Dim-2
 			tmp.toBinary(i);
 			for (j = 0; j< Dim-2; j++)
@@ -75,8 +78,82 @@ void __fastcall TNetF::pin_Mark(){
 		currOdd = oddInd = isOdd(j)^isOdd(j/2);//куда смещаем "пустые" точки: 0-вправо, 1 - влево
 		curr = (j * NumOfPoints); // первая точка текущей грани
 		if (Dim>2) {
-			cout << "проверить отдельно!!!!!!!!!!!" << endl;	break;
-			for (i = 0; i < Dim; i++){
+			cout << "проверить отдельно!!!!!!!!!!!" << endl;	//break;
+			coordNumber = j * 0.5; // Определяем  номер координаты
+			__mod =   j % 2; //знак нормали к грани 0 или 1
+
+			for(k = curr; k < curr+NumOfPoints; k++){
+				ind = 0;
+				for (i = 0; i < coordNumber; i++) {
+					cache->v->v[i] = k % Res;
+					if ((cache->v->v[i] == 0)|| (cache->v->v[i] == (Res-1)))
+						ind++;  //считаем, сколько координат на границе
+					curr *= dRes;  //делим на Res
+				}
+				cache->v->v[coordNumber] = __mod * (Res - 1); // в текущей координате либо 0, либо res-1 до нормирования
+				if (coordNumber < Dim)
+					for (i = coordNumber + 1; i < Dim; i++) {
+						cache->v->v[i] = k % Res;
+						if ((cache->v->v[i] == 0)|| (cache->v->v[i] == (Res-1)))
+							ind++;  //считаем, сколько координат на границе
+						curr *= dRes;
+					}
+
+				if (ind == Dim){  //угловая точка Dim-1 соседей к маркировке
+					indexes.reserve(Dim) ;
+					for(i = 0; i < Dim; i++){ //запоминаем все номера с пересечениями
+						for(k = 0; k < i; k++)
+							if (cache->v->v[k] == Res-1)
+								l +=  powVec->v->v[k];
+						for(k = i+1; k < Dim; k++)
+							if (cache->v->v[k] == Res-1)
+								l += powVec->v->v[k];
+
+						(cache->v->v[i] == 0) ?  l += NumOfPoints*i : l += NumOfPoints*(i+1);
+						indexes[i] = l; // в векторе indexes
+					}
+					f->v->v[indexes[0]] = 0;  //при этом первый индекс всегда делаем  = 0
+					for (i = 1; i < Dim; i++)
+						f->v->v[indexes[i]] = pinMark; //а остальные маркируем, не очень эфективно, но пока забьём
+
+				} else
+					if (ind == Dim-1){     //одномерная грань Dim-2 соседей к маркировке
+						indexes.reserve(Dim-1);
+						for(i = 0; i < Dim; i++){ //запоминаем все номера с пересечениями
+							for(k = 0; k < i; k++)
+								l +=  powVec_1->v->v[k]*cache->v->v[k];
+							for(k = i+1; k < Dim; k++)
+								l += powVec_1->v->v[k]*cache->v->v[k];
+
+							if (cache->v->v[i] == 0) //Находим, где точка не на границе и исключаем это измерение
+								l += NumOfPoints*i;
+							else
+								if (cache->v->v[i] == Res-1)
+									l += NumOfPoints*(i+1);
+								else
+									i++;
+							indexes[i] = l; // в векторе indexes
+						}
+						f->v->v[indexes[0]] = 0;  //при этом первый индекс всегда делаем  = 0
+						for (i = 1; i < Dim-1; i++)
+							f->v->v[indexes[i]] = pinMark; //а остальные маркируем, не очень эфективно, но пока забьём
+
+					} else   //двумерная грань - один сосед к маркировке и то, если нормаль не совпадает с нормалью к основной грани
+						if (ind == Dim-2){
+							//ищем нормаль к грани размерности 2 - не должна совпадать с нормалью к грани разм. Dim-1
+							if ((cache->v->v[coordNumber] > 0)&&((cache->v->v[coordNumber] < Res-1))) {
+
+							} else
+								f->v->v[k] = 0;
+						} else
+							f->v->v[k] = 0;
+			}
+
+
+
+
+
+		   /*	for (i = 0; i < Dim; i++){
 				vec.zero();  //зануляем вектор
 				vec[i] = -1; //помечаем первую "свободную" координату
 					for (k = i+1; k < Dim; k++) {
@@ -110,7 +187,8 @@ void __fastcall TNetF::pin_Mark(){
 						}
 						vec[k] = 0;
 					}
-			}
+
+			} */
 		} else {  //для двумерных векторов алгоритм прост и незатейлив
 		  if (currOdd){
 			f->v->v[curr] = pinMark;
@@ -1718,7 +1796,7 @@ unsigned long __fastcall TNetF::shift(unsigned long current, unsigned long coord
 		j1 = TNet::shift(j1, coordNumber, step,  borderChanged );
 		if (borderChanged)
 			tmp = true;
-	  }while ((f->v->v[j1] == pinMark)/*||(borderChanged)*/);
+	  }while (f->v->v[j1] == pinMark/*||(borderChanged)*/);
 	  if(tmp)
 		borderChanged = true;
 	  return j1;

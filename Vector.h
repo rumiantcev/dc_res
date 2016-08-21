@@ -57,7 +57,7 @@ public:
 
 	/* версия с проверкой ошибок */
 	// inline LDouble& operator [](long i) {if((v->linkCount>1)||!updated) update(); if (i < v->size) return v->v[i]; else throw "out of bounds";}
-	inline LDouble& operator[](unsigned long i) {
+	 LDouble& operator[](unsigned long i) {
 		if ((v->linkCount > 1) || !updated)
 			update();
 		return v->v[i];

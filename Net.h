@@ -53,7 +53,8 @@ protected:
 	unsigned long cacheCurrent; // ,
 	// parsedCacheCurrent;
 	unsigned long virtDim;
-	LDouble halfRes, dRes;
+	LDouble halfRes, //половинка разрешения сетки
+		dRes; //=1/Res
 	unsigned long coordNumber; // , i;
 	unsigned long _mod, __mod;
 

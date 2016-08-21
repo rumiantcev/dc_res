@@ -378,7 +378,7 @@ Vector* __fastcall TNet::parseCoordinateForShift(unsigned long current) {
 		unsigned long i;
 		for (i = 0; i < coordNumber; i++) {
 			cache->v->v[i] = current % Res;
-			current *= dRes;
+			current *= dRes;  //делим на Res
 		}
 		cache->v->v[coordNumber] = __mod * (Res - 1);
 		// в текущей координате либо 0, либо res-1 до нормирования

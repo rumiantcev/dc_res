@@ -130,8 +130,10 @@ void __fastcall TNetF::pin_Mark(){
 							else
 								if (cache->v->v[i] == Res-1)
 									l += NumOfPoints*(i+1);
-								else
+								else {
 									i++;
+									break;
+								}
 							indexes[i] = l; // в векторе indexes
 						}
 						f->v->v[indexes[0]] = 0;  //при этом первый индекс всегда делаем  = 0
@@ -140,11 +142,28 @@ void __fastcall TNetF::pin_Mark(){
 
 					} else   //двумерная грань - один сосед к маркировке и то, если нормаль не совпадает с нормалью к основной грани
 						if (ind == Dim-2){
-							//ищем нормаль к грани размерности 2 - не должна совпадать с нормалью к грани разм. Dim-1
-							if ((cache->v->v[coordNumber] > 0)&&((cache->v->v[coordNumber] < Res-1))) {
+							indexes.reserve(Dim-2);
+							for(i = 0; i < Dim; i++){ //запоминаем все номера с пересечениями
+								for(k = 0; k < i; k++)
+									l +=  powVec_1->v->v[k]*cache->v->v[k];
+								for(k = i+1; k < Dim; k++)
+									l += powVec_1->v->v[k]*cache->v->v[k];
 
-							} else
-								f->v->v[k] = 0;
+								if (cache->v->v[i] == 0) //Находим, где точка не на границе и исключаем это измерение
+									l += NumOfPoints*i;
+								else
+									if (cache->v->v[i] == Res-1)
+										l += NumOfPoints*(i+1);
+									else {
+										i++;
+										break;
+									}
+								indexes[i] = l; // в векторе indexes
+							}
+							f->v->v[indexes[0]] = 0;  //при этом первый индекс всегда делаем  = 0
+								for (i = 1; i < Dim-2; i++)
+									f->v->v[indexes[i]] = pinMark; //а остальные маркируем, не очень эфективно, но пока забьём
+
 						} else
 							f->v->v[k] = 0;
 			}

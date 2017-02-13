@@ -135,8 +135,10 @@ void TaskLoader::load_and_calc_tasks(){
 		if (type == "pursue_run"){
 			prTask = static_cast<PR_Task*>(taskList[j]);
 			//prTask->Control_PR(0);
-		  //	prTask->Control_PR_fullSets(0);
-			Control_PR_fullSets_smooth(0,*prTask);
+			if (method == "full_sets")
+				prTask->Control_PR_fullSets(0);
+            if (method == "full_sets_smooth")
+				Control_PR_fullSets_smooth(0,*prTask);
 		}
 		elapsed = clock()-before;  //замер времени начала выполнения расчётов
 

@@ -23,7 +23,10 @@ PR_Task::PR_Task(long dimX,  long dimU,  long dimV,  long dimM, LDouble ts, LDou
 	int tr_count):Task(dimX,  dimU,  dimV,  dimM,  ts,  prec,
 	 eps,  delta,  tmax,  st,  perf,  stat,  tr_count) {
 	}
-//------------------------------расчёт множеств альтернированных интегралов преследователей
+// ------------------------------ copy constructor --------------------------------//
+PR_Task::PR_Task(const PR_Task& ts):Task(ts) {
+	}
+	//------------------------------расчёт множеств альтернированных интегралов преследователей
 void PR_Task::Find_Ns(int trNum) {
 	vector<TNetF*> tmplist;     //'input'
 	tmplist = PursuerList;
@@ -186,8 +189,7 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 	long Ind = 0;
 
 	// интегрирование методом трапеций по двум точкам
-	intEtA = (0.5 * tau) * (Exponential(A, 0, precision) + Exponential(A, -tau,
-		precision));
+	intEtA = (0.5 * tau) * (Exponential(A, 0, precision) + Exponential(A, -tau, precision));
 	intEtA.update();
 
 	m2Net.oporn(t0, 1); // опорное значение сетки по M2
@@ -197,6 +199,8 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 
 	EtA = Exponential(A, t, precision);
 	PiEtA = PP * EtA;
+	cout << tr_s[0].x0<< endl;
+
 	PiEtAx0 = PiEtA * tr_s[trNum].x0;
 	//PiEtAx0.update();
 
@@ -581,7 +585,7 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 
 	while (k >= 1) {
 
-		if (!isCollisionPossible) {     //если шёл ёжижик, шёл и никого не встретил
+		if (!isCollisionPossible) {     //если шёл ёжик, шёл и никого не встретил
 			k--;
 			t -= tau;
 			EtA = Exponential(A, t, precision);  //то идём себе дальше
@@ -610,12 +614,12 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 					if (x_Net.f->v->v[i] != pinMark){
 						x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
 						c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
-                    }
+					}
 				}
 
 				Ind = c.GetExtrGlobal(opMin, 0, min_x);
 
-				if (min_x>0) //если попали внуть множетсва - выбираем поменьше
+				if (min_x>0) //если попали внуть множества - выбираем  время поменьше
 					timeSign=-1;
 				else       //если оказались снаружи - побольше
 					timeSign=1;
@@ -678,7 +682,7 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 				n=0;
 			for (/*n = 0*/; n < ps->funnel.size(); n++) {
 				px_Net = *ps->funnel[fi-n] + (-1)*x_Net;
-				p_Net = px_Net + tmpPNet;   //проверка принадлежности точки траетории сумме
+				p_Net = px_Net + tmpPNet;   //проверка принадлежности точки траектории сумме
 				//множества достижимости из точки траекторрии и множества соотв. преследователя
 				p_Net.perfomance = 0;
 				Ind = p_Net.GetExtrGlobal(opMin, Ind, min_x);
@@ -724,10 +728,6 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 		//находим следующий  x_i  методом  Рунге-Кутты
 		x_i = rungeCutt(x_i, u_i, v_i);
 
-//		if(!isCollisionPossible){  //в противном случае надо проверить  не попали ли внуть множетва управляемости
-//			t -= tau;
-//			k--;
-//		}
 
 		//сохраняем результаты расчётов
 		r_i =  new Vector(x_i);
@@ -744,7 +744,7 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 		j++;
 	}
 
-    tr_s[trNum].T= (j) * tau;
+	tr_s[trNum].T= (j) * tau;
 	 /* TODO -orum : Сделать отдеьный конструктор из вектора векторов в матрицу */
 	k= vx_i.size()-1;
 	tr_s[trNum].x_i = new Matrix(k+1, dim_x);
@@ -808,3 +808,279 @@ Gnuplot gp;
 //------------------------
 
 }
+
+// -------------------------------------- control finding----------------------//
+void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
+	TNetF c(mt.PP.m(), mt.perfomance, mt.steps), x_Net(c), p_Net(c), px_Net(c);
+	TNetF tmpPNet(*mt.cP), tmpQNet(*mt.cQ);
+	long  timeSign=-1, prevSign;
+	unsigned long i, j, m, n, l, k;
+	long    fi, Ind = 0,prevInd, k_up;
+	Matrix PiEtA(mt.PP.m(), mt.A.n()), PiEtAC(mt.PP.m(), mt.C.n()), PiEtAB(mt.PP.m(), mt.B.n()),
+		EtA(mt.A.m()); // EtA(A.m()) - единичная при t=0
+	LDouble t, min, absmin=-1, min_x, extr;
+	Vector PiEtAx(mt.PP.m()), psi(mt.PP.v->m), extrVec(mt.PP.v->m);
+	Vector u_i(mt.cP->Dim), v_i(mt.cQ->Dim), x_i(mt.dim_x);
+	bool isCollisionPossible=false, isInit;
+	Pursuer* ps;
+
+	VecOfVec vx_i, vu_i, vv_i;
+	Vector *r_i;
+
+	VecOfLong vec_j, vec_k; // Значения индексов j и k вдоль траектории
+	VecOfBool vec_cp; // Значения  признака collisionPossible вдоль траектории
+	alphType vec_t;//значения t вдоль траектории
+
+
+
+	j = 0;
+	k = mt.tr_s[trNum].NetList.size()-1;
+	k_up=k; //"наибольшее" удаление
+
+
+	x_i = mt.tr_s[trNum].x0; // заполняем x_i  начальным значением
+	r_i =  new Vector(x_i);
+	r_i->detach();
+	vx_i.push_back(r_i);//... и сохраняем его для траектории.
+	t = mt.tr_s[trNum].T; // значение t = конечному времени;
+
+	c.perfomance = 0;
+
+	while (k >= 1) {
+
+		if (!isCollisionPossible) {     //если шёл ёжик, шёл и никого не встретил,
+			// при отсутствии коллизий повторяем обычный алгоритм без сглаживания
+			k--;
+			t -= mt.tau;
+			EtA = Exponential(mt.A, t, mt.precision);  //то идём себе дальше
+			PiEtA = mt.PP * EtA;
+			PiEtAx = PiEtA * x_i;
+
+			for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
+				if (x_Net.f->v->v[i] != mt.pinMark){
+					x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
+					c.f->v->v[i] = mt.tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+				}
+			}
+
+			//выбираем psi
+			Ind = c.GetExtrGlobal(opMin, 0, min_x);
+		} else{
+			//если обходили множества преследователей смотрим, а не проскочили ли  чутка
+			//и оказались внутри очередного множества управляемости - корректируем время
+			// при этом сначала моделируем отскок, а потом прицеливаемся на точку в которую отскочили  из x(t_i-tau)
+			isInit = true;
+			do{
+				EtA = Exponential(mt.A, t, mt.precision);
+				PiEtA = mt.PP * EtA;
+				PiEtAx = PiEtA * x_i;
+				//cout << k << endl;
+				for (i = 0; i < x_Net.Count; i++){
+					if (x_Net.f->v->v[i] != mt.pinMark){
+						x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
+						c.f->v->v[i] = mt.tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+					}
+				}
+
+				Ind = c.GetExtrGlobal(opMin, 0, min_x);
+
+				if (min_x>0) //если попали внуть множества - выбираем  время поменьше
+					timeSign=-1;
+				else       //если оказались снаружи - побольше
+					timeSign=1;
+				if(isInit){
+					prevInd = Ind;
+					prevSign = timeSign;
+					isInit = false;
+				} /**/
+				if(prevSign!=timeSign){ //смена знака при проверке "снаружи" или "внутри" очередного мн-ва альт. инт. находится точка  и есть граница цикла
+					Ind = prevInd;
+					break;
+				}
+				if((static_cast<long>(k)+timeSign)==k_up){  //если дошли до верхней границы предрассчитанных альтернированных интегралов
+					//пересчитать Альтернированный интеграл и подвинуть вверх k_up
+					mt.calcNextAltInt(trNum, t+timeSign * mt.tau);
+					k_up = mt.tr_s[trNum].NetList.size()-1;
+				}
+				k += timeSign;
+				t += timeSign * mt.tau;
+
+			} while (true);/**/
+
+		}
+		//фиксируем psi  для множества управляемости, ближайшего к таектории
+		for (m = 0; m < c.Dim; m++)
+				psi.v->v[m] = c.getIJ(Ind, m);
+
+		//выбираем u_i - как если бы не было противников
+		PiEtAB = PiEtA * mt.B;
+		PiEtAC = PiEtA * mt.C;
+		mt.cP->oporn(t, 1);
+		mt.cQ->oporn(t, 1);
+		extrVec = Transpose(PiEtAB) * psi;
+		mt.cP->perfomance = 0;
+		Ind = mt.cP->GetExtrDirection(extrVec, scm, convCriteria, opMax, nZAware, Ind, NULL,  extr,  *mt.cP);
+		for (m = 0; m < mt.dim_u; m++)
+			u_i.v->v[m] = mt.cP->getIJ(Ind, m);
+		u_i = mt.cP->getBorderPoint(Ind, u_i);
+		for (m = 0; m < mt.dim_v; m++) //и зануляем v если не приблизились к множеcтву откуда возможно преследование
+				v_i.v->v[m] =   0.0;  //набо будет подумать v1 - стандартная помеха + v2 - из соотв.
+				//множеств  преследователей
+
+		//ввиду того, что надо каждый раз перепроверять есть или нет пересечение с множествами откуда
+		//возможно завершение преследования  то v выбираем по принципу: если траектория приблизилась
+		//к множеству преследователей, то выбираем v  соотвествующую ближайшему множеству преследователя
+		tmpPNet = *mt.cP;
+		tmpPNet *= PiEtAB;
+		absmin = 0.0;
+		isCollisionPossible = false;
+		for (l=0; l < mt.Pursuers/* *PursuerList*//*NList*/.size(); l++) {
+		   ps = mt.Pursuers[l];
+		   //проверить радиус видимости
+		   cout << eu_dist(*ps->center, x_i)<<endl;
+		   if(eu_dist(*ps->center, x_i) <  ps->radarVisibility){
+			fi = ps->funnel.size() - 1;
+			if(ps->currInd >0 ){   //т.е. если при t-tau уже натыкались на множество откуда возможно преследование и уклонялись, то
+				n= ps->currInd;    //при  надо проверить, накнёмся ли при t
+				ps->currInd = 0;
+			}else                 //иначе считаем, что все проверки с начала "воронки"
+				n=0;
+			for (/*n = 0*/; n < ps->funnel.size(); n++) {
+				px_Net = *ps->funnel[fi-n] + (-1)*x_Net;
+				p_Net = px_Net + tmpPNet;   //проверка принадлежности точки траектории сумме
+				//множества достижимости из точки траекторрии и множества соотв. преследователя
+				p_Net.perfomance = 0;
+				Ind = p_Net.GetExtrGlobal(opMin, Ind, min_x);
+				if(min_x>=0){  //если на следующем шаге есть пересечение с множествами откуда
+					//возможно завершение преследования то u выбираем так, чтобы оттолкнуться от множества
+					if(!isCollisionPossible){
+						isCollisionPossible = true;
+						absmin=min_x;
+					}
+					if(min_x<=absmin){  // отталкиваемся от ближайшего из которых возможно преследование
+						absmin = min_x;
+						px_Net.perfomance = 0;
+						Ind = px_Net.GetExtrGlobal(opMin,  0, min);
+						for (m = 0; m < c.Dim; m++)
+						psi.v->v[m] = px_Net.getIJ(Ind, m);
+						//выбираем u_i - надо доработать и сделать проверку на случай если u_i+1 = -u_i c тем, чтобы всегда было отклонение в сторону главной цели
+						extrVec = Transpose(PiEtAB) * psi;
+						mt.cP->perfomance = 0;
+						Ind = mt.cP->GetExtrDirection(extrVec, scm, convCriteria, opMin, nZAware, Ind, NULL,  extr,  *mt.cP);
+						for (m = 0; m < mt.dim_u; m++)
+							u_i.v->v[m] = mt.cP->getIJ(Ind, m);
+						u_i = mt.cP->getBorderPoint(Ind, u_i);
+						//выбираем v_i
+						//extrVec = Transpose(PiEtAC) * psi;
+						//cQ->perfomance = 0;
+						//Ind = cQ->GetExtrDirection(extrVec, scm, convCriteria, opMin, nZAware, Ind, NULL,  extr,  *cQ);
+						//for (m = 0; m < dim_v; m++)
+						//v_i.v->v[m] =   cQ->getIJ(Ind, m);
+						//v_i=cQ->getBorderPoint(Ind,v_i);
+						ps->currInd = n;  //запоминаем время в которое оттолкнулись от множества из котороно возможно преследование
+						break;
+					}
+				}
+			}
+		   }
+		   //подобрать подходящее множество из воронки
+		}   /**/
+
+		cout << (j) * mt.tau << " : "<< t << " : " << x_i<< " : " << u_i;
+
+
+	  if(isCollisionPossible && /*(vec_k.size()>0)*/(vec_cp[vec_cp.size()-1]!=true)){
+			//находим следующий  x_i  методом  Рунге-Кутты т.е. место куда "отскочит" траектория под управлением уклонения
+			x_i = mt.rungeCutt(x_i, u_i, v_i);
+		   // если препятствие есть и есть куда отклониться, а также отклонение не стачала, то создаём копию объкета, даём начальную точку x_{i-2}, конечную точку считаем x_i
+			PR_Task mid_step(mt); //для этого создаём новую задачу
+			vector<Traectory>ms_tr_s;
+			Traectory tr;
+			vector<TNetF*>ms_NetList;
+		   //	ms_tr_s.clear();
+			mid_step.tr_s = ms_tr_s;
+			Vector mid_x_0(*vx_i[j-1]);  //в качестве начальной точки выбираем x(t_{i-1})
+			Vector mid_x_t(x_i); //в качестве терминального множества  x(t_{i}) + сферка малого радиуса
+			tr =  mt.tr_s[trNum];
+			tr.x0 = mid_x_0;
+			tr.NetList = ms_NetList;
+			mid_step.tr_s.push_back(tr);
+		   //	cout <<"Начало: "<< mid_x_0 ;
+		 //	cout <<"Конец: "<< mid_x_t << endl;
+			int ii;
+			string str = "";
+			for (ii = 0; ii < mid_step.dim_m-1; ii++) {
+				str = str + "p"+ldToStr(ii)+"*"+ldToStr(mid_x_t[ii])+"+";
+			}
+			str = str + "p"+ldToStr(ii)+"*"+ldToStr(mid_x_t[ii]);
+			mid_step.setFuncToNetF(*(mid_step.cM), str);
+			mid_step.calcPursuerSets(trNum);
+			mid_step.TimeCalc_PR(trNum);
+			mid_step.Control_PR_fullSets(trNum);
+			u_i = mid_step.tr_s[trNum].u_i->GetRow(0);
+			x_i = mid_x_0;
+			k  = vec_k[vec_k.size()-1];
+			vec_k.pop_back();
+			j  = vec_j[vec_j.size()-1];
+			vec_j.pop_back();
+			t  = vec_t[vec_t.size()-1];
+
+			vec_t.pop_back();
+			vx_i.pop_back();
+			vu_i.pop_back();
+			vv_i.pop_back();
+			vec_cp.pop_back();
+
+			//cout<<u_i<<x_i<<endl;
+			/**/
+		}  /**/
+
+		//находим следующий  x_i  методом  Рунге-Кутты
+		x_i = mt.rungeCutt(x_i, u_i, v_i);
+		//сохраняем результаты расчётов
+		r_i =  new Vector(x_i);
+		r_i->detach();
+		vx_i.push_back(r_i);
+		//cout<<x_i;
+		r_i =  new Vector(u_i);
+		r_i->detach();
+		vu_i.push_back(r_i);
+		r_i =  new Vector(v_i);
+		r_i->detach();
+		vv_i.push_back(r_i);
+
+		vec_j.push_back(j);
+		vec_k.push_back(k);
+		vec_t.push_back(t);
+		vec_cp.push_back(isCollisionPossible);
+
+		j++;
+	}
+
+	mt.tr_s[trNum].T= (j) * mt.tau;
+	 /* TODO -orum : Сделать отдеьный конструктор из вектора векторов в матрицу */
+	k= vx_i.size()-1;
+	mt.tr_s[trNum].x_i = new Matrix(k+1, mt.dim_x);    	// массив векторов со значениями  x_i
+	mt.tr_s[trNum].u_i = new Matrix(k, mt.dim_u);  	// массив векторов со значениями  u_i
+	mt.tr_s[trNum].v_i = new Matrix(k, mt.dim_v);  	// массив векторов со значениями  v_i
+
+	for (m = 0; m < mt.dim_x; m++)
+			mt.tr_s[trNum].x_i->v->v[0][m] = vx_i[0]->v->v[m];
+	for (j=0; j < k; j++) {
+		//сохраняем результаты расчётов
+		for (m = 0; m < mt.dim_u; m++)
+			mt.tr_s[trNum].u_i->v->v[j][m] = vu_i[j]->v->v[m];
+		for (m = 0; m < mt.dim_v; m++)
+			mt.tr_s[trNum].v_i->v->v[j][m] = vv_i[j]->v->v[m];
+		for (m = 0; m < mt.dim_x; m++)
+			mt.tr_s[trNum].x_i->v->v[j + 1][m] = vx_i[j+1]->v->v[m];
+	  // cout<<*vx_i[j+1];
+	}
+
+	for_each(vx_i.begin(), vx_i.end(), DeleteObj());
+	for_each(vu_i.begin(), vu_i.end(), DeleteObj());
+	for_each(vv_i.begin(), vv_i.end(), DeleteObj());
+	//--------------------------------------------------------------------
+	cout<<k;
+}
+

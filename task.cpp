@@ -85,8 +85,9 @@ Task::Task(const Task& ts) : A(ts.A.m(), ts.A.n()), B(ts.B.m(), ts.B.n()),
 
 	tr_s.clear();
 	for (i = 0; i < (long)ts.tr_s.size(); i++)
-		tr_s[i] = (Traectory)ts.tr_s[i];
+		tr_s.push_back(ts.tr_s[i]);
 
+   //	cout << tr_s[0].x0<< endl;
 	perfomance = ts.perfomance;
 	state = ts.state;
 	A = ts.A;
@@ -110,9 +111,12 @@ Task::Task(const Task& ts) : A(ts.A.m(), ts.A.n()), B(ts.B.m(), ts.B.n()),
 	v_control = ts.v_control;
 
 	IndI = ts.IndI;
-	*cP= *ts.cP;
-	*cQ= *ts.cQ;
-	*cM= *ts.cM;
+	cP = new TNetF(*ts.cP);
+	cQ = new TNetF(*ts.cQ);
+	cM = new TNetF(*ts.cM);
+  //	cP= *ts.cP;
+   //	*cQ= *ts.cQ;
+  //	*cM= *ts.cM;
 	T=ts.T;
 	tmpT = ts.tmpT;
 	priority = ts.priority;
@@ -310,7 +314,7 @@ Vector Task::rungeCutt(const Vector& xn, const Vector& un, const Vector& vn, LDo
 }
 
 // -------------------------------------- control finding----------------------//
-void Task::Control_AltInt(int trNum) {
+void Task::Control_AltInt(int trNum) {  //поиск управлени€ методом построени€ јльтенированного интеграла ѕонтр€гина
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(*cP), tmpQNet(*cQ);
 	unsigned long i, j, k, m;
@@ -394,7 +398,7 @@ void Task::Control_AltInt(int trNum) {
 }
 
 // -------------------------------------- control finding----------------------//
-void Task::Control_R1(int trNum) {
+void Task::Control_R1(int trNum) { //поиск управлени€ в услови€х достумсности информации только о рассто€нии до цели
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(PP.m(), perfomance, steps), tmpQNet(PP.m(), perfomance, steps);
 	unsigned long i, j, k, m;
@@ -586,7 +590,7 @@ void Task::Control_R1(int trNum) {
 }
 
 // -------------------------------------- control finding----------------------//
-void Task::Control_R2(int trNum) {
+void Task::Control_R2(int trNum) { //поиск управлени€ в услови€х достумсности информации только о рассто€нии до цели
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(PP.m(), perfomance, steps), tmpQNet(PP.m(), perfomance, steps);
 	unsigned long i, j, k, m;
@@ -815,7 +819,7 @@ void Task::Control_R2(int trNum) {
 }
 
 // -------------------------------------- control finding----------------------//
-void Task::Control_Pontryagin(int trNum) {
+void Task::Control_Pontryagin(int trNum) {  //поиск управлени€ первым методом преследовани€ ѕонтр€гина
 	TNetF c(PP.m(), perfomance, steps), x_Net(c);
 	TNetF tmpPNet(*cP), tmpQNet(*cQ);
 	unsigned long i, j, k, m;

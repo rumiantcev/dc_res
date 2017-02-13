@@ -35,7 +35,7 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	cout<<localPath<<endl;
 
 	cout << "Begin.." << endl;
-	cout << "¬ерси€: 02.03.2016" << endl;
+	cout << "¬ерси€: 07.01.2017" << endl;
 	tl.loadGlobalParameters();
 	cout << "Parameters are loaded" << endl;
 
@@ -63,5 +63,5 @@ int _test(){//дл€ последовательного переноса содержимого в dc_res_test
    r = c - n;//геометрическа€ разность
    //cout << r;
 
-  delete L;
+  delete[] L;
 }

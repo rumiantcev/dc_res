@@ -20,13 +20,16 @@ public:
 	long ind;
 	vector<TNetF*>NetList;
 	VecOfLong psiExtr; // «начени€ psi на которых достигаетс€ extr
-  //	VecOfVec uu_i, vv_i, xx_i; //траетори€ и управлени€ дл€ Ќ≈фиксированного времени
-	Matrix *u_i, *v_i, *x_i; //траетори€ и управлени€ дл€ фиксированного времени
+
+  //	VecOfVec uu_i, vv_i, xx_i; //траектори€ и управлени€ дл€ Ќ≈фиксированного времени
+	Matrix *u_i, *v_i, *x_i; //траектори€ и управлени€ дл€ фиксированного времени
 	VecOfVec vecBrige;
 	VecOfVec w;
 
-	~Traectory();
 	Traectory();
+  	Traectory(const Traectory &from);
+	~Traectory();
+
 
 };
 // ---------------------------------------------------------------------------

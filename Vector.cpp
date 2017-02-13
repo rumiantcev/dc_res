@@ -293,7 +293,9 @@ void __fastcall Vector::update() const {
 }
 
 Vector* __fastcall Vector::copy(Vector* src, Vector* dst) {
-	if ((src != NULL) && (dst != NULL) && (src->v == dst->v))
+	if ((src != NULL) &&
+		(dst != NULL) &&
+		(src->v == dst->v))
 		return dst;
 	if (dst != NULL) {
 		delete dst;

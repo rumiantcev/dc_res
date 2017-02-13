@@ -33,7 +33,7 @@ LDouble& Matrix:: operator()(unsigned long i, unsigned long j) {
  delete (void*) p;
  else
  p=NULL;
- }/* */
+ } */
 // ------------------------------- destructor ---------------------------------//
 __fastcall Matrix::~Matrix() {
 	// if (--v->linkCount==0)
@@ -162,9 +162,10 @@ const Matrix __fastcall operator *(const LDouble &scalar, const Matrix &A)
 const Vector __fastcall operator *(const Matrix &A, const Vector& B) {
 	unsigned long i, j;
 	Vector result(A.v->m);
+	LDouble sum;
 
 	for (i = 0; i < A.v->m; i++) {
-		LDouble sum = 0;
+		sum = 0;
 		for (j = 0; j < A.v->n; j++)
 			sum += B.v->v[j] * A.v->v[i][j];
 		result.v->v[i] = sum;
@@ -205,7 +206,7 @@ ostream& __fastcall operator << (ostream& out_data, Matrix& C) {
 	if (!C.updated)
 		C.update();
 	for (i = 0; i < C.v->m; i++) {
-		out_data /* <<i /* */ << "[";
+		out_data /* <<i  */ << "[";
 		for (j = 0; j < C.v->n - 1; j++)
 			out_data << C.v->v[i][j] << ",";
 		out_data << C.v->v[i][C.v->n - 1];
@@ -422,7 +423,7 @@ Vector __fastcall Solve(const Matrix& A, const Vector& b, LDouble epsilon) {
 		k++;
 	}
 	// обратная подстановка
-	for (k = n - 1; k >= 0; k--) {
+	for (k = n - 1; k >/* = */ 0; k--) {
 		result[k] = y[k];
 		for (i = 0; i < k; i++)
 			y[i] -= a.v->v[i][k] * result[k];

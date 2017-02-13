@@ -1224,7 +1224,7 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 				// поиск методом эмул€ции отжига
 				do{ //если выбран pinMark индекс - идЄм дальше
 					j = _lrand() % (net.Count);
-				}while (f->v->v[j1] == pinMark);
+				}while (f->v->v[j] == pinMark);
 				while (t > tmin) {
 					sk = scm(j, vec, &net,NULL);
 					if (sk > zeroPrecision) {

@@ -135,7 +135,8 @@ void TaskLoader::load_and_calc_tasks(){
 		if (type == "pursue_run"){
 			prTask = static_cast<PR_Task*>(taskList[j]);
 			//prTask->Control_PR(0);
-			prTask->Control_PR_fullSets(0);
+		  //	prTask->Control_PR_fullSets(0);
+			Control_PR_fullSets_smooth(0,*prTask);
 		}
 		elapsed = clock()-before;  //замер времени начала выполнения расчётов
 
@@ -457,6 +458,6 @@ Task* TaskLoader::loadTask(string szFileName) {
 	else
 	{
 		cout<< " Unable to open file. Does it exist?"<<endl;;
-		return false;
+		return NULL;
 	}
 }

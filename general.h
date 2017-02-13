@@ -53,6 +53,7 @@ typedef alphType::value_type aplhVal;
 typedef std::map<long, bool>seekType;
 typedef std::list<long>pathType;
 typedef std::vector<long>VecOfLong;
+typedef std::vector<bool>VecOfBool;
 typedef std::vector<Vector*>VecOfVec;
 
 

@@ -358,7 +358,8 @@ void Vector::one() {
 }
 //------------------------- двоичное представление val -----------------------//
 int Vector::toBinary(unsigned long val) {
-	unsigned long len(log(val)/log(2));
+	unsigned long len(log(static_cast<LDouble>(val))
+					/log(2.0));
 	unsigned long i, rem, quot;
 
 	if (size() <= len) {

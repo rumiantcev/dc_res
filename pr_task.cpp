@@ -95,9 +95,7 @@ void PR_Task::Find_Ns(int trNum) {
 
 		cout << t << endl;
 	}
-	//return *this;        //?
-		/**/
-		//
+
 }
 
 // ------ расчёт множеств альтернированных интегралов преследователей - Костыль --------//
@@ -147,7 +145,6 @@ void PR_Task::calcNextAltInt(int trNum, LDouble t){
 	PiEtAk = PiEtA * intEtA;
 
 	calcNextAltInt(trNum, t, /*PiEtA,*/ PiEtAk, PiEtAkB/*,PiEtAkC*/,c);
-
 }
 
 void PR_Task::calcNextAltInt(int trNum, LDouble t, /* Matrix& PiEtA,*/ Matrix& PiEtAk, Matrix& PiEtAkB, /* Matrix& PiEtAkC,*/ TNetF& c){
@@ -205,11 +202,7 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 	//PiEtAx0.update();
 
 	// опорная функция PiEtA*x0 - строим пользуясь тем что это просто скалярное произведение
-	for (i = 0; i < x0Net.Count; i++)
-		if (x0Net.f->v->v[i] != pinMark){
-			x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
-		}
-
+	x0Net = point_oporn(PiEtAx0, x0Net, i);
 	Net = c + (-1) * x0Net;
 
 	Ind = Net.GetExtrGlobal(opMin,  Ind, min);
@@ -221,34 +214,10 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 		PiEtA = PP * EtA;
 		PiEtAk = PiEtA * intEtA;
 		calcNextAltInt( trNum, t, /*PiEtA,*/ PiEtAk,PiEtAkB,/*PiEtAkC,*/ c);
-		//-----------------
-		/*
-		PiEtAkB = PiEtAk * B;
-		//PiEtAkC = PiEtAk * C;
-		tmpPNet = *cP;
-		//cP->update();
-		//tmpQNet = *cQ;
-		// cQ->update();
-		tmpPNet.oporn(t, 1);
-		//tmpQNet.oporn(t, 1);
-		tmpPNet *= PiEtAkB;
-		//tmpQNet *= PiEtAkC;
-		tmpPNet.update();
-		//tmpQNet.update();
-
-		c = c + tmpPNet;
-		//c -= tmpQNet; // геометрическая разность
-		c.update();
-		*/
+	
 		PiEtAx0 = PiEtA * tr_s[trNum].x0;
 		// опорная функция PiEtA*x0 - строим пользуясь тем что это просто скалярное произведение
-		for (i = 0; i < x0Net.Count; i++)
-			if (x0Net.f->v->v[i] != pinMark){
-				x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
-			}
-
-	   //	tr_s[trNum].NetList.push_back(new TNetF(c));
-		// Сохраняем для последующего поиска Psi
+		x0Net = point_oporn(PiEtAx0, x0Net, i);
 		Net = c + (-1) * x0Net;
 		//Net.update();
 		Ind = Net.GetExtrGlobal(opMin,   Ind, min);
@@ -299,11 +268,7 @@ void PR_Task::Control_PR(int trNum) {
 			PiEtA = PP * EtA;
 			PiEtAx = PiEtA * x_i;
 
-			for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
-				x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
-				c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
-			}
-
+			pointGeomDiff(trNum, i, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
 			//выбираем psi
 			Ind = c.GetExtrGlobal(opMin, 0, min_x);
 		} else{
@@ -315,12 +280,7 @@ void PR_Task::Control_PR(int trNum) {
 				EtA = Exponential(A, t, precision);
 				PiEtA = PP * EtA;
 				PiEtAx = PiEtA * x_i;
-				for (i = 0; i < x_Net.Count; i++){
-					if (x_Net.f->v->v[i] != pinMark){
-						x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
-						c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
-					}
-				}
+				pointGeomDiff(trNum, i, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
 
 				Ind = c.GetExtrGlobal(opMin, 0, min_x);
 
@@ -414,51 +374,12 @@ void PR_Task::Control_PR(int trNum) {
 		//находим следующий  x_i  методом  Рунге-Кутты
 		x_i = rungeCutt(x_i, u_i, v_i);
 
-//		if(!isCollisionPossible){  //в противном случае надо проверить  не попали ли внуть множетва управляемости
-//			t -= tau;
-//			k--;
-//		}
-
-		//сохраняем результаты расчётов
-		r_i =  new Vector(x_i);
-		r_i->detach();
-		vx_i.push_back(r_i);
-		//cout<<x_i;
-		r_i =  new Vector(u_i);
-		r_i->detach();
-		vu_i.push_back(r_i);
-		r_i =  new Vector(v_i);
-		r_i->detach();
-		vv_i.push_back(r_i);
+		storeLocResults(u_i, v_i, x_i, vx_i, vu_i, vv_i, r_i);//сохраняем промежуточные результаты расчётов
 
 		j++;
 	}
 
-	 /* TODO -orum : Сделать отдеьный конструктор из вектора векторов в матрицу */
-	k= vx_i.size()-1;
-	tr_s[trNum].x_i = new Matrix(k+1, dim_x);
-	// массив векторов со значениями  x_i
-	tr_s[trNum].u_i = new Matrix(k, dim_u);
-	// массив векторов со значениями  u_i
-	tr_s[trNum].v_i = new Matrix(k, dim_v);
-	// массив векторов со значениями  v_i
-
-	for (m = 0; m < dim_x; m++)
-			tr_s[trNum].x_i->v->v[0][m] = vx_i[0]->v->v[m];
-	for (j=0; j < k; j++) {
-		//сохраняем результаты расчётов
-		for (m = 0; m < dim_u; m++)
-			tr_s[trNum].u_i->v->v[j][m] = vu_i[j]->v->v[m];
-		for (m = 0; m < dim_v; m++)
-			tr_s[trNum].v_i->v->v[j][m] = vv_i[j]->v->v[m];
-		for (m = 0; m < dim_x; m++)
-			tr_s[trNum].x_i->v->v[j + 1][m] = vx_i[j+1]->v->v[m];
-	  // cout<<*vx_i[j+1];
-	}
-
-	for_each(vx_i.begin(), vx_i.end(), DeleteObj());
-	for_each(vu_i.begin(), vu_i.end(), DeleteObj());
-	for_each(vv_i.begin(), vv_i.end(), DeleteObj());
+	k = storeResults(trNum, j, m, k, vx_i, vu_i, vv_i); //сохраняем  результаты расчётов
 	//--------------------------------------------------------------------
 	cout<<k;
 }
@@ -574,7 +495,6 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 	k = tr_s[trNum].NetList.size()-1;
 	k_up=k;
 
-
 	x_i = tr_s[trNum].x0; // заполняем x_i  начальным значением
 	r_i =  new Vector(x_i);
 	r_i->detach();
@@ -592,12 +512,7 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 			PiEtA = PP * EtA;
 			PiEtAx = PiEtA * x_i;
 
-			for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
-				if (x_Net.f->v->v[i] != pinMark){
-					x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
-					c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
-				}
-			}
+			pointGeomDiff(trNum, i, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
 
 			//выбираем psi
 			Ind = c.GetExtrGlobal(opMin, 0, min_x);
@@ -610,12 +525,8 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 				EtA = Exponential(A, t, precision);
 				PiEtA = PP * EtA;
 				PiEtAx = PiEtA * x_i;
-				for (i = 0; i < x_Net.Count; i++){
-					if (x_Net.f->v->v[i] != pinMark){
-						x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
-						c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
-					}
-				}
+
+				pointGeomDiff(trNum, i, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
 
 				Ind = c.GetExtrGlobal(opMin, 0, min_x);
 
@@ -719,57 +630,18 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 			}
 		   }
 		   //подобрать подходящее множество из воронки
-		 //
-
-
 		}   /**/
 
 		cout << (j) * tau << " : "<< t << " : " << x_i<< " : " << u_i;
 		//находим следующий  x_i  методом  Рунге-Кутты
 		x_i = rungeCutt(x_i, u_i, v_i);
 
-
-		//сохраняем результаты расчётов
-		r_i =  new Vector(x_i);
-		r_i->detach();
-		vx_i.push_back(r_i);
-		//cout<<x_i;
-		r_i =  new Vector(u_i);
-		r_i->detach();
-		vu_i.push_back(r_i);
-		r_i =  new Vector(v_i);
-		r_i->detach();
-		vv_i.push_back(r_i);
+		storeLocResults(u_i, v_i, x_i, vx_i, vu_i, vv_i, r_i);//сохраняем промежуточные результаты расчётов
 
 		j++;
 	}
 
-	tr_s[trNum].T= (j) * tau;
-	 /* TODO -orum : Сделать отдеьный конструктор из вектора векторов в матрицу */
-	k= vx_i.size()-1;
-	tr_s[trNum].x_i = new Matrix(k+1, dim_x);
-	// массив векторов со значениями  x_i
-	tr_s[trNum].u_i = new Matrix(k, dim_u);
-	// массив векторов со значениями  u_i
-	tr_s[trNum].v_i = new Matrix(k, dim_v);
-	// массив векторов со значениями  v_i
-
-	for (m = 0; m < dim_x; m++)
-			tr_s[trNum].x_i->v->v[0][m] = vx_i[0]->v->v[m];
-	for (j=0; j < k; j++) {
-		//сохраняем результаты расчётов
-		for (m = 0; m < dim_u; m++)
-			tr_s[trNum].u_i->v->v[j][m] = vu_i[j]->v->v[m];
-		for (m = 0; m < dim_v; m++)
-			tr_s[trNum].v_i->v->v[j][m] = vv_i[j]->v->v[m];
-		for (m = 0; m < dim_x; m++)
-			tr_s[trNum].x_i->v->v[j + 1][m] = vx_i[j+1]->v->v[m];
-	  // cout<<*vx_i[j+1];
-	}
-
-	for_each(vx_i.begin(), vx_i.end(), DeleteObj());
-	for_each(vu_i.begin(), vu_i.end(), DeleteObj());
-	for_each(vv_i.begin(), vv_i.end(), DeleteObj());
+	k = storeResults(trNum, j, m, k, vx_i, vu_i, vv_i);  //сохраняем результаты расчётов
 	//--------------------------------------------------------------------
 	cout<<k;
 }
@@ -831,12 +703,9 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 	VecOfBool vec_cp; // Значения  признака collisionPossible вдоль траектории
 	alphType vec_t;//значения t вдоль траектории
 
-
-
 	j = 0;
 	k = mt.tr_s[trNum].NetList.size()-1;
 	k_up=k; //"наибольшее" удаление
-
 
 	x_i = mt.tr_s[trNum].x0; // заполняем x_i  начальным значением
 	r_i =  new Vector(x_i);
@@ -856,13 +725,7 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 			PiEtA = mt.PP * EtA;
 			PiEtAx = PiEtA * x_i;
 
-			for (i = 0; i < x_Net.Count; i++) {// считаем опорную функцию точки PiEtAx
-				if (x_Net.f->v->v[i] != mt.pinMark){
-					x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
-					c.f->v->v[i] = mt.tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
-				}
-			}
-
+			mt.pointGeomDiff(trNum, i, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
 			//выбираем psi
 			Ind = c.GetExtrGlobal(opMin, 0, min_x);
 		} else{
@@ -875,12 +738,7 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 				PiEtA = mt.PP * EtA;
 				PiEtAx = PiEtA * x_i;
 				//cout << k << endl;
-				for (i = 0; i < x_Net.Count; i++){
-					if (x_Net.f->v->v[i] != mt.pinMark){
-						x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
-						c.f->v->v[i] = mt.tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
-					}
-				}
+				mt.pointGeomDiff(trNum, i, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
 
 				Ind = c.GetExtrGlobal(opMin, 0, min_x);
 
@@ -988,66 +846,13 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 
 		cout << (j) * mt.tau << " : "<< t << " : " << x_i<< " : " << u_i;
 
-
-	  if(isCollisionPossible && /*(vec_k.size()>0)*/(vec_cp[vec_cp.size()-1]!=true)){
-			//находим следующий  x_i  методом  Рунге-Кутты т.е. место куда "отскочит" траектория под управлением уклонения
-			x_i = mt.rungeCutt(x_i, u_i, v_i);
-		   // если препятствие есть и есть куда отклониться, а также отклонение не стачала, то создаём копию объкета, даём начальную точку x_{i-2}, конечную точку считаем x_i
-			PR_Task mid_step(mt); //для этого создаём новую задачу
-			vector<Traectory>ms_tr_s;
-			Traectory tr;
-			vector<TNetF*>ms_NetList;
-		   //	ms_tr_s.clear();
-			mid_step.tr_s = ms_tr_s;
-			Vector mid_x_0(*vx_i[j-1]);  //в качестве начальной точки выбираем x(t_{i-1})
-			Vector mid_x_t(x_i); //в качестве терминального множества  x(t_{i}) + сферка малого радиуса
-			tr =  mt.tr_s[trNum];
-			tr.x0 = mid_x_0;
-			tr.NetList = ms_NetList;
-			mid_step.tr_s.push_back(tr);
-		   //	cout <<"Начало: "<< mid_x_0 ;
-		 //	cout <<"Конец: "<< mid_x_t << endl;
-			int ii;
-			string str = "";
-			for (ii = 0; ii < mid_step.dim_m-1; ii++) {
-				str = str + "p"+ldToStr(ii)+"*"+ldToStr(mid_x_t[ii])+"+";
-			}
-			str = str + "p"+ldToStr(ii)+"*"+ldToStr(mid_x_t[ii]);
-			mid_step.setFuncToNetF(*(mid_step.cM), str);
-			mid_step.calcPursuerSets(trNum);
-			mid_step.TimeCalc_PR(trNum);
-			mid_step.Control_PR_fullSets(trNum);
-			u_i = mid_step.tr_s[trNum].u_i->GetRow(0);
-			x_i = mid_x_0;
-			k  = vec_k[vec_k.size()-1];
-			vec_k.pop_back();
-			j  = vec_j[vec_j.size()-1];
-			vec_j.pop_back();
-			t  = vec_t[vec_t.size()-1];
-
-			vec_t.pop_back();
-			vx_i.pop_back();
-			vu_i.pop_back();
-			vv_i.pop_back();
-			vec_cp.pop_back();
-
-			//cout<<u_i<<x_i<<endl;
-			/**/
-		}  /**/
+	  if(isCollisionPossible && (vec_cp[vec_cp.size()-1]!=true)) //шаг рекурсивного поиска управления (под сглаживание)
+			recusionStep(trNum, mt, v_i, vx_i, vu_i, vv_i, vec_j,
+					   vec_k, vec_cp, vec_t, j, k, t, u_i, x_i);
 
 		//находим следующий  x_i  методом  Рунге-Кутты
 		x_i = mt.rungeCutt(x_i, u_i, v_i);
-		//сохраняем результаты расчётов
-		r_i =  new Vector(x_i);
-		r_i->detach();
-		vx_i.push_back(r_i);
-		//cout<<x_i;
-		r_i =  new Vector(u_i);
-		r_i->detach();
-		vu_i.push_back(r_i);
-		r_i =  new Vector(v_i);
-		r_i->detach();
-		vv_i.push_back(r_i);
+		mt.storeLocResults(u_i, v_i, x_i, vx_i, vu_i, vv_i, r_i);//сохраняем промежуточные результаты расчётов
 
 		vec_j.push_back(j);
 		vec_k.push_back(k);
@@ -1057,30 +862,118 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 		j++;
 	}
 
-	mt.tr_s[trNum].T= (j) * mt.tau;
-	 /* TODO -orum : Сделать отдеьный конструктор из вектора векторов в матрицу */
-	k= vx_i.size()-1;
-	mt.tr_s[trNum].x_i = new Matrix(k+1, mt.dim_x);    	// массив векторов со значениями  x_i
-	mt.tr_s[trNum].u_i = new Matrix(k, mt.dim_u);  	// массив векторов со значениями  u_i
-	mt.tr_s[trNum].v_i = new Matrix(k, mt.dim_v);  	// массив векторов со значениями  v_i
+	k = mt.storeResults(trNum, j, m, k, vx_i, vu_i, vv_i); //сохраняем результаты расчётов
 
-	for (m = 0; m < mt.dim_x; m++)
-			mt.tr_s[trNum].x_i->v->v[0][m] = vx_i[0]->v->v[m];
-	for (j=0; j < k; j++) {
-		//сохраняем результаты расчётов
-		for (m = 0; m < mt.dim_u; m++)
-			mt.tr_s[trNum].u_i->v->v[j][m] = vu_i[j]->v->v[m];
-		for (m = 0; m < mt.dim_v; m++)
-			mt.tr_s[trNum].v_i->v->v[j][m] = vv_i[j]->v->v[m];
-		for (m = 0; m < mt.dim_x; m++)
-			mt.tr_s[trNum].x_i->v->v[j + 1][m] = vx_i[j+1]->v->v[m];
-	  // cout<<*vx_i[j+1];
-	}
-
-	for_each(vx_i.begin(), vx_i.end(), DeleteObj());
-	for_each(vu_i.begin(), vu_i.end(), DeleteObj());
-	for_each(vv_i.begin(), vv_i.end(), DeleteObj());
 	//--------------------------------------------------------------------
 	cout<<k;
 }
 
+// опорная функция PiEtA*x0 - строим пользуясь тем что это просто скалярное произведение
+TNetF &PR_Task::point_oporn(const Vector &PiEtAx0, TNetF &x0Net, unsigned long i) const {
+    for (i = 0; i < x0Net.Count; i++)
+          if (x0Net.f->v->v[i] != pinMark){
+              x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
+          }
+	return x0Net;
+}
+
+void PR_Task::pointGeomDiff(int trNum, unsigned long i, unsigned long k, const Vector &PiEtAx, TNetF &c, TNetF &x_Net) const {
+    for (i = 0; i < x_Net.Count; i++){
+		if (x_Net.f->v->v[i] != pinMark){
+			x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
+			c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
+		}
+	}
+}
+
+unsigned long
+PR_Task::storeResults(int trNum, unsigned long j, unsigned long m, unsigned long k, VecOfVec &vx_i, VecOfVec &vu_i,
+                      VecOfVec &vv_i) {
+    tr_s[trNum].T= (j) * tau;
+    /* TODO -orum : Сделать отдеьный конструктор из вектора векторов в матрицу */
+    k= vx_i.size()-1;
+    tr_s[trNum].x_i = new Matrix(k + 1, dim_x);
+    // массив векторов со значениями  x_i
+    tr_s[trNum].u_i = new Matrix(k, dim_u);
+    // массив векторов со значениями  u_i
+    tr_s[trNum].v_i = new Matrix(k, dim_v);
+    // массив векторов со значениями  v_i
+
+    for (m = 0; m < dim_x; m++)
+			tr_s[trNum].x_i->v->v[0][m] = vx_i[0]->v->v[m];
+    for (j=0; j < k; j++) {
+		//сохраняем результаты расчётов
+		for (m = 0; m < dim_u; m++)
+			tr_s[trNum].u_i->v->v[j][m] = vu_i[j]->v->v[m];
+		for (m = 0; m < dim_v; m++)
+			tr_s[trNum].v_i->v->v[j][m] = vv_i[j]->v->v[m];
+		for (m = 0; m < dim_x; m++)
+			tr_s[trNum].x_i->v->v[j + 1][m] = vx_i[j + 1]->v->v[m];
+	  // cout<<*vx_i[j+1];
+	}
+
+    for_each(vx_i.begin(), vx_i.end(), DeleteObj());
+    for_each(vu_i.begin(), vu_i.end(), DeleteObj());
+    for_each(vv_i.begin(), vv_i.end(), DeleteObj());
+    return k;
+}
+
+void PR_Task::storeLocResults(const Vector &u_i, const Vector &v_i, const Vector &x_i, VecOfVec &vx_i, VecOfVec &vu_i,
+							  VecOfVec &vv_i, Vector *r_i) const {//сохраняем результаты расчётов
+    r_i =  new Vector(x_i);
+    r_i->detach();
+    vx_i.push_back(r_i);
+    //cout<<x_i;
+    r_i =  new Vector(u_i);
+    r_i->detach();
+    vu_i.push_back(r_i);
+    r_i =  new Vector(v_i);
+    r_i->detach();
+    vv_i.push_back(r_i);
+}
+
+void recusionStep(int trNum, PR_Task &mt, const Vector &v_i, VecOfVec &vx_i, VecOfVec &vu_i, VecOfVec &vv_i,
+				  VecOfLong &vec_j, VecOfLong &vec_k, VecOfBool &vec_cp, alphType &vec_t, unsigned long &j,
+				  unsigned long &k, LDouble &t, Vector &u_i, Vector &x_i) {
+	//находим следующий  x_i  методом  Рунге-Кутты т.е. место куда "отскочит"
+    //траектория под управлением уклонения  при условии, если до этого  не применялось управление уклонения
+    x_i = mt.rungeCutt(x_i, u_i, v_i);
+    // если препятствие есть и есть куда отклониться, а также отклонение не стачала, то создаём копию объкета, даём начальную точку x_{i-2}, конечную точку считаем x_i
+    PR_Task mid_step(mt); //для этого создаём новую задачу
+    vector<Traectory>ms_tr_s;
+    Traectory tr;
+    vector<TNetF*>ms_NetList;
+    //	ms_tr_s.clear();
+    mid_step.tr_s = ms_tr_s;
+    Vector mid_x_0(*vx_i[j-1]);  //в качестве начальной точки выбираем x(t_{i-1})
+    Vector mid_x_t(x_i); //в качестве терминального множества  x(t_{i}) + сферка малого радиуса
+    tr =  mt.tr_s[trNum];
+    tr.x0 = mid_x_0;
+    tr.NetList = ms_NetList;
+    mid_step.tr_s.push_back(tr);
+    //	cout <<"Начало: "<< mid_x_0 ;
+    //	cout <<"Конец: "<< mid_x_t << endl;
+    int ii;
+    string str = "";
+    for (ii = 0; ii < mid_step.dim_m-1; ii++) {
+				str = str + "p"+ldToStr(ii)+"*"+ldToStr(mid_x_t[ii])+"+";
+			}
+    str = str + "p"+ldToStr(ii)+"*"+ldToStr(mid_x_t[ii]);
+    mid_step.setFuncToNetF(*(mid_step.cM), str);
+    mid_step.calcPursuerSets(trNum);
+    mid_step.TimeCalc_PR(trNum);
+    mid_step.Control_PR_fullSets(trNum);
+    u_i = mid_step.tr_s[trNum].u_i->GetRow(0);
+    x_i = mid_x_0;
+    k  = vec_k[vec_k.size()-1];
+    vec_k.pop_back();
+    j  = vec_j[vec_j.size()-1];
+    vec_j.pop_back();
+    t  = vec_t[vec_t.size()-1];
+
+    vec_t.pop_back();
+    vx_i.pop_back();
+    vu_i.pop_back();
+    vv_i.pop_back();
+    vec_cp.pop_back();
+}

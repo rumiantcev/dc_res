@@ -375,3 +375,16 @@ int Vector::toBinary(unsigned long val) {
 	}
     return 0;
 }
+//---------------------- перегрузка оператора сравнения веторов---------------//
+ bool operator== ( const Vector& a, const Vector& b){
+	unsigned long i;
+
+   //	cout << a[0]<<" , " <<b[0];
+	if(a.size() != b.size()) //сравниваем размеры массивов объектов , "В массивах разное количество элементов\n";
+		return false;
+		else //проверяем равны ли данныев в ячейках массивов
+			for ( i = 0; i < a.size(); i++)
+				if(a[i] != b[i]) //"Значения массивов не равны\n";
+					return false;
+	return true;
+ }

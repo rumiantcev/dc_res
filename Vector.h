@@ -83,6 +83,7 @@ public:
 	void __fastcall norm(const LDouble& halfRes);
 	LDouble __fastcall norm();
 	friend const LDouble eu_dist(const Vector&, const Vector&);
+	friend bool operator== ( const Vector&, const Vector&);
 };
 // ---------------------------------------------------------------------------
 #endif

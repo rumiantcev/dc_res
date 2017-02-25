@@ -17,13 +17,9 @@ Traectory::Traectory() {
 	ind =0;
 }
 
-Traectory::Traectory(const Traectory &from){
+Traectory::Traectory(const Traectory &from):
+	x0(from.x0),psi(from.psi),mu(from.mu),T(from.T),ind(from.ind){
 
-	x0 = from.x0;
-	psi = from.psi;
-	mu = from.mu;
-	T = from.T;
-	ind = from.ind;
 	//переносим "альтернированный интеграл"
 	NetList.reserve(from.NetList.size());
 	long i;

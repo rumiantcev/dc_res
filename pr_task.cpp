@@ -76,9 +76,9 @@ void PR_Task::Find_Ns(int trNum) {
 		   //	tmpNet = tmpQNet - tmpPNet;
 			NiNet = NiNet + tmpQNet;
 			NiNet -= tmpPNet; // геометрическая разность
-			cout<<NiNet<<endl;
+		 //	cout<<NiNet<<endl;
 		  /* */
-			cout << NiNet.is_empty << endl;
+		 //	cout << NiNet.is_empty << endl;
 			if (tmpNet.is_empty) {
 				break;
 			}
@@ -93,7 +93,7 @@ void PR_Task::Find_Ns(int trNum) {
 	  //	if (c!=NULL) delete c;// c тем, чтобы корректно разрушить то, что иы удаляешь из tmpList
 		tmplist.pop_back();
 
-		cout << t << endl;
+	   //	cout << t << endl;
 	}
 
 }
@@ -185,6 +185,11 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 	unsigned  long i;
 	long Ind = 0;
 
+	if (tr_s[trNum].NetList.size()>0){// если задачка решается повторно - зачищаем предыдущие результаты
+		tr_s[trNum].NetList.clear();
+		tr_s[trNum].psiExtr.clear();
+	}
+
 	// интегрирование методом трапеций по двум точкам
 	intEtA = (0.5 * tau) * (Exponential(A, 0, precision) + Exponential(A, -tau, precision));
 	intEtA.update();
@@ -196,7 +201,7 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 
 	EtA = Exponential(A, t, precision);
 	PiEtA = PP * EtA;
-	cout << tr_s[0].x0<< endl;
+   //	cout << tr_s[0].x0<< endl;
 
 	PiEtAx0 = PiEtA * tr_s[trNum].x0;
 	//PiEtAx0.update();
@@ -206,7 +211,7 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 	Net = c + (-1) * x0Net;
 
 	Ind = Net.GetExtrGlobal(opMin,  Ind, min);
-	cout << min << endl;
+   //	cout << min << endl;
 	while (min < 0) {
 		t += tau;
 		min = -1;
@@ -222,9 +227,12 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 		//Net.update();
 		Ind = Net.GetExtrGlobal(opMin,   Ind, min);
 		tr_s[trNum].psiExtr.push_back(Ind);
-		cout << min << " : " << Ind << " : " << t << endl;
+	 //	cout << min << " : " << Ind << " : " << t << endl;
 	}
-	tr_s[trNum].T = t;
+	if (t <= tau)
+		return -1;
+
+	 tr_s[trNum].T = t;
 	/* */
 	return t;
 }
@@ -268,7 +276,7 @@ void PR_Task::Control_PR(int trNum) {
 			PiEtA = PP * EtA;
 			PiEtAx = PiEtA * x_i;
 
-			pointGeomDiff(trNum, i, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
+			pointGeomDiff(trNum, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
 			//выбираем psi
 			Ind = c.GetExtrGlobal(opMin, 0, min_x);
 		} else{
@@ -280,7 +288,7 @@ void PR_Task::Control_PR(int trNum) {
 				EtA = Exponential(A, t, precision);
 				PiEtA = PP * EtA;
 				PiEtAx = PiEtA * x_i;
-				pointGeomDiff(trNum, i, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
+				pointGeomDiff(trNum, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
 
 				Ind = c.GetExtrGlobal(opMin, 0, min_x);
 
@@ -370,7 +378,7 @@ void PR_Task::Control_PR(int trNum) {
 
 		}   /**/
 
-		cout << (j) * tau << " : "<< t << " : " << x_i<< " : " << u_i;
+		//cout << (j) * tau << " : "<< t << " : " << x_i<< " : " << u_i;
 		//находим следующий  x_i  методом  Рунге-Кутты
 		x_i = rungeCutt(x_i, u_i, v_i);
 
@@ -379,9 +387,9 @@ void PR_Task::Control_PR(int trNum) {
 		j++;
 	}
 
-	k = storeResults(trNum, j, m, k, vx_i, vu_i, vv_i); //сохраняем  результаты расчётов
+	storeResults(trNum, vx_i, vu_i, vv_i); //сохраняем  результаты расчётов
 	//--------------------------------------------------------------------
-	cout<<k;
+	//cout<<k;
 }
 
 //-------------------постройка множеств откуда возможно преследование----------
@@ -410,7 +418,7 @@ void PR_Task::buildFunnels(pursuerType* pT){
 		func_m = pT->func_m;
 		for (i = 0; i < pT->dim; i++)  //опорная функция привязанная к конкретной точке начала преследования
 			func_m.append("+p"+ intToStr(i) + "*(" + ldToStr(pT->centres[j]->v->v[i])+")");
-		cout << func_m<<endl;
+	   //	cout << func_m<<endl;
 		qNet  =  new TNetF(c);
 		qNet->SetFunc(func_m);
 		qNet->oporn(t0, 1);
@@ -461,7 +469,7 @@ void PR_Task::buildFunnels(pursuerType* pT){
 		  /* */
 			if(c.maxRad>maxRad)
 				maxRad=c.maxRad;
-			cout << c.is_empty<<" : "<< t << endl;
+		//	cout << c.is_empty<<" : "<< t << endl;
 			tmpPr->funnel.push_back(new TNetF(c));
 		}
 		tmpPr->funnelDepth = t;
@@ -474,7 +482,7 @@ void PR_Task::buildFunnels(pursuerType* pT){
 
 
 // -------------------------------------- control finding----------------------//
-void PR_Task::Control_PR_fullSets(int trNum) {
+int PR_Task::Control_PR_fullSets(int trNum) {
 	TNetF c(PP.m(), perfomance, steps), x_Net(c), p_Net(c), px_Net(c);
 	TNetF tmpPNet(*cP), tmpQNet(*cQ);
 	long  timeSign=-1, prevSign;
@@ -512,7 +520,7 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 			PiEtA = PP * EtA;
 			PiEtAx = PiEtA * x_i;
 
-			pointGeomDiff(trNum, i, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
+			pointGeomDiff(trNum, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
 
 			//выбираем psi
 			Ind = c.GetExtrGlobal(opMin, 0, min_x);
@@ -526,7 +534,7 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 				PiEtA = PP * EtA;
 				PiEtAx = PiEtA * x_i;
 
-				pointGeomDiff(trNum, i, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
+				pointGeomDiff(trNum, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
 
 				Ind = c.GetExtrGlobal(opMin, 0, min_x);
 
@@ -583,7 +591,7 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 		for (l=0; l < Pursuers/* *PursuerList*//*NList*/.size(); l++) {
 		   ps = Pursuers[l];
 		   //проверить радиус видимости
-		   cout << eu_dist(*ps->center, x_i)<<endl;
+		  // cout << eu_dist(*ps->center, x_i)<<endl;
 		   if(eu_dist(*ps->center, x_i) <  ps->radarVisibility){
 			fi = ps->funnel.size() - 1;
 			if(ps->currInd >0 ){   //т.е. если при t-tau уже натыкались на множество откуда возможно преследование и уклонялись, то
@@ -632,7 +640,7 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 		   //подобрать подходящее множество из воронки
 		}   /**/
 
-		cout << (j) * tau << " : "<< t << " : " << x_i<< " : " << u_i;
+	   //	cout << (j) * tau << " : "<< t << " : " << x_i<< " : " << u_i;
 		//находим следующий  x_i  методом  Рунге-Кутты
 		x_i = rungeCutt(x_i, u_i, v_i);
 
@@ -640,10 +648,18 @@ void PR_Task::Control_PR_fullSets(int trNum) {
 
 		j++;
 	}
+	if ((vx_i.size()-1)>1) {
+			storeResults(trNum, vx_i, vu_i, vv_i);  //сохраняем результаты расчётов
+		}else{
+            for_each(vx_i.begin(), vx_i.end(), DeleteObj());
+			for_each(vu_i.begin(), vu_i.end(), DeleteObj());
+			for_each(vv_i.begin(), vv_i.end(), DeleteObj());
+			return -1;
+        }
 
-	k = storeResults(trNum, j, m, k, vx_i, vu_i, vv_i);  //сохраняем результаты расчётов
 	//--------------------------------------------------------------------
-	cout<<k;
+   //	cout<<k;
+	return 0;
 }
 
 //------------------------------------------------------------------------
@@ -693,14 +709,20 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 	LDouble t, min, absmin=-1, min_x, extr;
 	Vector PiEtAx(mt.PP.m()), psi(mt.PP.v->m), extrVec(mt.PP.v->m);
 	Vector u_i(mt.cP->Dim), v_i(mt.cQ->Dim), x_i(mt.dim_x);
-	bool isCollisionPossible=false, isInit;
+	bool isCollisionPossible=false,  //признак возможности попадания на множество откуда возможно завершение преследования
+		  isInit, //признак начала, может сдвигаться при увеличении альт. инетграла Понтрягина
+		  isControlChange = false; //признак переключения режима управления  преследование<->убегание
+	long controlType = -1;//признак типа управления -1- преследование, 0 - рекурсия, 1 - убегание
+	long prevCt,prevCt2;
+	bool isCtrlChangeNextStep=false;
 	Pursuer* ps;
 
 	VecOfVec vx_i, vu_i, vv_i;
-	Vector *r_i;
+	Vector *r_i, *prev_u_i;
 
 	VecOfLong vec_j, vec_k; // Значения индексов j и k вдоль траектории
-	VecOfBool vec_cp; // Значения  признака collisionPossible вдоль траектории
+	VecOfLong vec_ct; // Значения  признака controlType  вдоль траектории
+    vec_ct.push_back(controlType);
 	alphType vec_t;//значения t вдоль траектории
 
 	j = 0;
@@ -725,7 +747,7 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 			PiEtA = mt.PP * EtA;
 			PiEtAx = PiEtA * x_i;
 
-			mt.pointGeomDiff(trNum, i, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
+			mt.pointGeomDiff(trNum, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
 			//выбираем psi
 			Ind = c.GetExtrGlobal(opMin, 0, min_x);
 		} else{
@@ -738,7 +760,7 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 				PiEtA = mt.PP * EtA;
 				PiEtAx = PiEtA * x_i;
 				//cout << k << endl;
-				mt.pointGeomDiff(trNum, i, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
+				mt.pointGeomDiff(trNum, k, PiEtAx, c, x_Net);// считаем опорную функцию точки PiEtAx
 
 				Ind = c.GetExtrGlobal(opMin, 0, min_x);
 
@@ -792,14 +814,17 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 		tmpPNet *= PiEtAB;
 		absmin = 0.0;
 		isCollisionPossible = false;
+		controlType  = -1;
+		//vec_ct.push_back(controlType);
+
 		for (l=0; l < mt.Pursuers/* *PursuerList*//*NList*/.size(); l++) {
 		   ps = mt.Pursuers[l];
 		   //проверить радиус видимости
-		   cout << eu_dist(*ps->center, x_i)<<endl;
+		   //cout << eu_dist(*ps->center, x_i)<<endl;
 		   if(eu_dist(*ps->center, x_i) <  ps->radarVisibility){
 			fi = ps->funnel.size() - 1;
 			if(ps->currInd >0 ){   //т.е. если при t-tau уже натыкались на множество откуда возможно преследование и уклонялись, то
-				n= ps->currInd;    //при  надо проверить, накнёмся ли при t
+				n = ps->currInd;    //при  надо проверить, накнёмся ли при t
 				ps->currInd = 0;
 			}else                 //иначе считаем, что все проверки с начала "воронки"
 				n=0;
@@ -836,6 +861,9 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 						//v_i.v->v[m] =   cQ->getIJ(Ind, m);
 						//v_i=cQ->getBorderPoint(Ind,v_i);
 						ps->currInd = n;  //запоминаем время в которое оттолкнулись от множества из котороно возможно преследование
+
+						controlType  = 1;
+
 						break;
 					}
 				}
@@ -844,25 +872,50 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 		   //подобрать подходящее множество из воронки
 		}   /**/
 
-		cout << (j) * mt.tau << " : "<< t << " : " << x_i<< " : " << u_i;
 
-	  if(isCollisionPossible && (vec_cp[vec_cp.size()-1]!=true)) //шаг рекурсивного поиска управления (под сглаживание)
-			recusionStep(trNum, mt, v_i, vx_i, vu_i, vv_i, vec_j,
-					   vec_k, vec_cp, vec_t, j, k, t, u_i, x_i);
+		prevCt = vec_ct[vec_ct.size()-1];
+		if (
+		   //	(((prevCt == 0)||(prevCt == -1))&&(controlType  == 1))
+		   //	||
+			(isCtrlChangeNextStep)
+		   )
+			isControlChange = true;
+		else
+			isControlChange = false;
+
+		if (
+		(((prevCt == 0)||(prevCt == 1))&&(controlType  == -1))
+		||
+		(((prevCt == 0)||(prevCt == -1))&&(controlType  == 1))
+		)
+				isCtrlChangeNextStep= true;
+			else
+				isCtrlChangeNextStep= false;
+
+	  // isControlChange = (prevCt == controlType)?false:true;
+
+		cout<<"From: " << (j) * mt.tau << " : "<< t << " : " << x_i<< " : " << u_i << " : " << vx_i.size()<< endl;
+
+		 if( isControlChange){ //шаг рекурсивного поиска управления (под сглаживание)
+			recusionStep(trNum, mt, v_i, vx_i, vu_i, vv_i, vec_j, vec_k, vec_t, j, k, t, u_i, x_i);
+		   //	cout <<"Back: "<< (j) * mt.tau << " : "<< t << " : " << x_i<< " : " << u_i << " : " << vx_i.size()<< endl;
+			controlType = 0;
+			isCtrlChangeNextStep= false;
+		}   /**/
 
 		//находим следующий  x_i  методом  Рунге-Кутты
 		x_i = mt.rungeCutt(x_i, u_i, v_i);
 		mt.storeLocResults(u_i, v_i, x_i, vx_i, vu_i, vv_i, r_i);//сохраняем промежуточные результаты расчётов
+		//cout <<"after: "<< (j) * mt.tau << " : "<< t << " : " << x_i<< " : " << u_i << " : " << vec_t.size()<< endl;
 
+		vec_ct.push_back(controlType);
 		vec_j.push_back(j);
 		vec_k.push_back(k);
 		vec_t.push_back(t);
-		vec_cp.push_back(isCollisionPossible);
-
 		j++;
 	}
 
-	k = mt.storeResults(trNum, j, m, k, vx_i, vu_i, vv_i); //сохраняем результаты расчётов
+	mt.storeResults(trNum, vx_i, vu_i, vv_i); //сохраняем результаты расчётов
 
 	//--------------------------------------------------------------------
 	cout<<k;
@@ -877,7 +930,8 @@ TNetF &PR_Task::point_oporn(const Vector &PiEtAx0, TNetF &x0Net, unsigned long i
 	return x0Net;
 }
 
-void PR_Task::pointGeomDiff(int trNum, unsigned long i, unsigned long k, const Vector &PiEtAx, TNetF &c, TNetF &x_Net) const {
+void PR_Task::pointGeomDiff(int trNum,  unsigned long k, const Vector &PiEtAx, TNetF &c, TNetF &x_Net) const {
+    unsigned long i;
     for (i = 0; i < x_Net.Count; i++){
 		if (x_Net.f->v->v[i] != pinMark){
 			x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
@@ -886,15 +940,16 @@ void PR_Task::pointGeomDiff(int trNum, unsigned long i, unsigned long k, const V
 	}
 }
 
-unsigned long
-PR_Task::storeResults(int trNum, unsigned long j, unsigned long m, unsigned long k, VecOfVec &vx_i, VecOfVec &vu_i,
-                      VecOfVec &vv_i) {
-    tr_s[trNum].T= (j) * tau;
+void PR_Task::storeResults(int trNum, VecOfVec &vx_i, VecOfVec &vu_i,  VecOfVec &vv_i) {
+
+	unsigned long j,m, k;
+
+	tr_s[trNum].T= (j) * tau;
     /* TODO -orum : Сделать отдеьный конструктор из вектора векторов в матрицу */
     k= vx_i.size()-1;
     tr_s[trNum].x_i = new Matrix(k + 1, dim_x);
     // массив векторов со значениями  x_i
-    tr_s[trNum].u_i = new Matrix(k, dim_u);
+	tr_s[trNum].u_i = new Matrix(k, dim_u);
     // массив векторов со значениями  u_i
     tr_s[trNum].v_i = new Matrix(k, dim_v);
     // массив векторов со значениями  v_i
@@ -912,10 +967,10 @@ PR_Task::storeResults(int trNum, unsigned long j, unsigned long m, unsigned long
 	  // cout<<*vx_i[j+1];
 	}
 
-    for_each(vx_i.begin(), vx_i.end(), DeleteObj());
-    for_each(vu_i.begin(), vu_i.end(), DeleteObj());
-    for_each(vv_i.begin(), vv_i.end(), DeleteObj());
-    return k;
+	for_each(vx_i.begin(), vx_i.end(), DeleteObj());
+	for_each(vu_i.begin(), vu_i.end(), DeleteObj());
+	for_each(vv_i.begin(), vv_i.end(), DeleteObj());
+   // return k;
 }
 
 void PR_Task::storeLocResults(const Vector &u_i, const Vector &v_i, const Vector &x_i, VecOfVec &vx_i, VecOfVec &vu_i,
@@ -928,52 +983,76 @@ void PR_Task::storeLocResults(const Vector &u_i, const Vector &v_i, const Vector
     r_i->detach();
     vu_i.push_back(r_i);
     r_i =  new Vector(v_i);
-    r_i->detach();
-    vv_i.push_back(r_i);
+	r_i->detach();
+	vv_i.push_back(r_i);
 }
 
 void recusionStep(int trNum, PR_Task &mt, const Vector &v_i, VecOfVec &vx_i, VecOfVec &vu_i, VecOfVec &vv_i,
-				  VecOfLong &vec_j, VecOfLong &vec_k, VecOfBool &vec_cp, alphType &vec_t, unsigned long &j,
+				  VecOfLong &vec_j, VecOfLong &vec_k,   alphType &vec_t, unsigned long &j,
 				  unsigned long &k, LDouble &t, Vector &u_i, Vector &x_i) {
 	//находим следующий  x_i  методом  Рунге-Кутты т.е. место куда "отскочит"
-    //траектория под управлением уклонения  при условии, если до этого  не применялось управление уклонения
-    x_i = mt.rungeCutt(x_i, u_i, v_i);
-    // если препятствие есть и есть куда отклониться, а также отклонение не стачала, то создаём копию объкета, даём начальную точку x_{i-2}, конечную точку считаем x_i
-    PR_Task mid_step(mt); //для этого создаём новую задачу
-    vector<Traectory>ms_tr_s;
-    Traectory tr;
-    vector<TNetF*>ms_NetList;
-    //	ms_tr_s.clear();
-    mid_step.tr_s = ms_tr_s;
-    Vector mid_x_0(*vx_i[j-1]);  //в качестве начальной точки выбираем x(t_{i-1})
-    Vector mid_x_t(x_i); //в качестве терминального множества  x(t_{i}) + сферка малого радиуса
-    tr =  mt.tr_s[trNum];
-    tr.x0 = mid_x_0;
-    tr.NetList = ms_NetList;
-    mid_step.tr_s.push_back(tr);
-    //	cout <<"Начало: "<< mid_x_0 ;
-    //	cout <<"Конец: "<< mid_x_t << endl;
-    int ii;
-    string str = "";
-    for (ii = 0; ii < mid_step.dim_m-1; ii++) {
-				str = str + "p"+ldToStr(ii)+"*"+ldToStr(mid_x_t[ii])+"+";
-			}
-    str = str + "p"+ldToStr(ii)+"*"+ldToStr(mid_x_t[ii]);
-    mid_step.setFuncToNetF(*(mid_step.cM), str);
-    mid_step.calcPursuerSets(trNum);
-    mid_step.TimeCalc_PR(trNum);
-    mid_step.Control_PR_fullSets(trNum);
-    u_i = mid_step.tr_s[trNum].u_i->GetRow(0);
-    x_i = mid_x_0;
-    k  = vec_k[vec_k.size()-1];
-    vec_k.pop_back();
-    j  = vec_j[vec_j.size()-1];
-    vec_j.pop_back();
-    t  = vec_t[vec_t.size()-1];
+	//траектория под управлением уклонения  при условии, если до этого  не применялось управление уклонения
 
-    vec_t.pop_back();
-    vx_i.pop_back();
-    vu_i.pop_back();
-    vv_i.pop_back();
-    vec_cp.pop_back();
+	// если препятствие есть и есть куда отклониться, а также отклонение не стачала, то создаём копию объкета, даём начальную точку x_{i-2}, конечную точку считаем x_i
+	PR_Task mid_step(mt); //для этого создаём новую задачу
+
+	vector<TNetF*>ms_NetList;
+	mid_step.tr_s.clear();
+	mid_step.PursuerList.clear(); //т.к. в этих услвиях ни от кого уклоняться не надо - считаем, что преследователей нет,
+	//в последующем надо будет удалять только преследователя вокруг множества которого мы путешествуем
+
+	Vector mid_x_0(*vx_i[j-1/**//*vx_i.size()-1/**/]);  //в качестве начальной точки выбираем x(t_{i-1})
+
+	x_i = mt.rungeCutt(x_i, u_i, v_i);
+	Vector mid_x_t(x_i); //в качестве терминального множества  x(t_{i})
+	LDouble t_0;
+
+	Traectory tr;
+	tr =  mt.tr_s[trNum];
+	tr.x0 = mid_x_0;
+	tr.NetList = ms_NetList;
+	mid_step.tr_s.push_back(tr);
+
+	int ii;
+	string str = "";
+	for (ii = 0; ii < mid_step.dim_m-1; ii++) {
+				str = str + "p"+ldToStr(ii)+"*("+ldToStr(mid_x_t[ii])+")+";
+			}
+	str = str + "p"+ldToStr(ii)+"*("+ldToStr(mid_x_t[ii])+")";
+	mid_step.setFuncToNetF(*(mid_step.cM), str);
+	mid_step.cM->oporn(mid_step.t0, 1);
+
+   //		cout <<"Начало: "<< mid_x_0 ;
+   //		cout <<"Конец: "<< mid_x_t ;
+
+	int kk;  //в случае, если оказываемся слишком близко - измельчаем шаг по времени и соотв. образом увеличиваем точность
+	do{
+		mid_step.calcPursuerSets(trNum);
+		t_0 = mid_step.TimeCalc_PR(trNum);
+		if (t_0> 0/*mid_step.tau/**/)
+			kk = mid_step.Control_PR_fullSets(trNum);
+		if ((kk<0)||(t_0<0)) {
+			mid_step.tau /=2;
+			mid_step.precision /=2;
+			mid_step.epsilon /=2;
+		}
+	}while ((kk < 0)||(t_0<0));
+
+   //	cout << *mid_step.tr_s[trNum].u_i;
+	u_i = mid_step.tr_s[trNum].u_i->GetRow(/*mid_step.tr_s[trNum].u_i->m()-1/**/0/**/);
+  //	cout <<"u_i: "<<  u_i;
+
+	x_i = mid_x_0;
+	k  = vec_k[vec_k.size()-1];
+	j  = vec_j[vec_j.size()-1];
+	t  = vec_t[vec_t.size()-1];
+
+	vec_k.pop_back();
+	vec_j.pop_back();
+	vec_t.pop_back();
+
+	vx_i.pop_back();
+	vu_i.pop_back();
+	vv_i.pop_back();
+
 }

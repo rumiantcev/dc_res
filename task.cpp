@@ -122,6 +122,7 @@ Task::Task(const Task& ts) : A(ts.A.m(), ts.A.n()), B(ts.B.m(), ts.B.n()),
 	priority = ts.priority;
 	method = ts.method;
 	psi0Index = ts.psi0Index;
+	pinMark = Environment::instance()._pinMark;
 }
 
 // ---------------------------- destructor ------------------------------------//

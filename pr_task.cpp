@@ -711,10 +711,11 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 	Vector u_i(mt.cP->Dim), v_i(mt.cQ->Dim), x_i(mt.dim_x);
 	bool isCollisionPossible=false,  //признак возможности попадани€ на множество откуда возможно завершение преследовани€
 		  isInit, //признак начала, может сдвигатьс€ при увеличении альт. инетграла ѕонтр€гина
-		  isControlChange = false; //признак переключени€ режима управлени€  преследование<->убегание
+		  isControlChange = false, //признак переключени€ режима управлени€  преследование<->убегание
+		  isCtrlCanChange = false;//признак "не слшком частой" смены управлений
 	long controlType = -1;//признак типа управлени€ -1- преследование, 0 - рекурси€, 1 - убегание
 	long prevCt,prevCt2;
-	bool isCtrlChangeNextStep=false;
+	//bool isCtrlChangeNextStep=false;
 	Pursuer* ps;
 
 	VecOfVec vx_i, vu_i, vv_i;
@@ -874,7 +875,7 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 
 
 		prevCt = vec_ct[vec_ct.size()-1];
-		if (
+	 /*	if (
 		   //	(((prevCt == 0)||(prevCt == -1))&&(controlType  == 1))
 		   //	||
 			(isCtrlChangeNextStep)
@@ -882,31 +883,40 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 			isControlChange = true;
 		else
 			isControlChange = false;
-
+	   // isCtrlChangeNextStep= false;
+		 /**/
 		if (
-		(((prevCt == 0)||(prevCt == 1))&&(controlType  == -1))
-		||
-		(((prevCt == 0)||(prevCt == -1))&&(controlType  == 1))
-		)
-				isCtrlChangeNextStep= true;
+				(((prevCt == 0)||(prevCt == 1))&&(controlType  == -1))
+				||
+				(((prevCt == 0)||(prevCt == -1))&&(controlType  == 1))
+		   )
+			isControlChange = true;
+		else
+			isControlChange = false;
+
+		  /*		isCtrlChangeNextStep= true;
 			else
 				isCtrlChangeNextStep= false;
-
-	  // isControlChange = (prevCt == controlType)?false:true;
+		/**/
+	   //isControlChange = (prevCt == controlType)?false:true;
 
 		cout<<"From: " << (j) * mt.tau << " : "<< t << " : " << x_i<< " : " << u_i << " : " << vx_i.size()<< endl;
 
-		 if( isControlChange){ //шаг рекурсивного поиска управлени€ (под сглаживание)
+		 if(isControlChange && isCtrlCanChange){ //шаг рекурсивного поиска управлени€ (под сглаживание)
 			recusionStep(trNum, mt, v_i, vx_i, vu_i, vv_i, vec_j, vec_k, vec_t, j, k, t, u_i, x_i);
-		   //	cout <<"Back: "<< (j) * mt.tau << " : "<< t << " : " << x_i<< " : " << u_i << " : " << vx_i.size()<< endl;
+			cout <<"Back: "<< (j) * mt.tau << " : "<< t << " : " << x_i<< " : " << u_i << " : " << vx_i.size()<< endl;
 			controlType = 0;
-			isCtrlChangeNextStep= false;
-		}   /**/
+			//isCtrlChangeNextStep= false;
+			isCtrlCanChange= false;
+		  //  isControlChange = false;
+		}  else
+			isCtrlCanChange= true;
+		 /**/
 
 		//находим следующий  x_i  методом  –унге- утты
 		x_i = mt.rungeCutt(x_i, u_i, v_i);
 		mt.storeLocResults(u_i, v_i, x_i, vx_i, vu_i, vv_i, r_i);//сохран€ем промежуточные результаты расчЄтов
-		//cout <<"after: "<< (j) * mt.tau << " : "<< t << " : " << x_i<< " : " << u_i << " : " << vec_t.size()<< endl;
+		cout <<"after: "<< (j) * mt.tau << " : "<< t << " : " << x_i<< " : " << u_i << " : " << vec_t.size()<< endl;
 
 		vec_ct.push_back(controlType);
 		vec_j.push_back(j);
@@ -1039,7 +1049,8 @@ void recusionStep(int trNum, PR_Task &mt, const Vector &v_i, VecOfVec &vx_i, Vec
 	}while ((kk < 0)||(t_0<0));
 
    //	cout << *mid_step.tr_s[trNum].u_i;
-	u_i = mid_step.tr_s[trNum].u_i->GetRow(/*mid_step.tr_s[trNum].u_i->m()-1/**/0/**/);
+	u_i = mid_step.tr_s[trNum].u_i->GetRow(/*mid_step.tr_s[trNum].u_i->m()-1/**/
+											0/**/);
   //	cout <<"u_i: "<<  u_i;
 
 	x_i = mid_x_0;

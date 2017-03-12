@@ -80,6 +80,8 @@ void TaskLoader::load_and_calc_tasks(){
 		fileName = localPath+"\\";
 		fileName+= section->Keys[0].szValue;//fileName = DFile.GetValue(section->szName, "file");
 		t =  loadTask(fileName);
+		if (t == NULL )
+			exit(0); //выходим, если файл загружен неудачно.
 		cout << "Task "<< t->description<< "  loaded" << endl;
 		taskList.push_back(t);
 		fileName = localPath+"\\";

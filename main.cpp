@@ -45,6 +45,7 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	return 0;
 }
 
+/*
 int _test(){//для последовательного переноса содержимого в dc_res_test
 
    TNetF c(2, optTimS, 20), n(c), r(c);
@@ -65,3 +66,4 @@ int _test(){//для последовательного переноса содержимого в dc_res_test
 
   delete[] L;
 }
+*/

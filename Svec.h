@@ -5,20 +5,15 @@
 
  #include "general.h"
 /* ќписание простого вектора с возможностью счЄта собственно сам вектор */
-// ласс нужен собственно дл€ того, чтобы можно было быстро, без копировани€ массива, перезавать охватывающий класс по значению
+// ласс нужен дл€ того, чтобы можно было быстро, без копировани€ массива, передавать охватывающий класс по значению
+ //реализован несколько извращЄнный подсчЄт ссылок (создавалось, когда auto_ptr ещЄ не было в проекте)
 /**
- * -----------------------------------SimpleVec--------------------------------<url>element://model:project::Project2/cpp:e_field:src:Project2:sVec.v</url>
+ * -----------------------------------SimpleVec--------------------------------
  */
 class sVec {
 public:
 	unsigned long size;
-	/**
-	 * <url>element://model:project::Project2/cpp:e_class:src:Project2:TNet</url>
-	 * <url>element://model:project::Project2/cpp:e_class:src:Project2:Matrix</url>
-	 * <url>element://model:project::Project2/cpp:e_class:src:Project2:Vector</url>
-	 * <url>element://model:project::Project2/cpp:e_class:src:Project2:sMx</url>
-	 * <url>element://model:project::Project2/cpp:e_class:src:Project2:sVec</url>
-	 */
+	
 	LDouble *v;
 	long linkCount;
 

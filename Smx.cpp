@@ -11,12 +11,13 @@ using namespace std;
 
 // ------------------------------- destructor ---------------------------------//
 void sMx:: operator delete(void *p) {
-    if(p==0) return;
+	if(p == NULL)
+		return;
 
 	sMx *ptr = static_cast<sMx*>(p);
 
 	if (ptr->v == NULL)
-		delete(void*) p;
+		delete p;
 	else
 		p = NULL;
 }

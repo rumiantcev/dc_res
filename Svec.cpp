@@ -11,12 +11,13 @@ using namespace std;
 
 // ------------------------------- destructor ---------------------------------//
 void sVec:: operator delete(void *p) {
-	if(p==0) return;
+	if(p == NULL)
+		return;
 
 	sVec *ptr = static_cast<sVec*>(p);
 
 	if (ptr->v == NULL)
-		delete(void*) p;
+		delete p;
 	else
 		p = NULL;
 }

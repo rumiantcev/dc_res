@@ -875,16 +875,7 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 
 
 		prevCt = vec_ct[vec_ct.size()-1];
-	 /*	if (
-		   //	(((prevCt == 0)||(prevCt == -1))&&(controlType  == 1))
-		   //	||
-			(isCtrlChangeNextStep)
-		   )
-			isControlChange = true;
-		else
-			isControlChange = false;
-	   // isCtrlChangeNextStep= false;
-		 /**/
+
 		if (
 				(((prevCt == 0)||(prevCt == 1))&&(controlType  == -1))
 				||
@@ -894,10 +885,6 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 		else
 			isControlChange = false;
 
-		  /*		isCtrlChangeNextStep= true;
-			else
-				isCtrlChangeNextStep= false;
-		/**/
 	   //isControlChange = (prevCt == controlType)?false:true;
 
 		cout<<"From: " << (j) * mt.tau << " : "<< t << " : " << x_i<< " : " << u_i << " : " << vx_i.size()<< endl;
@@ -1011,7 +998,7 @@ void recusionStep(int trNum, PR_Task &mt, const Vector &v_i, VecOfVec &vx_i, Vec
 	mid_step.PursuerList.clear(); //т.к. в этих услвиях ни от кого уклоняться не надо - считаем, что преследователей нет,
 	//в последующем надо будет удалять только преследователя вокруг множества которого мы путешествуем
 
-	Vector mid_x_0(*vx_i[j-1/**//*vx_i.size()-1/**/]);  //в качестве начальной точки выбираем x(t_{i-1})
+	Vector mid_x_0(*vx_i[j-1]);  //в качестве начальной точки выбираем x(t_{i-1})  vx_i.size()-1
 
 	x_i = mt.rungeCutt(x_i, u_i, v_i);
 	Vector mid_x_t(x_i); //в качестве терминального множества  x(t_{i})
@@ -1039,7 +1026,7 @@ void recusionStep(int trNum, PR_Task &mt, const Vector &v_i, VecOfVec &vx_i, Vec
 	do{
 		mid_step.calcPursuerSets(trNum);
 		t_0 = mid_step.TimeCalc_PR(trNum);
-		if (t_0> 0/*mid_step.tau/**/)
+		if (t_0> 0) //mid_step.tau
 			kk = mid_step.Control_PR_fullSets(trNum);
 		if ((kk<0)||(t_0<0)) {
 			mid_step.tau /=2;
@@ -1049,8 +1036,7 @@ void recusionStep(int trNum, PR_Task &mt, const Vector &v_i, VecOfVec &vx_i, Vec
 	}while ((kk < 0)||(t_0<0));
 
    //	cout << *mid_step.tr_s[trNum].u_i;
-	u_i = mid_step.tr_s[trNum].u_i->GetRow(/*mid_step.tr_s[trNum].u_i->m()-1/**/
-											0/**/);
+	u_i = mid_step.tr_s[trNum].u_i->GetRow(0);  //mid_step.tr_s[trNum].u_i->m()-1
   //	cout <<"u_i: "<<  u_i;
 
 	x_i = mid_x_0;

@@ -367,7 +367,7 @@ int Vector::toBinary(unsigned long val) {
 	}
 	quot = val;
     zero();
-	for (i = v->size-1; i>=0; i--) {
+	for (i = v->size-1; i>0; i--) {
 		quot >>= 1;
 		rem = val - (quot<<1);
 		v->v[i] = rem;

@@ -1,3 +1,9 @@
+/*
+* Copyright (c) 2001-2017, Alexey Rumyantsev.
+* e-mail: rumiantcev@yandex.ru
+* All rights reserved.
+*
+*/
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -193,7 +199,7 @@ Task* TaskLoader::loadTask(string szFileName) {
 		tmpStr = new string(long_buf);
 
 		// Приоритет задачи (будет работать в многопоточном случае)
-		in_f.get(c);
+		in_f.get(c	);
 		while (c != '[')
 			in_f.get(c);
 		in_f.get(buf, 20, ']');

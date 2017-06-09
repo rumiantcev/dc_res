@@ -1,3 +1,9 @@
+/*
+* Copyright (c) 2015-2017, Alexey Rumyantsev, Julia Filimonova.
+* e-mail: rumiantcev@yandex.ru, jul305@gmail.com
+* All rights reserved.
+*
+*/
 //---------------------------------------------------------------------------
 
 #pragma hdrstop

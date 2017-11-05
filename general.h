@@ -85,7 +85,7 @@ struct DeleteObj {
 };
 
 //---- преобразования в std::string
- std::string intToStr(int i){
+ inline std::string intToStr(int i){
 	std::string str;
 	std::stringstream oss;
 	oss << i;
@@ -93,7 +93,7 @@ struct DeleteObj {
 	return str;
 }
 
- std::string ldToStr(LDouble ld){
+ inline std::string ldToStr(LDouble ld){
 	std::string str;
 	std::stringstream oss;
 	oss << ld;

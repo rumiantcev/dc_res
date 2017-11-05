@@ -151,12 +151,12 @@ public:
 				// Constructors & Destructors
 				/////////////////////////////////////////////////////////////////
 				CDataFile();
-			  explicit 	CDataFile(t_Str szFileName);
+			  explicit 	CDataFile(const t_Str& szFileName);
 	virtual		~CDataFile();
 
 				// File handling methods
 				/////////////////////////////////////////////////////////////////
-	bool		Load(t_Str szFileName);
+	bool		Load(const t_Str& szFileName);
 	bool		Save();
 
 				// Data handling methods
@@ -164,47 +164,47 @@ public:
 
 				// GetValue: Our default access method. Returns the raw t_Str value
 				// Note that this returns keys specific to the given section only.
-	t_Str		GetValue(t_Str szKey, t_Str szSection = t_Str(""));
+	t_Str		GetValue(const t_Str& szKey, const t_Str& szSection = t_Str(""));
 				// GetString: Returns the value as a t_Str
-	t_Str		GetString(t_Str szKey, t_Str szSection = t_Str(""));
+	t_Str		GetString(const t_Str& szKey, const t_Str& szSection = t_Str(""));
 				// GetFloat: Return the value as a float
-	float		GetFloat(t_Str szKey, t_Str szSection = t_Str(""));
+	float		GetFloat(const t_Str& szKey, const t_Str& szSection = t_Str(""));
 				// GetInt: Return the value as an int
-	int			GetInt(t_Str szKey, t_Str szSection = t_Str(""));
+	int			GetInt(const t_Str& szKey, const t_Str& szSection = t_Str(""));
 				// GetBool: Return the value as a bool
-	bool		GetBool(t_Str szKey, t_Str szSection = t_Str(""));
+	bool		GetBool(const t_Str& szKey, const t_Str& szSection = t_Str(""));
 
 				// SetValue: Sets the value of a given key. Will create the
 				// key if it is not found and AUTOCREATE_KEYS is active.
-	bool		SetValue(t_Str szKey, t_Str szValue,
-						 t_Str szComment = t_Str(""), t_Str szSection = t_Str(""));
+	bool		SetValue(const t_Str& szKey, const t_Str& szValue,
+						 const t_Str& szComment = t_Str(""), const t_Str& szSection = t_Str(""));
 
 				// SetFloat: Sets the value of a given key. Will create the
 				// key if it is not found and AUTOCREATE_KEYS is active.
-	bool		SetFloat(t_Str szKey, float fValue,
-						 t_Str szComment = t_Str(""), t_Str szSection = t_Str(""));
+	bool		SetFloat(const t_Str& szKey, float fValue,
+						 const t_Str& szComment = t_Str(""), const t_Str& szSection = t_Str(""));
 
 				// SetInt: Sets the value of a given key. Will create the
 				// key if it is not found and AUTOCREATE_KEYS is active.
-	bool		SetInt(t_Str szKey, int nValue,
-						 t_Str szComment = t_Str(""), t_Str szSection = t_Str(""));
+	bool		SetInt(const t_Str& szKey, int nValue,
+					   const t_Str& szComment = t_Str(""), const t_Str& szSection = t_Str(""));
 
 				// SetBool: Sets the value of a given key. Will create the
 				// key if it is not found and AUTOCREATE_KEYS is active.
-	bool		SetBool(t_Str szKey, bool bValue,
-						 t_Str szComment = t_Str(""), t_Str szSection = t_Str(""));
+	bool		SetBool(const t_Str& szKey, bool bValue,
+						const t_Str& szComment = t_Str(""), const t_Str& szSection = t_Str(""));
 
 				// Sets the comment for a given key.
-	bool		SetKeyComment(t_Str szKey, t_Str szComment, t_Str szSection = t_Str(""));
+	bool		SetKeyComment(const t_Str& szKey, const t_Str& szComment, const t_Str& szSection = t_Str(""));
 
 				// Sets the comment for a given section
-	bool		SetSectionComment(t_Str szSection, t_Str szComment);
+	bool		SetSectionComment(const t_Str& szSection, const t_Str& szComment);
 
 				// DeleteKey: Deletes a given key from a specific section
-	bool		DeleteKey(t_Str szKey, t_Str szFromSection = t_Str(""));
+	bool		DeleteKey(const t_Str& szKey, const t_Str& szFromSection = t_Str(""));
 
 				// DeleteSection: Deletes a given section.
-	bool		DeleteSection(t_Str szSection);
+	bool		DeleteSection(const t_Str& szSection);
 
 				// Key/Section handling methods
 				/////////////////////////////////////////////////////////////////
@@ -212,14 +212,14 @@ public:
 				// CreateKey: Creates a new key in the requested section. The
 	            // Section will be created if it does not exist and the
 				// AUTOCREATE_SECTIONS bit is set.
-	bool		CreateKey(t_Str szKey, t_Str szValue,
-		                  t_Str szComment = t_Str(""), t_Str szSection = t_Str(""));
+	bool		CreateKey(const t_Str& szKey, const t_Str& szValue,
+						  const t_Str& szComment = t_Str(""), const t_Str& szSection = t_Str(""));
 				// CreateSection: Creates the new section if it does not allready
 				// exist. Section is created with no keys.
-	bool		CreateSection(t_Str szSection, t_Str szComment = t_Str(""));
+	bool		CreateSection(t_Str szSection, const t_Str& szComment = t_Str(""));
 				// CreateSection: Creates the new section if it does not allready
 				// exist, and copies the keys passed into it into the new section.
-	bool		CreateSection(t_Str szSection, t_Str szComment, KeyList Keys);
+	bool		CreateSection(const t_Str& szSection, const t_Str& szComment, KeyList Keys);
 
 				// Utility Methods
 				/////////////////////////////////////////////////////////////////
@@ -253,10 +253,10 @@ protected:
 
 				// GetKey: Returns the requested key (if found) from the requested
 				// Section. Returns NULL otherwise.
-	t_Key*		GetKey(t_Str szKey, t_Str szSection);
+	t_Key*		GetKey(const t_Str& szKey, const t_Str& szSection);
 				// GetSection: Returns the requested section (if found), NULL otherwise.
-	t_Section*	GetSection(t_Str szSection);
-	t_Section*	GetNextSection(t_Str szSection);
+	t_Section*	GetSection(const t_Str& szSection);
+	t_Section*	GetNextSection(const t_Str& szSection);
 
 
 

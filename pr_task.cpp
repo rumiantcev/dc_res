@@ -188,7 +188,7 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 	LDouble t = t0, min;
 	TNetF c(PP.m(), perfomance, steps), tmpPNet(*cP), /*tmpQNet(*cQ),*/ Net(c),
 		x0Net(c), tmpNet(c);
-	unsigned  long i;
+	//unsigned  long i;
 	long Ind = 0;
 
 	if (tr_s[trNum].NetList.size()>0){// если задачка решаетс€ повторно - зачищаем предыдущие результаты
@@ -213,7 +213,7 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 	//PiEtAx0.update();
 
 	// опорна€ функци€ PiEtA*x0 - строим пользу€сь тем что это просто скал€рное произведение
-	x0Net = point_oporn(PiEtAx0, x0Net, i);
+	x0Net = point_oporn(PiEtAx0, x0Net);
 	Net = c + (-1) * x0Net;
 
 	Ind = Net.GetExtrGlobal(opMin,  Ind, min);
@@ -228,7 +228,7 @@ LDouble PR_Task::TimeCalc_PR(int trNum) {
 	
 		PiEtAx0 = PiEtA * tr_s[trNum].x0;
 		// опорна€ функци€ PiEtA*x0 - строим пользу€сь тем что это просто скал€рное произведение
-		x0Net = point_oporn(PiEtAx0, x0Net, i);
+		x0Net = point_oporn(PiEtAx0, x0Net);
 		Net = c + (-1) * x0Net;
 		//Net.update();
 		Ind = Net.GetExtrGlobal(opMin,   Ind, min);
@@ -925,8 +925,8 @@ void Control_PR_fullSets_smooth(int trNum, PR_Task& mt) {//mt - mainTask
 }
 
 // опорна€ функци€ PiEtA*x0 - строим пользу€сь тем что это просто скал€рное произведение
-TNetF &PR_Task::point_oporn(const Vector &PiEtAx0, TNetF &x0Net, unsigned long i) const {
-    for (i = 0; i < x0Net.Count; i++)
+TNetF &PR_Task::point_oporn(const Vector &PiEtAx0, TNetF &x0Net) const {
+	for (unsigned long i = 0; i < x0Net.Count; i++)
           if (x0Net.f->v->v[i] != pinMark){
               x0Net.f->v->v[i] = scm(i, PiEtAx0, &x0Net,NULL);
           }
@@ -934,8 +934,7 @@ TNetF &PR_Task::point_oporn(const Vector &PiEtAx0, TNetF &x0Net, unsigned long i
 }
 
 void PR_Task::pointGeomDiff(int trNum,  unsigned long k, const Vector &PiEtAx, TNetF &c, TNetF &x_Net) const {
-    unsigned long i;
-    for (i = 0; i < x_Net.Count; i++){
+	for (unsigned long i = 0; i < x_Net.Count; i++){
 		if (x_Net.f->v->v[i] != pinMark){
 			x_Net.f->v->v[i] = scm(i, PiEtAx, &x_Net,NULL);
 			c.f->v->v[i] = tr_s[trNum].NetList[k]->f->v->v[i] - x_Net.f->v->v[i];
@@ -947,10 +946,10 @@ void PR_Task::storeResults(int trNum, VecOfVec &vx_i, VecOfVec &vu_i,  VecOfVec 
 
 	unsigned long j,m, k;
 
-	tr_s[trNum].T= (j) * tau;
-    /* TODO -orum : —делать отдеьный конструктор из вектора векторов в матрицу */
-    k= vx_i.size()-1;
-    tr_s[trNum].x_i = new Matrix(k + 1, dim_x);
+	k= vx_i.size()-1;
+	tr_s[trNum].T= (k) * tau;
+	/* TODO -orum : —делать отдеьный конструктор из вектора векторов в матрицу */
+	tr_s[trNum].x_i = new Matrix(k + 1, dim_x);
     // массив векторов со значени€ми  x_i
 	tr_s[trNum].u_i = new Matrix(k, dim_u);
     // массив векторов со значени€ми  u_i

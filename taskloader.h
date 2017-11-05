@@ -33,7 +33,7 @@ class TaskLoader{
 		string localPath;
 		VecOfTask taskList;
 
-		explicit TaskLoader(string);
+		explicit TaskLoader(const string&);
         virtual ~TaskLoader();
 
 		void loadGlobalParameters();

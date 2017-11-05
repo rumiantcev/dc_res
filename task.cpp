@@ -267,9 +267,13 @@ LDouble Task::TimeCalc_AltInt(int trNum) {
 		tmpPNet.update();
 		tmpQNet.update();
 
+		cout << c;
 		c = c + tmpPNet;
+		cout << c;
 		c -= tmpQNet; // геометрическая разность
+		cout << c;
 		c.update();
+		cout << c;
 
 		// опорная функция PiEtA*x0 - строим пользуясь тем что это просто скалярное произведение
 		for (i = 0; i < x0Net.Count; i++)
@@ -614,7 +618,7 @@ void Task::Control_R2(int trNum) { //поиск управления в условиях достумсности ин
 	VecOfVec vx_i, vu_i, vv_i;
 	Vector *r_i;
 
-	long jk=-1, prevInd,indExtr, _j;
+	long jk=-1, prevInd,indExtr/*, _j*/;
 	int currPlateNorm, currDirection=-1, prevDirection = -1, moveSign = 1, exitSign = 0, exitLim = (c.Dim-1)*2;
 
 	j = 0;
@@ -672,7 +676,7 @@ void Task::Control_R2(int trNum) { //поиск управления в условиях достумсности ин
 		if (jk<0){      //первый узел по любому случаен
 			do{
 				jk = _lrand() % (c.Count);
-			}while (c.f->v->v[_j] == pinMark);
+			}while (c.f->v->v[jk] == pinMark);
 			//jk = _lrand() % (c.Count);
 			indExtr = jk;
 			currDirection= rand()%c.Dim;

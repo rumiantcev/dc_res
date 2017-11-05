@@ -2023,7 +2023,7 @@ template <typename T>
 class ArrayTraits<arma::Cube<T> > : public ArrayTraitsDefaults<T> {
 	class SliceRange {
 	public:
-		SliceRange() : p(NULL), col(0), slice(0) { }
+		SliceRange() : p(NULL), col(0), slice(0), row(0) { }
 		explicit SliceRange(const arma::Cube<T> *_p, size_t _row, size_t _col) :
 			p(_p), row(_row), col(_col), slice(0) { }
 

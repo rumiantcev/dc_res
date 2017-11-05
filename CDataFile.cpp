@@ -67,7 +67,7 @@
 // CDataFile
 // Our default contstructor.  If it can load the file, it will do so and populate
 // the section list with the values from the file.
-CDataFile::CDataFile(t_Str szFileName) : m_szFileName(szFileName)
+CDataFile::CDataFile(const t_Str& szFileName) : m_szFileName(szFileName)
 {
 	m_bDirty = false;
 	m_Flags = (AUTOCREATE_SECTIONS | AUTOCREATE_KEYS);
@@ -124,7 +124,7 @@ void CDataFile::SetFileName(t_Str szFileName)
 // Attempts to load in the text file. If successful it will populate the
 // Section list with the key/value pairs found in the file. Note that comments
 // are saved so that they can be rewritten to the file later.
-bool CDataFile::Load(t_Str szFileName)
+bool CDataFile::Load(const t_Str& szFileName)
 {
 	// We dont want to create a new file here.  If it doesn't exist, just
 	// return false and report the failure.
@@ -232,7 +232,7 @@ bool CDataFile::Save()
 		t_Section Section;
 		t_Key Key;
 
-		for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); s_pos++)
+		for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); ++s_pos)
 		{
 			Section = (*s_pos);
 			bool bWroteComment = false;
@@ -284,7 +284,7 @@ bool CDataFile::Save()
 
 // SetKeyComment
 // Set the comment of a given key. Returns true if the key is not found.
-bool CDataFile::SetKeyComment(t_Str szKey, t_Str szComment, t_Str szSection)
+bool CDataFile::SetKeyComment(const t_Str& szKey, const t_Str& szComment, const t_Str& szSection)
 {
 	KeyItor k_pos;
 	t_Section* pSection;
@@ -292,7 +292,7 @@ bool CDataFile::SetKeyComment(t_Str szKey, t_Str szComment, t_Str szSection)
 	if ( (pSection = GetSection(szSection)) == NULL )
 		return false;
 
-	for (k_pos = pSection->Keys.begin(); k_pos != pSection->Keys.end(); k_pos++)
+	for (k_pos = pSection->Keys.begin(); k_pos != pSection->Keys.end(); ++k_pos)
 	{
 		if ( CompareNoCase( (*k_pos).szKey, szKey ) == 0 )
 		{
@@ -309,7 +309,7 @@ bool CDataFile::SetKeyComment(t_Str szKey, t_Str szComment, t_Str szSection)
 // SetSectionComment
 // Set the comment for a given section. Returns false if the section
 // was not found.
-bool CDataFile::SetSectionComment(t_Str szSection, t_Str szComment)
+bool CDataFile::SetSectionComment(const t_Str& szSection, const t_Str& szComment)
 {
 	SectionItor s_pos;
 
@@ -332,7 +332,7 @@ bool CDataFile::SetSectionComment(t_Str szSection, t_Str szComment)
 // Key within the given section, and if it finds it, change the keys value to
 // the new value. If it does not locate the key, it will create a new key with
 // the proper value and place it in the section requested.
-bool CDataFile::SetValue(t_Str szKey, t_Str szValue, t_Str szComment, t_Str szSection)
+bool CDataFile::SetValue(const t_Str& szKey, const t_Str& szValue, const t_Str& szComment, const t_Str& szSection)
 {
 	t_Key* pKey = GetKey(szKey, szSection);
 	t_Section* pSection = GetSection(szSection);
@@ -382,7 +382,7 @@ bool CDataFile::SetValue(t_Str szKey, t_Str szValue, t_Str szComment, t_Str szSe
 
 // SetFloat
 // Passes the given float to SetValue as a string
-bool CDataFile::SetFloat(t_Str szKey, float fValue, t_Str szComment, t_Str szSection)
+bool CDataFile::SetFloat(const t_Str& szKey, float fValue, const t_Str& szComment, const t_Str& szSection)
 {
 	char szStr[64];
 
@@ -393,7 +393,7 @@ bool CDataFile::SetFloat(t_Str szKey, float fValue, t_Str szComment, t_Str szSec
 
 // SetInt
 // Passes the given int to SetValue as a string
-bool CDataFile::SetInt(t_Str szKey, int nValue, t_Str szComment, t_Str szSection)
+bool CDataFile::SetInt(const t_Str& szKey, int nValue, const t_Str& szComment, const t_Str& szSection)
 {
 	char szStr[64];
 
@@ -405,7 +405,7 @@ bool CDataFile::SetInt(t_Str szKey, int nValue, t_Str szComment, t_Str szSection
 
 // SetBool
 // Passes the given bool to SetValue as a string
-bool CDataFile::SetBool(t_Str szKey, bool bValue, t_Str szComment, t_Str szSection)
+bool CDataFile::SetBool(const t_Str& szKey, bool bValue, const t_Str& szComment, const t_Str& szSection)
 {
 	t_Str szValue = bValue ?  "True" : "False";
 
@@ -415,7 +415,7 @@ bool CDataFile::SetBool(t_Str szKey, bool bValue, t_Str szComment, t_Str szSecti
 // GetValue
 // Returns the key value as a t_Str object. A return value of
 // t_Str("") indicates that the key could not be found.
-t_Str CDataFile::GetValue(t_Str szKey, t_Str szSection)
+t_Str CDataFile::GetValue(const t_Str& szKey, const t_Str& szSection)
 {
 	t_Key* pKey = GetKey(szKey, szSection);
 
@@ -425,7 +425,7 @@ t_Str CDataFile::GetValue(t_Str szKey, t_Str szSection)
 // GetString
 // Returns the key value as a t_Str object. A return value of
 // t_Str("") indicates that the key could not be found.
-t_Str CDataFile::GetString(t_Str szKey, t_Str szSection)
+t_Str CDataFile::GetString(const t_Str& szKey, const t_Str& szSection)
 {
 	return GetValue(szKey, szSection);
 }
@@ -433,7 +433,7 @@ t_Str CDataFile::GetString(t_Str szKey, t_Str szSection)
 // GetFloat
 // Returns the key value as a float type. Returns FLT_MIN if the key is
 // not found.
-float CDataFile::GetFloat(t_Str szKey, t_Str szSection)
+float CDataFile::GetFloat(const t_Str& szKey, const t_Str& szSection)
 {
 	t_Str szValue = GetValue(szKey, szSection);
 
@@ -446,7 +446,7 @@ float CDataFile::GetFloat(t_Str szKey, t_Str szSection)
 // GetInt
 // Returns the key value as an integer type. Returns INT_MIN if the key is
 // not found.
-int	CDataFile::GetInt(t_Str szKey, t_Str szSection)
+int	CDataFile::GetInt(const t_Str& szKey, const t_Str& szSection)
 {
 	t_Str szValue = GetValue(szKey, szSection);
 
@@ -459,12 +459,13 @@ int	CDataFile::GetInt(t_Str szKey, t_Str szSection)
 // GetBool
 // Returns the key value as a bool type. Returns false if the key is
 // not found.
-bool CDataFile::GetBool(t_Str szKey, t_Str szSection)
+bool CDataFile::GetBool(const t_Str& szKey, const t_Str& szSection)
 {
 	bool bValue = false;
 	t_Str szValue = GetValue(szKey, szSection);
 
-	if ( szValue.find("1") == 0
+	if ( //szValue.find("1") == 0
+		szValue.compare("1") == 0
 		|| CompareNoCase(szValue, "true")
 		|| CompareNoCase(szValue, "yes") )
 	{
@@ -477,11 +478,11 @@ bool CDataFile::GetBool(t_Str szKey, t_Str szSection)
 // DeleteSection
 // Delete a specific section. Returns false if the section cannot be
 // found or true when sucessfully deleted.
-bool CDataFile::DeleteSection(t_Str szSection)
+bool CDataFile::DeleteSection(const t_Str& szSection)
 {
 	SectionItor s_pos;
 
-	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); s_pos++)
+	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); ++s_pos)
 	{
 		if ( CompareNoCase( (*s_pos).szName, szSection ) == 0 )
 		{
@@ -496,7 +497,7 @@ bool CDataFile::DeleteSection(t_Str szSection)
 // DeleteKey
 // Delete a specific key in a specific section. Returns false if the key
 // cannot be found or true when sucessfully deleted.
-bool CDataFile::DeleteKey(t_Str szKey, t_Str szFromSection)
+bool CDataFile::DeleteKey(const t_Str& szKey, const t_Str& szFromSection)
 {
 	KeyItor k_pos;
 	t_Section* pSection;
@@ -504,7 +505,7 @@ bool CDataFile::DeleteKey(t_Str szKey, t_Str szFromSection)
 	if ( (pSection = GetSection(szFromSection)) == NULL )
 		return false;
 
-	for (k_pos = pSection->Keys.begin(); k_pos != pSection->Keys.end(); k_pos++)
+	for (k_pos = pSection->Keys.begin(); k_pos != pSection->Keys.end(); ++k_pos)
 	{
 		if ( CompareNoCase( (*k_pos).szKey, szKey ) == 0 )
 		{
@@ -521,7 +522,7 @@ bool CDataFile::DeleteKey(t_Str szKey, t_Str szFromSection)
 // Key within the given section, and if it finds it, change the keys value to
 // the new value. If it does not locate the key, it will create a new key with
 // the proper value and place it in the section requested.
-bool CDataFile::CreateKey(t_Str szKey, t_Str szValue, t_Str szComment, t_Str szSection)
+bool CDataFile::CreateKey(const t_Str& szKey, const t_Str& szValue, const t_Str& szComment, const t_Str& szSection)
 {
 	bool bAutoKey = (m_Flags & AUTOCREATE_KEYS) == AUTOCREATE_KEYS;
 	bool bReturn;//  = false;
@@ -542,7 +543,7 @@ bool CDataFile::CreateKey(t_Str szKey, t_Str szValue, t_Str szComment, t_Str szS
 // allready exists in the list or not, if not, it creates the new section and
 // assigns it the comment given in szComment.  The function returns true if
 // sucessfully created, or false otherwise.
-bool CDataFile::CreateSection(t_Str szSection, t_Str szComment)
+bool CDataFile::CreateSection(t_Str szSection, const t_Str& szComment)
 {
 	t_Section* pSection = GetSection(szSection);
 
@@ -569,7 +570,7 @@ bool CDataFile::CreateSection(t_Str szSection, t_Str szComment)
 // assigns it the comment given in szComment.  The function returns true if
 // sucessfully created, or false otherwise. This version accpets a KeyList
 // and sets up the newly created Section with the keys in the list.
-bool CDataFile::CreateSection(t_Str szSection, t_Str szComment, KeyList Keys)
+bool CDataFile::CreateSection(const t_Str& szSection, const t_Str& szComment, KeyList Keys)
 {
 	if ( !CreateSection(szSection, szComment) )
 		return false;
@@ -582,7 +583,7 @@ bool CDataFile::CreateSection(t_Str szSection, t_Str szComment, KeyList Keys)
 	KeyItor k_pos;
 
 	pSection->szName = szSection;
-	for (k_pos = Keys.begin(); k_pos != Keys.end(); k_pos++)
+	for (k_pos = Keys.begin(); k_pos != Keys.end(); ++k_pos)
 	{
 		t_Key* pKey = new t_Key;
 		pKey->szComment = (*k_pos).szComment;
@@ -612,7 +613,7 @@ int CDataFile::KeyCount()
 	int nCounter = 0;
 	SectionItor s_pos;
 
-	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); s_pos++)
+	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); ++s_pos)
 		nCounter += (*s_pos).Keys.size();
 
 	return nCounter;
@@ -625,7 +626,7 @@ int CDataFile::KeyCount()
 // GetKey
 // Given a key and section name, looks up the key and if found, returns a
 // pointer to that key, otherwise returns NULL.
-t_Key*	CDataFile::GetKey(t_Str szKey, t_Str szSection)
+t_Key*	CDataFile::GetKey(const t_Str& szKey, const t_Str& szSection)
 {
 	KeyItor k_pos;
 	t_Section* pSection;
@@ -636,7 +637,7 @@ t_Key*	CDataFile::GetKey(t_Str szKey, t_Str szSection)
 	if ( (pSection = GetSection(szSection)) == NULL )
 		return NULL;
 
-	for (k_pos = pSection->Keys.begin(); k_pos != pSection->Keys.end(); k_pos++)
+	for (k_pos = pSection->Keys.begin(); k_pos != pSection->Keys.end(); ++k_pos)
 	{
 		if ( CompareNoCase( (*k_pos).szKey, szKey ) == 0 )
 			return (t_Key*)&(*k_pos);
@@ -648,11 +649,11 @@ t_Key*	CDataFile::GetKey(t_Str szKey, t_Str szSection)
 // GetSection
 // Given a section name, locates that section in the list and returns a pointer
 // to it. If the section was not found, returns NULL
-t_Section* CDataFile::GetSection(t_Str szSection)
+t_Section* CDataFile::GetSection(const t_Str& szSection)
 {
 	SectionItor s_pos;
 
-	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); s_pos++)
+	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); ++s_pos)
 	{
 		if ( CompareNoCase( (*s_pos).szName, szSection ) == 0 )
 			return (t_Section*)&(*s_pos);
@@ -661,15 +662,15 @@ t_Section* CDataFile::GetSection(t_Str szSection)
 	return NULL;
 }
 
-t_Section* CDataFile::GetNextSection(t_Str szSection)
+t_Section* CDataFile::GetNextSection(const t_Str& szSection)
 {
 	SectionItor s_pos;
 
-	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); s_pos++)
+	for (s_pos = m_Sections.begin(); s_pos != m_Sections.end(); ++s_pos)
 	{
 		if ( CompareNoCase( (*s_pos).szName, szSection ) == 0 )
 		{
-			s_pos++;
+			++s_pos;
 			return (t_Section*)&(*s_pos);
 		}
 
@@ -690,7 +691,7 @@ SectionItor	CDataFile::GetNextSectionIter(SectionItor i){
   if (i==m_Sections.end())
 	return i/*NULL*/;
   else {
-   i++;
+   ++i;
 	if (i==m_Sections.end()) {
 		return i/*NULL*/;
 	}

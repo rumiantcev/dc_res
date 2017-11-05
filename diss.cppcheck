@@ -1,2 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="1"/>
+<project version="1">
+    <analyze-all-vs-configs>true</analyze-all-vs-configs>
+    <suppressions>
+        <suppression>variableScope</suppression>
+    </suppressions>
+</project>

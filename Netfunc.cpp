@@ -237,7 +237,7 @@ __fastcall TNetF::TNetF(unsigned long dim, long perf, unsigned long res)
 }
 
 // ------------------------------constructor ----------------------------------//
-__fastcall TNetF::TNetF(unsigned  long Dim, long perf, unsigned  long res, string fstr)
+__fastcall TNetF::TNetF(unsigned  long Dim, long perf, unsigned  long res, const string& fstr)
 	: TNet(Dim, perf, res, true) {
 	/* TODO -orum -caddon : Сделать конструктор с возможностью переключения Virt/Non Virt net */
 	initNetFDefault();
@@ -437,7 +437,7 @@ const TNetF __fastcall operator +(const TNetF& A, const TNetF& B) {
 
 // ----------------------------------- Геометрическая - -----------------------//
 TNetF& __fastcall TNetF:: operator -= (const TNetF& B) {
-	unsigned long i, j(0),  m;
+	unsigned long i, /*j(0),*/  m;
 	Vector vec(Dim), st(Dim);
 	TNetF st0Net(Dim, perfomance, Res);
 	LDouble coeff;
@@ -977,7 +977,7 @@ unsigned long /* !inline */ TNetF::selectExtrX(const Vector& vec, scM scmul, cCr
 		}
 		else {
 			bool isProxy;
-			isMax == opMax ? isProxy = val >= extr : isProxy = val <= extr;
+			isMax == opMax ? isProxy = (val >= extr) : isProxy = (val <= extr);
 			// если ищем максимум, то проверяем на то что новое значение >= запомненному, если минимум -<= запомненному
 			if (isProxy) {
 				extr = val;
@@ -1289,7 +1289,7 @@ void __fastcall TNetF::makeAlpha(alphType& alpha, bool* L, TNetF &net) {
 // ----------------------------------------------------------------------------//
 
 void __fastcall TNetF::Conv(bool *L) {
-	unsigned long i, j(0), m/*, k*/;
+	unsigned long i, /*j(0),*/ m/*, k*/;
 	LDouble coeff;
 	TNetF st0Net(Dim, perfomance, NumOfPoints);
 	Vector vec(Dim), st(Dim);

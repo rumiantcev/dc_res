@@ -73,7 +73,7 @@ public:
     unsigned long markCount;
 
 	__fastcall TNetF(unsigned long, long, unsigned long); // Ok
-	__fastcall TNetF(unsigned long, long, unsigned long, string); // Ok
+	__fastcall TNetF(unsigned long, long, unsigned long, const string&); // Ok
 	__fastcall TNetF(unsigned long, unsigned long,  long, unsigned long); // Ok
 	explicit __fastcall TNetF(TNet&); // Ok
 	// __fastcall TNetF(TNet&,TSIC_Data&);

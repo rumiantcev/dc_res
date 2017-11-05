@@ -5,7 +5,7 @@
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
-        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+        <Platform Condition="'$(Platform)'==''">Win64</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Console</AppType>
     </PropertyGroup>
@@ -147,8 +147,8 @@
         <BCC_AddProjectDirToIncludePath>true</BCC_AddProjectDirToIncludePath>
         <BCC_CPPCompileAlways>true</BCC_CPPCompileAlways>
         <BCC_EnableBatchCompilation>true</BCC_EnableBatchCompilation>
-        <VerInfo_Build>46</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileVersion=1.0.1.46;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
+        <VerInfo_Build>47</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileVersion=1.0.1.47;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <BCC_HonorMemPtrPrecision>true</BCC_HonorMemPtrPrecision>
@@ -188,7 +188,7 @@
         <BCC_NewOperatorNames>true</BCC_NewOperatorNames>
         <ILINK_FastTLS>true</ILINK_FastTLS>
         <ILINK_LibraryPath>$(BDSLIB)\$(PLATFORM)\release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
-        <BCC_DOSHeaderSearchAlgorithm>true</BCC_DOSHeaderSearchAlgorithm>
+        <ACC_DOSHeaderSearchAlgorhthm>true</ACC_DOSHeaderSearchAlgorhthm>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <BCC_InstructionSet>6</BCC_InstructionSet>
         <Defines>NDEBUG;$(Defines)</Defines>

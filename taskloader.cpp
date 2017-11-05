@@ -17,7 +17,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 // ------------------------------ constructor --------------------------------//
-TaskLoader::TaskLoader(string path):localPath(path) {
+TaskLoader::TaskLoader(const string& path):localPath(path) {
 	localPath.append("\\Data");
 }
 
@@ -80,7 +80,7 @@ void TaskLoader::load_and_calc_tasks(){
 	t_Section* section;
 	string fileName, method, opt/*,v_control*/, type;
    //	string sectionName;
-	i++;
+	++i;
 	while (i!=DFile.m_Sections.end()){
 		section = (t_Section*)&(*i);
 		fileName = localPath+"\\";

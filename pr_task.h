@@ -50,7 +50,7 @@ class PR_Task: public Task {
 		void buildFunnels(pursuerType* pT);
 	protected:
 		//рефакторенные функции
-		TNetF &point_oporn(const Vector &PiEtAx0, TNetF &x0Net, unsigned long i) const;
+		TNetF &point_oporn(const Vector &PiEtAx0, TNetF &x0Net) const;
 		void pointGeomDiff(int trNum, unsigned long k, const Vector &PiEtAx, TNetF &c, TNetF &x_Net) const;
 		void storeResults(int trNum,  VecOfVec &vx_i, VecOfVec &vu_i, VecOfVec &vv_i);
 		void storeLocResults(const Vector &u_i, const Vector &v_i, const Vector &x_i, VecOfVec &vx_i, VecOfVec &vu_i, VecOfVec &vv_i,

@@ -10,10 +10,12 @@
 
 #include <algorithm>
 #include<vector>
+
+#include"general.h"
 #include"Vector.h"
 #include "Matrix.h"
 #include"Netfunc.h"
-#include"general.h"
+
 using namespace std;
 
 

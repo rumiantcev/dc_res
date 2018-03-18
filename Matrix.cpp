@@ -467,7 +467,7 @@ Matrix __fastcall Matrix::GetSubMatrix(unsigned long a, unsigned long b, unsigne
 }
 
 // ------------------------------- Update -------------------------------------//
-void __fastcall Matrix::update() {
+void __fastcall Matrix::update()  const{
 	detach();
 	if (upd != 1){
 	   unsigned long  i, j;
@@ -480,7 +480,7 @@ void __fastcall Matrix::update() {
 }
 
 // ------------------------------- create ------------------------------------//
-/* !inline */ void __fastcall Matrix::create(bool isE, unsigned long mm, unsigned long nn) {
+/* !inline */ void __fastcall Matrix::create(bool isE, unsigned long mm, unsigned long nn)  const{
 	try {
 		upd = 1.0;
 		updated = true;
@@ -499,10 +499,11 @@ void __fastcall Matrix::update() {
 }
 
 // ------------------------------- detach -------------------------------------//
-void __fastcall Matrix::detach() {
+void __fastcall Matrix::detach()  const{
 
 	if (v->linkCount > 1) {
 		unsigned long  i, j;
+		LDouble upd_ = upd;
 		sMx *vv;
 		v->linkCount--;
 		vv = v;
@@ -510,7 +511,7 @@ void __fastcall Matrix::detach() {
 		create(false, vv->m, vv->n);
 		for (i = 0; i < vv->m; i++)
 			for (j = 0; j < vv->n; j++)
-				v->v[i][j] = vv->v[i][j];
+				v->v[i][j] = vv->v[i][j] * upd_;
 		v->linkCount = 1;
 	}
 }

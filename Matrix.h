@@ -21,11 +21,9 @@
  */
 class Matrix {
 public:
-	// int		m, n;
-	sMx *v;
-	LDouble upd;
-	bool updated;
-	// ,cached; Reserved
+	mutable sMx *v;
+	mutable LDouble upd;
+	mutable bool updated;
 
 	__fastcall Matrix(unsigned long, unsigned long);
 	explicit __fastcall Matrix(unsigned long);
@@ -34,9 +32,9 @@ public:
 	__fastcall Matrix(const string&, unsigned long, unsigned long);
 	// void operator delete(void *p);
 
-	void __fastcall update();
-	/* !inline */ void __fastcall create(bool, unsigned long, unsigned long);
-	void __fastcall detach();
+	void __fastcall update() const;
+	/* !inline */ void __fastcall create(bool, unsigned long, unsigned long)  const;
+	void __fastcall detach() const;
 	virtual __fastcall ~Matrix();
 
 	unsigned long m() const ; // число строк

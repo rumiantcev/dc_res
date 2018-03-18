@@ -33,10 +33,10 @@ public:
 	short perfomance;
 	Matrix *v; // массив координат
 	unsigned long Count; // общее число точек
-	unsigned long NumOfPoints; // число точек на грани!!!
+	unsigned long NumOfPoints; // число точек на грани!!! размерности n-1
 	unsigned long Dim; // размерность сети
 	unsigned long minBorder, maxBorder;
-	unsigned int SurfaceDim; // размерность повернности гиперкуба
+	unsigned int SurfaceDim; // размерность поверхности гиперкуба
 	unsigned int NumOfSur; // число поверхностей гиперкуба
 
 	bool updated, // признак актуальности

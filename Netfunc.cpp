@@ -672,7 +672,7 @@ void __fastcall TNetF::AddVariables() {
 
 
 // ----------------------------------------------------------------------------//
-LDouble __fastcall TNetF::oporn(const Vector &x, LDouble t, int sign) {
+LDouble __fastcall TNetF::oporn(const Vector &x, LDouble t_, int sign) {
 	LDouble result;
 	DWORD err;
 
@@ -680,12 +680,12 @@ LDouble __fastcall TNetF::oporn(const Vector &x, LDouble t, int sign) {
 	for (i = 0; i < Dim; i++)
 		vars[i] = sign * x.v->v[i];
 
-	this->t = t;
-#ifdef _WIN64
-	TDllStdProc2<LDouble, TSIC_Data64*, DWORD*>sic_exec(*dll, "sic_exec");
-#else
-	TDllStdProc2<LDouble, TSIC_Data32*, DWORD*>sic_exec(*dll, "sic_exec");
-#endif
+	t = t_;
+	#ifdef _WIN64
+		TDllStdProc2<LDouble, TSIC_Data64*, DWORD*>sic_exec(*dll, "sic_exec");
+	#else
+		TDllStdProc2<LDouble, TSIC_Data32*, DWORD*>sic_exec(*dll, "sic_exec");
+	#endif
 	result = sic_exec(&sic, &err);
 	return result;
 }
@@ -819,7 +819,7 @@ unsigned long __fastcall TNetF::findExtrSlowDirection(const Vector& vec, scM scm
 					extrOper == opMax? isExtr = (val > extr) :  isExtr = (val < extr);
 					if (isExtr)	{
 						extr = val;
-					j=i;
+						j=i;
 					}
 				}
 			}

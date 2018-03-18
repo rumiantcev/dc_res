@@ -19,7 +19,7 @@
 class sVec {
 public:
 	unsigned long size;
-	
+
 	LDouble *v;
 	long linkCount;
 

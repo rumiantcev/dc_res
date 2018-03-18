@@ -467,7 +467,7 @@ Task* TaskLoader::loadTask(string szFileName) {
 	}
 	else
 	{
-		cout<< " Unable to open file. Does it exist?"<<endl;;
+		cout<< " Unable to open file. Does it exist?"<<endl;
 		return NULL;
 	}
 }

@@ -120,7 +120,7 @@ public:
 	// const TRapidEvaluator &func,int sign);
 	void __fastcall oporn(LDouble t, int sign);
 	TNetF __fastcall opornx(LDouble t, int sign);
-	LDouble __fastcall oporn(const Vector &x, LDouble t, int sign,
+	LDouble __fastcall oporn(const Vector &x, LDouble t_, int sign,
 		const Matrix &A);
 	void __fastcall oporn(LDouble t, int sign, const Matrix &A);
 

@@ -8,8 +8,6 @@
 
 #include <stdlib>
 #include <system.hpp>
-// #include <sysutils.hpp>
-//#include <assert.h>
 
 #pragma hdrstop
 #include "Net.h"
@@ -46,7 +44,7 @@ Vector* __fastcall TNet::getVecAt(unsigned long i) {
 //	initNetDefault();
 //}
 
-/* */// ------------------------------Parameters Initializatin----------------------//
+/* */// ------------------------------Parameters Initialization----------------------//
 
 void __fastcall TNet::initNetParams(const unsigned long& res) {
 	virtDim = Dim;
@@ -740,8 +738,8 @@ void __fastcall TNet::copyNetFrom(const TNet& Net) {
 
 /* */// ----------------------build vectors with power values----------------------------------------------//
 void __fastcall TNet::buildPowerVectors(unsigned long _res) {
-	unsigned long i;
-	int j = 0;
+	unsigned long i, j = 0;
+
 	if (powVec != NULL)
 		delete powVec;
 	if (powVec_1 != NULL)

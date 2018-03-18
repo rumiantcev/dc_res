@@ -13,7 +13,7 @@
 //#include <fstream>
 #include "svec.h"
 #include "smx.h"
- #include "general.h"
+#include "general.h"
 using namespace std;
 
 /**
@@ -48,9 +48,11 @@ public:
 	Vector& __fastcall operator = (const LDouble & c);
 
 	/* !inline */ Vector& __fastcall operator += (const Vector&);
+	/* !inline */ Vector& __fastcall operator -= (const Vector&);
 	/* !inline */ Vector& __fastcall operator *= (const LDouble&);
 
 	friend const Vector __fastcall operator +(const Vector&, const Vector&);
+    friend const Vector __fastcall operator -(const Vector&, const Vector&);
 	friend const Vector __fastcall operator *(const LDouble&, const Vector&);
 	friend const LDouble __fastcall operator *(const Vector&, const Vector&);
 	// ---------------------------------------------------------------------------

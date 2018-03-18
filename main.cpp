@@ -26,7 +26,7 @@
 using namespace Dll;
 using namespace::std;
 
-int _test();
+//int _test();
 
 int _tmain(int argc, _TCHAR* argv[]) {
 

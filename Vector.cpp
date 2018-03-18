@@ -100,10 +100,9 @@ Vector& __fastcall Vector:: operator += (const Vector& A) {
 	if (A.v == v)
 		upd += A.upd;
 	else {
-		unsigned long i;
 		if (v->linkCount > 1)
 			detach();
-		for (i = 0; i < A.v->size; i++)
+		for (unsigned long i = 0; i < A.v->size; i++)
 			v->v[i] += coeff * A.v->v[i];
 	}
 	updated = false;
@@ -116,11 +115,25 @@ Vector& __fastcall Vector::vSum(const Vector& A) // added for profiling
 		upd += A.upd;
 	}
 	else {
-		unsigned long i;
 		if (v->linkCount > 1)
 			detach();
-		for (i = 0; i < A.v->size; i++)
+		for (unsigned long i = 0; i < A.v->size; i++)
 			v->v[i] += A.v->v[i];
+	}
+	updated = false;
+	return *this;
+}
+
+// ---------------------------- -= --------------------------------------------//
+Vector& __fastcall Vector:: operator -= (const Vector& A) {
+	LDouble coeff = A.upd / upd;
+	if (A.v == v)
+		upd -= A.upd;
+	else {
+		if (v->linkCount > 1)
+			detach();
+		for (unsigned long i = 0; i < A.v->size; i++)
+			v->v[i] -= coeff * A.v->v[i];
 	}
 	updated = false;
 	return *this;
@@ -129,6 +142,11 @@ Vector& __fastcall Vector::vSum(const Vector& A) // added for profiling
 // ---------------------------- + ---------------------------------------------//
 const Vector __fastcall operator +(const Vector& A, const Vector &B) {
 	return (Vector)A += B;
+}
+
+// ---------------------------- - ---------------------------------------------//
+const Vector __fastcall operator -(const Vector& A, const Vector &B) {
+	return (Vector)A -= B;
 }
 
 // ----------------------------- * -------------------------------------------//
@@ -149,6 +167,7 @@ const LDouble __fastcall scMul(const Vector& A, const Vector &B)
 	LDouble res = 0;
 	for (i = 0; i < A.v->size; i++)
 		res += A.v->v[i] * B.v->v[i];
+    res *= B.upd * A.upd;
 	return res;
 }
 

@@ -11,8 +11,8 @@
 // ----------------------------------- Vector ---------------------------------//
 //#include <iostream>
 //#include <fstream>
-#include "svec.h"
-#include "smx.h"
+#include "Svec.h"
+#include "Smx.h"
 #include "general.h"
 using namespace std;
 

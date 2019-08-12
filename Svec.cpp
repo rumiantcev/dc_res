@@ -11,7 +11,7 @@
 // #include <excpt>
 #pragma hdrstop
 
-#include "svec.h"
+#include "Svec.h"
 
 using namespace std;
 
@@ -25,7 +25,8 @@ void sVec:: operator delete(void *p) {
 	if (ptr->v == NULL)
 		delete p;
 	else
-		p = NULL;
+		//p = NULL;
+		ptr = NULL;
 }
 
 // ------------------------------- destructor ---------------------------------//

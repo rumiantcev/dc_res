@@ -192,7 +192,7 @@ const Vector __fastcall operator*(const LDouble &scalar, const Vector &A) {
 ostream& __fastcall operator << (ostream& out_data, Vector& C) {
 	unsigned long i;
 	// ≈сли прос€т вывести пустой вектор - возвращаем NULL
-	if ((&C == NULL) || (C.v == NULL)) {
+	if (/*(&C == NULL) ||*/ C.v == NULL) {
 		out_data << "NULL;";
 		return out_data;
 	}
@@ -215,8 +215,8 @@ istream& __fastcall operator >> (istream& in_data, Vector& C) {
 	unsigned long i;
 
 	// »нициализируем несчитываемые значени€
-	C.upd = 1.0;
-	C.updated = true;
+	//C.upd = 1.0;
+	//C.updated = true;
 
 	// «аполн€ем матрицу данными из потока
 

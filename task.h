@@ -10,10 +10,10 @@
 // ---------------------------------------------------------------------------
 //#include<classes.hpp>
 #include"general.h"
-#include"vector.h"
-#include"matrix.h"
-#include"net.h"
-#include"netfunc.h"
+#include"Vector.h"
+#include"Matrix.h"
+#include"Net.h"
+#include"Netfunc.h"
 // #include "RapidEvaluator.hpp"
 #include"traectory.h"
 #include "environment.h"

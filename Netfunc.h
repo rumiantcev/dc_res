@@ -26,7 +26,7 @@ using namespace Dll;
 #include "SICx.h"
 // #include "Vector.h"
 // #include "matrix.h"
-#include "net.h"
+#include "Net.h"
 #include "environment.h"
 #include "t_Mx.h"
 // #include "rapideval\RapidEvaluator.hpp"
@@ -84,10 +84,10 @@ public:
 	__fastcall ~TNetF();
 	void operator delete(void *p); // Ok
 
-	virtual void __fastcall update();
-	virtual void __fastcall dynUpdate();
-	virtual void __fastcall create( unsigned long /* , long, long */);
-	virtual void __fastcall detach();
+	virtual void __fastcall update() override;
+	virtual void __fastcall dynUpdate() override;
+	virtual void __fastcall create( unsigned long /* , long, long */)  override;
+	virtual void __fastcall detach() override;
 
 	friend ostream& __fastcall operator << (ostream&, TNetF&); // Ok
 	friend istream& __fastcall operator >> (istream&, TNetF&); // Ok
@@ -111,7 +111,7 @@ public:
 	// friend TNetF __fastcall operator *(LDouble &,TNetF&); // Changes in update()
 
 	unsigned long __fastcall shift(unsigned long current, unsigned long coordNumber, int step,
-	bool& borderChanged) throw(exInvalidMoveDirection);
+	bool& borderChanged) noexcept(false);
 
 	LDouble __fastcall oporn(const Vector &x, LDouble t, int sign);
 	LDouble __fastcall oporn(const Vector &x, LDouble t, const string &funcStr,
@@ -131,7 +131,7 @@ public:
 	long __fastcall GetExtrGlobal(OpType extrOper, long index, LDouble& extr);
 	// Поиск экстермума на опорной функции
 
-	void __fastcall Clear(); // Ok
+	void __fastcall Clear() override; // Ok
 	// /*!inline*/ LDouble& Vector operator[](long i);
 	// /*!inline*/  const LDouble& operator [](long i)const;
 

@@ -14,8 +14,8 @@
 //#include<istream>
 //#include<math.h>
 
-#include "vector.h"
-#include "matrix.h"
+#include "Vector.h"
+#include "Matrix.h"
 #include "general.h"
 // #include "Netfunc.h"
 
@@ -80,7 +80,7 @@ public:
 	Vector* __fastcall parseCoordinate(unsigned long current);
 	Vector* __fastcall parseCoordinateForShift(unsigned long current);
 	unsigned long __fastcall shift(unsigned long current, unsigned long coordNumber, int step,
-		bool& borderChanged) throw(exInvalidMoveDirection);
+		bool& borderChanged);// throw(exInvalidMoveDirection);
 	virtual void wasteCache();
 
 private:

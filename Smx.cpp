@@ -10,7 +10,7 @@
 // #include <math>
 #include <fstream>
 #pragma hdrstop
-#include "sMx.h"
+#include "Smx.h"
 
 
 using namespace std;
@@ -25,7 +25,8 @@ void sMx:: operator delete(void *p) {
 	if (ptr->v == NULL)
 		delete p;
 	else
-		p = NULL;
+		//p = NULL;
+		ptr = NULL;
 }
 
 // ------------------------------ destructor ----------------------------------//

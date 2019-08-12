@@ -9,9 +9,9 @@
 #include <assert.h>
 #include <algorithm>
 #pragma hdrstop
-#include "matrix.h"
-#include "smx.h"
-#include "vector.h"
+#include "Matrix.h"
+#include "Smx.h"
+#include "Vector.h"
 
 // -------------------------------------- m () --------------------------------//
 unsigned long Matrix::m() const {
@@ -203,7 +203,7 @@ const Vector __fastcall operator *(Vector& B, Matrix &A) {
 ostream& __fastcall operator << (ostream& out_data, Matrix& C) {
 	unsigned long i, j;
 	// ≈сли прос€т вывести пустую матрицу - возвращаем NULL
-	if ((&C == NULL) || (C.v == NULL) || (C.v->m <= 0) || (C.v->n <= 0)) {
+	if (/*(&C == NULL) ||*/ (C.v == NULL) || (C.v->m <= 0) || (C.v->n <= 0)) {
 		out_data << "NULL;";
 		return out_data;
 	}

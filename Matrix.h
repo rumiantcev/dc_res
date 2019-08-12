@@ -11,9 +11,9 @@
 #pragma once
 // #include <stream>
 
-#include "svec.h"
-#include "vector.h"
-#include "smx.h"
+#include "Svec.h"
+#include "Vector.h"
+#include "Smx.h"
 #include "general.h"
 
 /**

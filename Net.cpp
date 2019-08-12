@@ -408,7 +408,7 @@ Vector* __fastcall TNet::parseCoordinateForShift(unsigned long current) {
  * Осуществляет переход на соседнюю точку по поверхности сетки в заданном направлении
  */
 unsigned long __fastcall TNet::shift(unsigned long current, unsigned long coordNumber, int step,
-	bool& borderChanged) throw(exInvalidMoveDirection) {
+	bool& borderChanged) noexcept(false) {
 	// Vector vv= *powVec,vv_1=*powVec_1;
 	unsigned long currPlateNorm = current / (NumOfPoints * 2);
 	unsigned long _dim = Dim == virtDim ? Dim : virtDim;
@@ -619,7 +619,7 @@ TNet& __fastcall TNet:: operator *= (const Matrix& A) {
 
 /* */// ----------------------------------- * --------------------------------------//
 const TNet __fastcall operator*(const Matrix &A, const TNet& B) {
-	TNet result = B;
+	//TNet result = B;
 	return TNet(B) *= A;
 }
 

@@ -296,7 +296,8 @@ void TNetF:: operator delete(void *p) {
 		//delete(void *) p;
         delete ptr;
 	else
-		p = NULL;
+		//p = NULL;
+		ptr = NULL;
 }
 
 // ---------------------------- destructor-------------------------------------//
@@ -1086,7 +1087,8 @@ unsigned long __fastcall TNetF::findExtrFastXGlobal(OpType isMax, unsigned long 
 				catch (exInvalidMoveDirection) { // do nothing;
 				}
 				if (k2 != je)
-					if (k2 != je) {
+					//if (k2 != je)
+						{
 						val = f->v->v[k2];
 						if (!isExtrExist) {
 							isExtrExist = true;
@@ -1586,7 +1588,7 @@ void __fastcall TNetF::ConvTimS(bool *L) {
 	for (i = 0; i < Count; i++) {
 		if (f->v->v[i] != pinMark){
 			if (!L[i]) {
-				extr_exist = false;
+				//extr_exist = false;
 				for (m = 0; m < Dim; m++)
 					vec.v->v[m] = getIJ(i, m);
 				extr_exist = isExtr = false;
@@ -1811,7 +1813,7 @@ Vector* __fastcall TNetF::getVecAt(unsigned long i) {
 }
 //---------------------------------shift---------------------------------------
 unsigned long __fastcall TNetF::shift(unsigned long current, unsigned long coordNumber, int step,
-	bool& borderChanged) throw(exInvalidMoveDirection) {
+	bool& borderChanged) noexcept(false) {
 
 	bool tmp(false);
 	unsigned long j1(current);
